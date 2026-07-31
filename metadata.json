@@ -1,0 +1,6 @@
+{
+  "name": "MedColleague",
+  "description": "Expert medical educator & clinical assistant providing humanized, high-yield clinical insights, case vignettes, and evidence-based guidance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,22 @@
+{
+  "short_name": "MedColleague",
+  "name": "MedColleague - AI Clinical Educator & Board Exam Prep",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#F8FAFC",
+  "theme_color": "#0284C7",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "description": "Cross-Platform AI Medical Educator, Board Exam Question Bank, Case Vignettes, and AI Video Tutor."
+}
