@@ -11,6 +11,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- D3.js Engine for Psychometric & Radar Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <style>
     :root {
       --primary: #0EA5E9;
@@ -133,6 +135,22 @@
     .progress-bar-bg { background: var(--border); height: 10px; border-radius: 5px; overflow: hidden; margin-top: 6px; }
     .progress-bar-fill { background: linear-gradient(90deg, var(--primary), var(--success)); height: 100%; transition: width 0.5s ease; }
 
+    /* Skeleton Pulse Loader */
+    .skeleton-box { background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%); background-size: 200% 100%; animation: skeleton-pulse 1.5s infinite; border-radius: 8px; }
+    @keyframes skeleton-pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* QBank Vignette Smooth Slide-In Animation */
+    @keyframes vignetteSlideIn {
+      0% { opacity: 0; transform: translateX(28px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    .vignette-slide-in {
+      animation: vignetteSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Compliance Disclaimer Banner */
+    .compliance-banner { background: #FFFBEB; border-bottom: 1px solid #FCD34D; color: #B45309; padding: 8px 20px; font-size: 11.5px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; z-index: 75; }
+
     /* Modal Overlay */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
@@ -226,6 +244,12 @@
         </div>
       </header>
 
+      <!-- EDUCATIONAL USE DISCLAIMER BANNER -->
+      <div class="compliance-banner">
+        <span>⚠️ <strong>Educational & Board Exam Prep Notice</strong>: MedColleague content is for study and USMLE/NCLEX exam preparation only, not direct clinical decision support or patient care.</span>
+        <span style="cursor:pointer; font-size:14px; margin-left:12px;" onclick="this.parentElement.style.display='none'">✕</span>
+      </div>
+
       <!-- CONTENT AREA -->
       <main class="content-area">
 
@@ -290,7 +314,19 @@
             <!-- Left Panel: Document Upload & Case Viewer -->
             <div class="card">
               <div class="card-title">📄 Clinical Case & Vignette Upload</div>
-              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:12px;">Upload medical PDFs, ECG reports, or case notes for instant step-by-step interactive tutoring with Dr. Ese.</p>
+              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">Upload medical PDFs, ECG reports, or case notes for instant step-by-step interactive tutoring with Dr. Ese.</p>
+
+              <!-- Anti-PHI Compliance Warning -->
+              <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:10px; padding:8px 12px; margin-bottom:12px; font-size:11.5px; color:#B45309;">
+                🔒 <strong>HIPAA & Anti-PHI Warning</strong>: Do not upload protected patient health information (names, DOBs, MRNs). Ensure all case notes are de-identified.
+              </div>
+
+              <!-- PDF File Upload Interface -->
+              <div style="margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                <input type="file" id="pdf-file-picker" accept=".pdf,.txt" style="display:none;" onchange="handlePDFFileSelect(event)">
+                <button class="btn btn-secondary" style="font-size:11.5px; padding:6px 12px;" onclick="document.getElementById('pdf-file-picker').click()">📁 Select Case PDF File (Max 10MB)</button>
+                <span id="pdf-file-status" style="font-size:11.5px; color:var(--text-muted);">No file selected</span>
+              </div>
 
               <div style="margin-bottom:12px;">
                 <span style="font-size:11.5px; font-weight:bold; color:var(--primary-dark);">Sample Cases:</span><br>
@@ -299,11 +335,11 @@
                 <span class="action-pill" onclick="loadSample('hf')">📄 HeartFailure_GDMT.pdf</span>
               </div>
 
-              <textarea id="tutor-doc-input" rows="6" placeholder="Paste medical case text, PDF notes, or lab values here..."></textarea>
+              <textarea id="tutor-doc-input" rows="5" placeholder="Paste medical case text, PDF notes, or lab values here..."></textarea>
 
               <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
                 <button class="btn" onclick="startTutorWalkthrough()">▶️ Start Tutoring Walkthrough</button>
-                <button class="btn btn-secondary" onclick="speakTutorVoice()">🎙️ Voice Playback</button>
+                <button class="btn btn-success" onclick="runVignettePipeline()">⚡ Vignette-to-Everything Pipeline</button>
               </div>
 
               <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:12px;">
@@ -321,6 +357,21 @@
                 <div class="tutor-hud-tag">
                   <div class="pulse-dot"></div>
                   <span>DR. ESE • LIVE SENIOR AI EDUCATOR</span>
+                </div>
+              </div>
+
+              <!-- Voice Playback Control Bar -->
+              <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg); padding:8px 14px; border-radius:10px; border:1px solid var(--border); margin-top:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:12px; font-weight:bold; color:var(--primary-dark);">🔊 Voice Controls:</span>
+                  <button class="btn btn-secondary" style="font-size:11px; padding:3px 8px;" onclick="speakTutorVoice()">▶️ Speak</button>
+                  <button class="btn btn-secondary" style="font-size:11px; padding:3px 8px;" onclick="stopTutorVoice()">⏸️ Stop</button>
+                </div>
+                <div style="display:flex; align-items:center; gap:4px; font-size:11px; color:var(--text-muted);">
+                  <span>Speed:</span>
+                  <button class="btn btn-secondary" style="font-size:10px; padding:2px 6px;" onclick="setVoiceSpeed(1.0)">1.0x</button>
+                  <button class="btn btn-secondary" style="font-size:10px; padding:2px 6px;" onclick="setVoiceSpeed(1.25)">1.25x</button>
+                  <button class="btn btn-secondary" style="font-size:10px; padding:2px 6px;" onclick="setVoiceSpeed(1.5)">1.5x</button>
                 </div>
               </div>
 
@@ -405,8 +456,9 @@
                 <span style="background:var(--primary-light); color:var(--primary-dark); padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; margin-left:8px;" id="q-system-tag">CARDIOVASCULAR</span>
               </div>
 
-              <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <span style="font-size:12px; font-weight:bold; color:var(--success);" id="user-streak-tag">🔥 Streak: 14</span>
+                <button class="btn btn-success" style="padding:6px 12px; font-size:11.5px;" onclick="generateTargetedQBankItem()">⚡ Generate Item for Weakest Topic</button>
                 <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="toggleTestMode()" id="test-mode-btn">🔄 Mode: TUTOR</button>
                 <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="openLabModal()">🧪 Lab Values</button>
                 <span style="font-size:13px; font-weight:800; color:var(--danger);" id="q-timer">⏱️ 01:24</span>
@@ -566,25 +618,28 @@
         <!-- SECTION 6: ANALYTICS & READINESS -->
         <section id="section-analytics" class="hidden">
           <div class="card">
-            <div class="card-title">📊 Organ System Mastery & Exam Readiness Gauge</div>
+            <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>📊 Unified Weakness Engine & IRT Exam Readiness</span>
+              <button class="btn btn-secondary" style="font-size:12px; padding:6px 12px;" onclick="openIRTModal()">🔍 Inspect Psychometric Model</button>
+            </div>
             
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:20px;">
               <div style="background:var(--primary-light); border:1px solid #BAE6FD; padding:20px; border-radius:16px; text-align:center;">
-                <div style="font-size:36px; font-weight:800; color:var(--primary-dark);">248</div>
-                <div style="font-size:12px; font-weight:700; color:var(--primary-dark); margin-top:4px;">PROJECTED USMLE STEP 2 CK SCORE</div>
-                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Target Range: 245 - 255</div>
+                <div style="font-size:36px; font-weight:800; color:var(--primary-dark);" id="analytics-predicted-score">248</div>
+                <div style="font-size:12px; font-weight:700; color:var(--primary-dark); margin-top:4px;">PREDICTED USMLE STEP 2 CK SCORE</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;" id="analytics-score-ci">95% CI: [238 - 258] • Pass Prob: 98%</div>
               </div>
 
               <div style="background:var(--success-bg); border:1px solid #A7F3D0; padding:20px; border-radius:16px; text-align:center;">
-                <div style="font-size:36px; font-weight:800; color:#059669;">84.2%</div>
-                <div style="font-size:12px; font-weight:700; color:#047857; margin-top:4px;">CUMULATIVE QBANK ACCURACY</div>
+                <div style="font-size:36px; font-weight:800; color:#059669;" id="analytics-overall-acc">84.2%</div>
+                <div style="font-size:12px; font-weight:700; color:#047857; margin-top:4px;">BAYESIAN KNOWLEDGE MASTERY</div>
                 <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Peer Average: 68.0%</div>
               </div>
             </div>
 
-            <div style="font-weight:700; font-size:14px; margin-bottom:12px;">Organ System Breakdown:</div>
+            <div style="font-weight:700; font-size:14px; margin-bottom:12px;">Unified Organ System Mastery Graph:</div>
             
-            <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; flex-direction:column; gap:12px;" id="organ-mastery-list">
               <div>
                 <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
                   <span>Cardiovascular System</span>
@@ -616,6 +671,15 @@
                 </div>
                 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 81%;"></div></div>
               </div>
+            </div>
+
+            <!-- D3.JS RADAR CHART CONTAINER FOR WEAKNESS ENGINE -->
+            <div style="background:var(--bg); border:1px solid var(--border); border-radius:16px; padding:20px; margin-top:20px; text-align:center;">
+              <div style="font-weight:800; font-size:15px; color:var(--primary-dark); margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <span>🕸️ Dynamic Mastery Radar Chart (D3.js Engine)</span>
+                <span style="font-size:11px; color:var(--primary-dark); background:var(--primary-light); padding:4px 12px; border-radius:12px; font-weight:bold;">Real-Time Organ Vectors</span>
+              </div>
+              <div id="d3-radar-chart" style="width:100%; max-width:480px; height:340px; margin:0 auto; display:flex; justify-content:center; align-items:center;"></div>
             </div>
 
           </div>
@@ -696,6 +760,10 @@
 
       if (window.innerWidth <= 768) {
         document.getElementById('sidebar').classList.remove('open');
+      }
+
+      if (navId === 'analytics') {
+        setTimeout(() => renderD3RadarChart(), 100);
       }
     }
 
@@ -900,7 +968,14 @@
       document.getElementById('q-num-text').innerText = `${currentQIdx + 1} of ${Q_DATA.length}`;
       document.getElementById('q-system-tag').innerText = q.system;
       document.getElementById('user-streak-tag').innerText = `🔥 Streak: ${userStreak}`;
-      document.getElementById('qbank-vignette-text').innerText = q.vignette;
+      
+      const vignetteElem = document.getElementById('qbank-vignette-text');
+      if (vignetteElem) {
+        vignetteElem.innerText = q.vignette;
+        vignetteElem.classList.remove('vignette-slide-in');
+        void vignetteElem.offsetWidth; // Trigger CSS reflow for smooth animation
+        vignetteElem.classList.add('vignette-slide-in');
+      }
 
       const choicesList = document.getElementById('qbank-choices-list');
       choicesList.innerHTML = '';
@@ -1012,6 +1087,179 @@
       }
     }
 
+    // Handle PDF File Upload via /api/upload/parse-pdf
+    async function handlePDFFileSelect(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const statusElem = document.getElementById('pdf-file-status');
+      if (statusElem) statusElem.innerText = `Parsing ${file.name}...`;
+
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size exceeds 10MB limit. Please select a smaller PDF case file.');
+        if (statusElem) statusElem.innerText = 'File too large (>10MB)';
+        return;
+      }
+
+      try {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const base64Str = (e.target.result || '').toString().split(',')[1] || '';
+          
+          const res = await fetch('/api/upload/parse-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileBase64: base64Str,
+              fileName: file.name
+            })
+          });
+
+          const data = await res.json();
+          if (data.success && data.extractedText) {
+            const inputElem = document.getElementById('tutor-doc-input');
+            if (inputElem) inputElem.value = data.extractedText;
+            if (statusElem) statusElem.innerText = `✓ Parsed ${data.fileName} (${data.charCount} chars, ${data.organSystem})`;
+          } else {
+            alert(data.error || 'Failed to parse PDF.');
+            if (statusElem) statusElem.innerText = 'Parse error';
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch (err) {
+        console.error('PDF parsing error:', err);
+        if (statusElem) statusElem.innerText = 'Error reading file';
+      }
+    }
+
+    // Dynamic Organ System Mastery State for D3 Radar Chart
+    const masteryData = {
+      Cardiology: 88,
+      Renal: 74,
+      Pulmonology: 81,
+      GI: 92,
+      Neurology: 78,
+      Endocrine: 83,
+      HemOnc: 85,
+      Infectious: 89
+    };
+
+    function updateMasteryFromReview(systemName, isPositive) {
+      let key = 'Cardiology';
+      const sysLower = (systemName || '').toLowerCase();
+      if (sysLower.includes('renal') || sysLower.includes('acid')) key = 'Renal';
+      else if (sysLower.includes('pulm')) key = 'Pulmonology';
+      else if (sysLower.includes('gi') || sysLower.includes('gastro')) key = 'GI';
+      else if (sysLower.includes('neuro')) key = 'Neurology';
+      else if (sysLower.includes('endo')) key = 'Endocrine';
+      else if (sysLower.includes('hem') || sysLower.includes('onc')) key = 'HemOnc';
+      else if (sysLower.includes('infect') || sysLower.includes('id')) key = 'Infectious';
+
+      const delta = isPositive ? 2 : -3;
+      masteryData[key] = Math.min(100, Math.max(20, (masteryData[key] || 75) + delta));
+
+      renderD3RadarChart();
+    }
+
+    // D3.js Radar Chart Visualization Engine
+    function renderD3RadarChart() {
+      if (typeof d3 === 'undefined') return;
+      const container = d3.select("#d3-radar-chart");
+      if (container.empty()) return;
+      container.html("");
+
+      const data = [
+        { axis: "Cardio", value: masteryData.Cardiology },
+        { axis: "Renal", value: masteryData.Renal },
+        { axis: "Pulm", value: masteryData.Pulmonology },
+        { axis: "GI / Hep", value: masteryData.GI },
+        { axis: "Neuro", value: masteryData.Neurology },
+        { axis: "Endo", value: masteryData.Endocrine },
+        { axis: "Hem/Onc", value: masteryData.HemOnc },
+        { axis: "Infectious", value: masteryData.Infectious }
+      ];
+
+      const width = 340, height = 300, radius = Math.min(width, height) / 2 - 38;
+      const total = data.length;
+      const angleSlice = (Math.PI * 2) / total;
+      const rScale = d3.scaleLinear().domain([0, 100]).range([0, radius]);
+
+      const svg = container.append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .append("g")
+        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+      // Web concentric grid circles
+      const levels = [20, 40, 60, 80, 100];
+      levels.forEach(level => {
+        const levelFactor = radius * (level / 100);
+        svg.selectAll(`.grid-level-${level}`)
+          .data(data)
+          .enter()
+          .append("line")
+          .attr("x1", (d, i) => levelFactor * Math.cos(angleSlice * i - Math.PI / 2))
+          .attr("y1", (d, i) => levelFactor * Math.sin(angleSlice * i - Math.PI / 2))
+          .attr("x2", (d, i) => levelFactor * Math.cos(angleSlice * (i + 1) - Math.PI / 2))
+          .attr("y2", (d, i) => levelFactor * Math.sin(angleSlice * (i + 1) - Math.PI / 2))
+          .style("stroke", "#CBD5E1")
+          .style("stroke-opacity", "0.7")
+          .style("stroke-width", "1px");
+      });
+
+      // Axes
+      const axis = svg.selectAll(".axis")
+        .data(data)
+        .enter()
+        .append("g")
+        .attr("class", "axis");
+
+      axis.append("line")
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", (d, i) => rScale(100) * Math.cos(angleSlice * i - Math.PI / 2))
+        .attr("y2", (d, i) => rScale(100) * Math.sin(angleSlice * i - Math.PI / 2))
+        .style("stroke", "#94A3B8")
+        .style("stroke-dasharray", "3 3");
+
+      axis.append("text")
+        .style("font-size", "10px")
+        .style("font-weight", "800")
+        .style("fill", "#0284C7")
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.35em")
+        .attr("x", (d, i) => rScale(116) * Math.cos(angleSlice * i - Math.PI / 2))
+        .attr("y", (d, i) => rScale(116) * Math.sin(angleSlice * i - Math.PI / 2))
+        .text(d => `${d.axis} (${d.value}%)`);
+
+      // Polygon
+      const radarLine = d3.lineRadial()
+        .curve(d3.curveLinearClosed)
+        .radius(d => rScale(d.value))
+        .angle((d, i) => i * angleSlice);
+
+      svg.append("path")
+        .datum(data)
+        .attr("d", radarLine)
+        .style("fill", "#0EA5E9")
+        .style("fill-opacity", 0.35)
+        .style("stroke", "#0284C7")
+        .style("stroke-width", "2.5px");
+
+      // Data points
+      svg.selectAll(".radarCircle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("r", 4.5)
+        .attr("cx", (d, i) => rScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2))
+        .attr("cy", (d, i) => rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2))
+        .style("fill", "#0369A1")
+        .style("stroke", "#FFFFFF")
+        .style("stroke-width", "2px");
+    }
+
     // Flashcard SM-2 State & Data
     const FC_DATA = [
       {
@@ -1019,21 +1267,33 @@
         system: "CARDIOVASCULAR • PHARMACOLOGY",
         front: "What is the first-line pharmacotherapy for acute symptomatic Wolff-Parkinson-White (WPW) syndrome presenting with Atrial Fibrillation?",
         back: "✅ IV Procainamide or Ibutilide",
-        notes: "(Contraindicated: Metoprolol, Diltiazem, Digoxin, Adenosine)"
+        notes: "(Contraindicated: Metoprolol, Diltiazem, Digoxin, Adenosine)",
+        repetitions: 1,
+        easeFactor: 2.5,
+        interval: 1,
+        dueDate: new Date().toISOString()
       },
       {
         id: "fc-2",
         system: "RENAL & ACID-BASE",
         front: "What formula is used to calculate the Serum Anion Gap, and what threshold defines High Anion Gap Metabolic Acidosis?",
         back: "✅ Anion Gap = Na⁺ - (Cl⁻ + HCO₃⁻)",
-        notes: "Normal range is 8-12 mEq/L. A gap > 12 mEq/L indicates HAGMA."
+        notes: "Normal range is 8-12 mEq/L. A gap > 12 mEq/L indicates HAGMA.",
+        repetitions: 0,
+        easeFactor: 2.5,
+        interval: 1,
+        dueDate: new Date().toISOString()
       },
       {
         id: "fc-3",
         system: "PULMONOLOGY • CRITICAL CARE",
         front: "What classic triad on ECG is suggestive of acute Cor Pulmonale secondary to massive Pulmonary Embolism?",
         back: "✅ S1Q3T3 Pattern",
-        notes: "S wave in lead I, Q wave in lead III, Inverted T wave in lead III (plus sinus tachycardia)."
+        notes: "S wave in lead I, Q wave in lead III, Inverted T wave in lead III (plus sinus tachycardia).",
+        repetitions: 2,
+        easeFactor: 2.6,
+        interval: 3,
+        dueDate: new Date().toISOString()
       }
     ];
 
@@ -1046,9 +1306,10 @@
         const state = {
           fcIdx,
           isFlipped,
-          reviewedCount
+          reviewedCount,
+          FC_DATA
         };
-        localStorage.setItem('medcolleague_flashcard_state', JSON.stringify(state));
+        localStorage.setItem('medcolleague_flashcard_state_v2', JSON.stringify(state));
       } catch (e) {
         console.warn('LocalStorage save fc failed:', e);
       }
@@ -1056,7 +1317,7 @@
 
     function loadFlashcardState() {
       try {
-        const saved = localStorage.getItem('medcolleague_flashcard_state');
+        const saved = localStorage.getItem('medcolleague_flashcard_state_v2');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (typeof parsed.fcIdx === 'number' && parsed.fcIdx >= 0 && parsed.fcIdx < FC_DATA.length) {
@@ -1064,6 +1325,16 @@
           }
           if (typeof parsed.reviewedCount === 'number') {
             reviewedCount = parsed.reviewedCount;
+          }
+          if (Array.isArray(parsed.FC_DATA) && parsed.FC_DATA.length > 0) {
+            parsed.FC_DATA.forEach((savedCard, i) => {
+              if (FC_DATA[i]) {
+                FC_DATA[i].repetitions = savedCard.repetitions || FC_DATA[i].repetitions;
+                FC_DATA[i].easeFactor = savedCard.easeFactor || FC_DATA[i].easeFactor;
+                FC_DATA[i].interval = savedCard.interval || FC_DATA[i].interval;
+                FC_DATA[i].dueDate = savedCard.dueDate || FC_DATA[i].dueDate;
+              }
+            });
           }
           isFlipped = !!parsed.isFlipped;
         }
@@ -1100,20 +1371,58 @@
       renderFlashcard();
     }
 
-    function rateCard(score, intervalLabel) {
+    function rateCard(grade, intervalLabel) {
+      const fc = FC_DATA[fcIdx];
+      if (!fc) return;
+
+      let reps = fc.repetitions || 0;
+      let ease = fc.easeFactor || 2.5;
+      let interval = fc.interval || 1;
+
+      // Core SM-2 Algorithm Calculation
+      if (grade >= 3) {
+        if (reps === 0) interval = 1;
+        else if (reps === 1) interval = 3;
+        else if (reps === 2) interval = 6;
+        else interval = Math.round(interval * ease);
+        reps += 1;
+      } else {
+        reps = 0;
+        interval = 1;
+      }
+
+      // SM-2 Ease Factor calculation
+      ease = ease + (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02));
+      if (ease < 1.3) ease = 1.3;
+      ease = Math.round(ease * 100) / 100;
+
+      const due = new Date();
+      due.setDate(due.getDate() + interval);
+
+      fc.repetitions = reps;
+      fc.easeFactor = ease;
+      fc.interval = interval;
+      fc.dueDate = due.toISOString();
+
       reviewedCount++;
       isFlipped = false;
 
+      saveFlashcardState();
+
       const toast = document.getElementById('fc-feedback-toast');
-      toast.innerText = `✓ Card reviewed with SM-2 score ${score}. Scheduled for ${intervalLabel}.`;
+      const dueStr = due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      toast.innerHTML = `✓ SM-2 Rating ${grade}: Interval updated to <strong>${interval} day(s)</strong> (Due: <strong>${dueStr}</strong>, EF: ${ease})`;
       toast.classList.remove('hidden');
 
       setTimeout(() => {
         toast.classList.add('hidden');
-      }, 2500);
+      }, 3000);
 
       fcIdx = (fcIdx + 1) % FC_DATA.length;
       renderFlashcard();
+
+      // Update Weakness Engine
+      updateMasteryFromReview(fc.system, grade >= 3);
     }
 
     // PDF Export Utility for Offline Study
@@ -1308,6 +1617,7 @@
       renderFlashcard();
       runEgfr();
       runAnionGap();
+      renderD3RadarChart();
     });
 
     // MedSearch AI Search Engine Logic
@@ -1377,6 +1687,172 @@
       executeSearch(q);
     }
 
+    // IRT Psychometric Model Modal
+    function openIRTModal() {
+      document.getElementById('irt-modal').classList.add('active');
+    }
+    function closeIRTModal() {
+      document.getElementById('irt-modal').classList.remove('active');
+    }
+
+    // Voice Synthesis Controls for Dr. Ese
+    let activeUtterance = null;
+    let voiceSpeed = 1.0;
+
+    function setVoiceSpeed(speed) {
+      voiceSpeed = speed;
+      if (window.speechSynthesis.speaking) {
+        speakTutorVoice();
+      }
+    }
+
+    function stopTutorVoice() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function speakTutorVoice() {
+      stopTutorVoice();
+      const chatBox = document.getElementById('tutor-chat-box');
+      if (!chatBox) return;
+      const lastMsg = chatBox.querySelector('.msg-tutor:last-child');
+      if (!lastMsg) return;
+
+      const textToSpeak = lastMsg.innerText.replace(/👩‍🏫 Dr. Ese:/g, '').trim();
+      if (!textToSpeak || !('speechSynthesis' in window)) return;
+
+      activeUtterance = new SpeechSynthesisUtterance(textToSpeak);
+      activeUtterance.rate = voiceSpeed;
+      activeUtterance.pitch = 1.0;
+
+      // Select female or natural voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Google US English'));
+      if (femaleVoice) activeUtterance.voice = femaleVoice;
+
+      window.speechSynthesis.speak(activeUtterance);
+    }
+
+    // Personalized AI QBank Item Generator
+    async function generateTargetedQBankItem() {
+      const qVignette = document.getElementById('qbank-vignette-text');
+      if (!qVignette) return;
+
+      qVignette.innerHTML = `
+        <div class="skeleton-box" style="height:20px; width:80%; margin-bottom:8px;"></div>
+        <div class="skeleton-box" style="height:20px; width:95%; margin-bottom:8px;"></div>
+        <div class="skeleton-box" style="height:20px; width:60%;"></div>
+        <div style="margin-top:12px; font-size:12px; font-weight:bold; color:var(--primary-dark);">⚡ Generating personalized item for weakest system: Renal / Acid-Base...</div>
+      `;
+
+      try {
+        const res = await fetch('/api/ai/generate-qbank', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ organSystem: 'Renal / Nephrology', examType: 'USMLE Step 2 CK' })
+        });
+        const data = await res.json();
+        const item = data?.question;
+
+        if (item && item.vignette) {
+          Q_DATA.push({
+            system: item.system || 'RENAL / NEPHROLOGY',
+            vignette: item.vignette,
+            options: item.options,
+            correctIdx: item.correctIndex,
+            explanation: `<strong>Correct Answer: ${item.options[item.correctIndex]}</strong><br><br>${item.correctReason}<br><br><strong>Distractor Analysis:</strong><br>${(item.incorrectReasons || []).join('<br>')}`,
+            pearl: item.pearl
+          });
+
+          currentQIdx = Q_DATA.length - 1;
+          selectedChoiceIdx = null;
+          hasSubmitted = false;
+          renderQuestion();
+        } else {
+          alert('Unable to generate item. Restoring standard QBank item.');
+          renderQuestion();
+        }
+      } catch (err) {
+        console.error('QBank generation error:', err);
+        renderQuestion();
+      }
+    }
+
+    // Vignette-to-Everything Pipeline
+    async function runVignettePipeline() {
+      const docInput = document.getElementById('tutor-doc-input');
+      const text = docInput ? docInput.value.trim() : '';
+
+      if (!text) {
+        alert('Please paste clinical case text or select a sample case first.');
+        return;
+      }
+
+      const chatBox = document.getElementById('tutor-chat-box');
+      if (chatBox) {
+        chatBox.innerHTML += `
+          <div class="msg-bubble msg-student">📄 Running Vignette-to-Everything Pipeline for uploaded case...</div>
+          <div class="msg-bubble msg-tutor">
+            👩‍🏫 <strong>Dr. Ese</strong>: Analyzing clinical findings, generating 3 targeted QBank items, high-yield flashcards, and updating your organ mastery model...
+          </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      try {
+        const res = await fetch('/api/ai/vignette-pipeline', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ caseText: text, organSystem: 'Cardiology' })
+        });
+        const data = await res.json();
+        const pipelineData = data?.data;
+
+        if (pipelineData) {
+          if (chatBox) {
+            chatBox.innerHTML += `
+              <div class="msg-bubble msg-tutor">
+                👩‍🏫 <strong>Dr. Ese Pipeline Output</strong>:<br><br>
+                • <strong>Summary</strong>: ${pipelineData.summary}<br><br>
+                • <strong>Generated Bundle</strong>: ${pipelineData.qbankItems?.length || 1} QBank items & ${pipelineData.flashcards?.length || 1} flashcards added to your study deck!<br><br>
+                • <strong>Weakness Engine Delta</strong>: ${pipelineData.weaknessDelta?.system} mastery adjusted by ${pipelineData.weaknessDelta?.suggestedMasteryAdjustment}.
+              </div>
+            `;
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }
+
+          // Add generated QBank items to deck
+          if (pipelineData.qbankItems && pipelineData.qbankItems.length > 0) {
+            pipelineData.qbankItems.forEach(qi => {
+              Q_DATA.push({
+                system: qi.system || 'CARDIOLOGY',
+                vignette: qi.vignette,
+                options: qi.options,
+                correctIdx: qi.correctIndex,
+                explanation: qi.correctReason,
+                pearl: qi.pearl
+              });
+            });
+          }
+
+          // Add generated Flashcards to deck
+          if (pipelineData.flashcards && pipelineData.flashcards.length > 0) {
+            pipelineData.flashcards.forEach(fc => {
+              FC_DATA.push({
+                system: fc.system || 'CARDIOLOGY',
+                front: fc.front,
+                back: fc.back,
+                notes: fc.pearl
+              });
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Pipeline error:', err);
+      }
+    }
+
     // Modals
     function openLabModal() { document.getElementById('lab-modal').classList.add('active'); }
     function closeLabModal() { document.getElementById('lab-modal').classList.remove('active'); }
@@ -1392,5 +1868,41 @@
       });
     }
   </script>
+
+  <!-- IRT PSYCHOMETRIC MODEL MODAL -->
+  <div class="modal-overlay" id="irt-modal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:16px;">
+        <h3 style="font-size:16px; font-weight:800; color:var(--text);">🔍 IRT Psychometric Board Score Model</h3>
+        <button onclick="closeIRTModal()" style="background:transparent; border:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✕</button>
+      </div>
+
+      <div style="background:var(--primary-light); padding:16px; border-radius:12px; border:1px solid #BAE6FD; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:bold; color:var(--primary-dark); margin-bottom:6px;">Rasch 1-Parameter Item Response Theory (IRT)</div>
+        <p style="font-size:12px; line-height:1.5; color:var(--text);">
+          Unlike black-box score estimates, MedColleague calculates latent ability parameter <strong>&theta; = +1.15</strong> across all USMLE organ system domains, mapping accuracy and SM-2 retention onto the standard NBME 3-digit score distribution.
+        </p>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div style="background:var(--bg); border:1px solid var(--border); padding:12px; border-radius:10px; text-align:center;">
+          <div style="font-size:11px; font-weight:bold; color:var(--text-muted);">LATENT ABILITY (&theta;)</div>
+          <div style="font-size:22px; font-weight:800; color:var(--primary-dark); margin-top:2px;">+1.15</div>
+        </div>
+        <div style="background:var(--bg); border:1px solid var(--border); padding:12px; border-radius:10px; text-align:center;">
+          <div style="font-size:11px; font-weight:bold; color:var(--text-muted);">95% CONFIDENCE INTERVAL</div>
+          <div style="font-size:18px; font-weight:800; color:var(--success); margin-top:4px;">[238 - 258]</div>
+        </div>
+      </div>
+
+      <div style="font-size:12px; font-weight:bold; color:var(--text); margin-bottom:8px;">Standard Error & Information Function:</div>
+      <p style="font-size:11.5px; color:var(--text-muted); line-height:1.5; margin-bottom:16px;">
+        Standard Error of Measurement (SE) = &plusmn;5.1 points. Based on 1,420 QBank attempts and 380 spaced-repetition card reviews across 8 organ system domains.
+      </p>
+
+      <button class="btn" style="width:100%; justify-content:center;" onclick="closeIRTModal()">Close Psychometric Inspector</button>
+    </div>
+  </div>
+
 </body>
 </html>

@@ -5,6 +5,7 @@
   "main": "public/index.html",
   "scripts": {
     "build": "echo 'Vercel static build complete'",
+    "test": "node --test tests/clinical.test.js",
     "start": "serve public"
   },
   "dependencies": {

@@ -1,4 +1,5 @@
 -- MedColleague Full-Stack PostgreSQL / Supabase Database Schema
+-- Updated with Unified Weakness Engine, Case Upload Pipeline, Subscriptions, and Analytics
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -25,7 +26,7 @@ CREATE TABLE questions (
     exam_type exam_type NOT NULL,
     organ_system VARCHAR(100) NOT NULL,
     vignette TEXT NOT NULL,
-    options JSONB NOT NULL, -- ["Option A", "Option B", ...]
+    options JSONB NOT NULL,
     correct_index INT NOT NULL,
     explanation TEXT NOT NULL,
     high_yield_pearl TEXT NOT NULL,
@@ -64,6 +65,62 @@ CREATE TABLE flashcard_reviews (
     next_review_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Organ System Mastery (Bayesian / IRT Unified Weakness Engine)
+CREATE TABLE organ_system_mastery (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    organ_system VARCHAR(100) NOT NULL,
+    p_mastery FLOAT DEFAULT 0.5,
+    attempts_count INT DEFAULT 0,
+    correct_count INT DEFAULT 0,
+    flashcard_reviews_count INT DEFAULT 0,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_user_organ_system UNIQUE (user_id, organ_system)
+);
+
+-- Uploaded Case Records (Vignette-to-Everything Pipeline)
+CREATE TABLE uploaded_cases (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    file_name VARCHAR(255) NOT NULL,
+    case_text TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    organ_system VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Generated Items (AI QBank & Flashcard artifacts)
+CREATE TABLE generated_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    item_type VARCHAR(50) NOT NULL,
+    organ_system VARCHAR(100) NOT NULL,
+    content JSONB NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Subscriptions Table (Stripe Billing)
+CREATE TABLE subscriptions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    stripe_customer_id VARCHAR(255),
+    stripe_subscription_id VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'active',
+    plan subscription_plan DEFAULT 'FREE',
+    current_period_end TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Study Sessions Log
+CREATE TABLE study_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    session_type VARCHAR(50) NOT NULL,
+    duration_minutes INT DEFAULT 0,
+    items_completed INT DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- AI Tutor Sessions Log
 CREATE TABLE tutor_sessions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -73,7 +130,11 @@ CREATE TABLE tutor_sessions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create Indexes for Performance
+-- Create Compound Indexes for Performance
 CREATE INDEX idx_questions_organ_system ON questions(organ_system);
-CREATE INDEX idx_question_attempts_user ON question_attempts(user_id);
+CREATE INDEX idx_question_attempts_user ON question_attempts(user_id, created_at);
 CREATE INDEX idx_flashcard_reviews_due ON flashcard_reviews(user_id, next_review_at);
+CREATE INDEX idx_organ_system_mastery ON organ_system_mastery(user_id, organ_system);
+CREATE INDEX idx_uploaded_cases_user ON uploaded_cases(user_id);
+CREATE INDEX idx_generated_items_user ON generated_items(user_id);
+CREATE INDEX idx_subscriptions_user ON subscriptions(user_id);
