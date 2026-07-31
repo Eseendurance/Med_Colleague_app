@@ -341,11 +341,12 @@
             <!-- QBank Toolbar -->
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-bottom:14px; border-bottom:1px solid var(--border); margin-bottom:16px;">
               <div>
-                <span style="font-size:12px; color:var(--text-muted);">Block 1 • Item <strong>1 of 40</strong></span>
-                <span style="background:var(--primary-light); color:var(--primary-dark); padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; margin-left:8px;">CARDIOVASCULAR</span>
+                <span style="font-size:12px; color:var(--text-muted);" id="qbank-block-info">Block 1 • Item <strong id="q-num-text">1 of 3</strong></span>
+                <span style="background:var(--primary-light); color:var(--primary-dark); padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; margin-left:8px;" id="q-system-tag">CARDIOVASCULAR</span>
               </div>
 
               <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:12px; font-weight:bold; color:var(--success);" id="user-streak-tag">🔥 Streak: 14</span>
                 <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="toggleTestMode()" id="test-mode-btn">🔄 Mode: TUTOR</button>
                 <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="openLabModal()">🧪 Lab Values</button>
                 <span style="font-size:13px; font-weight:800; color:var(--danger);" id="q-timer">⏱️ 01:24</span>
@@ -355,33 +356,22 @@
 
             <!-- Question Vignette -->
             <div style="font-size:15px; line-height:1.65; color:var(--text); margin-bottom:20px;" id="qbank-vignette-text">
-              A 64-year-old male presents to the emergency department complaining of sudden onset palpitations and mild lightheadedness lasting 3 hours. Vital signs: BP 118/74 mmHg, HR 142 bpm (irregular), RR 18/min, SpO2 98% on room air. An ECG reveals irregular narrow-complex tachycardia without distinct P waves. Which of the following is the most appropriate initial management step?
+              Loading Question...
             </div>
 
             <!-- Choices List -->
             <div id="qbank-choices-list">
-              <div class="q-choice" onclick="selectChoice(0)">
-                <span>A. Immediate synchronized electrical cardioversion at 100J</span>
-                <span class="key-badge">Press 1</span>
-              </div>
-              <div class="q-choice" onclick="selectChoice(1)">
-                <span>B. Intravenous Metoprolol or Diltiazem for rate control</span>
-                <span class="key-badge">Press 2</span>
-              </div>
-              <div class="q-choice" onclick="selectChoice(2)">
-                <span>C. High-dose oral Amiodarone for 14 days</span>
-                <span class="key-badge">Press 3</span>
-              </div>
-              <div class="q-choice" onclick="selectChoice(3)">
-                <span>D. Immediate cardiac catheterization for coronary stenting</span>
-                <span class="key-badge">Press 4</span>
-              </div>
+              <!-- Dynamically populated choices -->
             </div>
 
-            <!-- Submit Answer Button -->
-            <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
-              <button class="btn btn-secondary" onclick="strikethroughMode()">✏️ Strike-through Choice</button>
-              <button class="btn btn-success" id="submit-answer-btn" onclick="confirmAnswer()">Submit Answer (Enter)</button>
+            <!-- Submit Answer & Feedback Row -->
+            <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div id="qbank-feedback-badge"></div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <button class="btn btn-secondary" onclick="strikethroughMode()">✏️ Strike-through</button>
+                <button class="btn" id="submit-answer-btn" onclick="confirmAnswer()" disabled style="opacity:0.5; cursor:not-allowed;">Submit Answer (Enter)</button>
+                <button class="btn btn-success hidden" id="next-question-btn" onclick="nextQuestionBlock()">Next Question ➔</button>
+              </div>
             </div>
 
             <!-- Explanation Rationale Box -->
@@ -389,18 +379,13 @@
               <div style="font-weight:800; color:var(--primary-dark); font-size:15px; margin-bottom:8px;">🔬 Comprehensive Clinical Explanation</div>
               
               <div style="font-size:13.5px; line-height:1.6; color:var(--text);" id="explanation-body-text">
-                <p style="margin-bottom:8px;"><strong style="color:var(--success);">✅ Why Choice B is Correct:</strong> In hemodynamically stable Atrial Fibrillation with Rapid Ventricular Response (RVR), initial rate control using IV Beta-blockers (Metoprolol) or Non-dihydropyridine CCBs (Diltiazem) is recommended to control HR < 110 bpm.</p>
-                <p style="margin-bottom:8px;"><strong style="color:var(--danger);">❌ Why Choice A is Incorrect:</strong> Synchronized cardioversion is indicated ONLY if the patient exhibits hemodynamic instability (hypotension, altered mental status, acute pulmonary edema, chest pain).</p>
+                <!-- Rationale content dynamically populated -->
               </div>
 
               <!-- High-Yield Pearl Box -->
               <div style="background:#ECFDF5; border:1px solid #6EE7B7; padding:12px 16px; border-radius:12px; margin-top:12px;">
                 <div style="font-size:12px; font-weight:800; color:#047857;">⚡ HIGH-YIELD BOARD PEARL:</div>
-                <div style="font-size:13px; color:#065F46; margin-top:4px;">On USMLE & NCLEX, never administer AV-node blocking agents (Metoprolol, Diltiazem, Digoxin) in WPW patients with AFib, as it precipitates Ventricular Fibrillation! Use Procainamide instead.</div>
-              </div>
-
-              <div style="margin-top:14px; text-align:right;">
-                <button class="btn" onclick="nextQuestionBlock()">Next Question ➔</button>
+                <div style="font-size:13px; color:#065F46; margin-top:4px;" id="board-pearl-text">Loading pearl...</div>
               </div>
             </div>
 
@@ -412,40 +397,42 @@
           <div class="card" style="max-width:700px; margin:0 auto;">
             <div class="card-title">
               <span>⚡ Spaced Repetition Flashcards (SM-2)</span>
-              <span style="font-size:12px; color:var(--text-muted);">Due Today: <strong>14 Cards</strong></span>
+              <span style="font-size:12px; color:var(--text-muted);">Reviewed: <strong id="fc-reviewed-count">380</strong> • Card <span id="fc-num-text">1 of 3</span></span>
             </div>
 
             <div class="flashcard-stage" onclick="flipCard()">
               <div class="flashcard-inner" id="fc-container">
-                <div style="font-size:12px; font-weight:bold; color:var(--primary); text-transform:uppercase; margin-bottom:10px;">CARDIOVASCULAR • PHARMACOLOGY</div>
+                <div style="font-size:12px; font-weight:bold; color:var(--primary); text-transform:uppercase; margin-bottom:10px;" id="fc-system-tag">CARDIOVASCULAR • PHARMACOLOGY</div>
                 <div id="fc-front-text" style="font-size:17px; font-weight:700; color:var(--text); line-height:1.5;">
                   What is the first-line pharmacotherapy for acute symptomatic Wolff-Parkinson-White (WPW) syndrome presenting with Atrial Fibrillation?
                 </div>
                 
                 <div id="fc-back-text" class="hidden" style="margin-top:16px; border-top:1px solid var(--border); padding-top:16px; font-size:16px; font-weight:700; color:var(--success);">
-                  ✅ IV Procainamide or Ibutilide<br>
-                  <span style="font-size:12.5px; font-weight:normal; color:var(--text-muted); display:block; margin-top:6px;">(Contraindicated: Metoprolol, Diltiazem, Digoxin, Adenosine)</span>
+                  <div id="fc-answer-content">✅ IV Procainamide or Ibutilide</div>
+                  <span id="fc-notes-content" style="font-size:12.5px; font-weight:normal; color:var(--text-muted); display:block; margin-top:6px;">(Contraindicated: Metoprolol, Diltiazem, Digoxin, Adenosine)</span>
                 </div>
                 
                 <div style="font-size:11px; color:var(--text-muted); margin-top:20px;">[Tap card or press Spacebar to flip]</div>
               </div>
             </div>
 
-            <!-- SM-2 Rating Buttons -->
-            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px; flex-wrap:wrap;">
-              <button class="btn btn-secondary" onclick="rateCard(1)">
-                <span>Again</span> <span style="font-size:10px; opacity:0.8;">(&lt; 10 min)</span>
+            <!-- SM-2 Rating Buttons (ONLY visible when card is flipped) -->
+            <div id="fc-rating-buttons" class="hidden" style="display:flex; justify-content:center; gap:10px; margin-top:20px; flex-wrap:wrap;">
+              <button class="btn btn-secondary" onclick="rateCard(1, '1 day')">
+                <span>Again</span> <span style="font-size:10px; opacity:0.8;">(1d)</span>
               </button>
-              <button class="btn btn-secondary" onclick="rateCard(2)">
-                <span>Hard</span> <span style="font-size:10px; opacity:0.8;">(1 day)</span>
+              <button class="btn btn-secondary" onclick="rateCard(2, '3 days')">
+                <span>Hard</span> <span style="font-size:10px; opacity:0.8;">(3d)</span>
               </button>
-              <button class="btn" onclick="rateCard(3)">
-                <span>Good</span> <span style="font-size:10px; opacity:0.8;">(4 days)</span>
+              <button class="btn" onclick="rateCard(3, '5 days')">
+                <span>Good</span> <span style="font-size:10px; opacity:0.8;">(5d)</span>
               </button>
-              <button class="btn btn-success" onclick="rateCard(4)">
-                <span>Easy</span> <span style="font-size:10px; opacity:0.8;">(10 days)</span>
+              <button class="btn btn-success" onclick="rateCard(4, '7 days')">
+                <span>Easy</span> <span style="font-size:10px; opacity:0.8;">(7d)</span>
               </button>
             </div>
+
+            <div id="fc-feedback-toast" style="text-align:center; font-size:12px; font-weight:bold; color:var(--success); margin-top:12px;" class="hidden"></div>
           </div>
         </section>
 
@@ -468,14 +455,21 @@
                 <div style="font-weight:700; font-size:14px; color:var(--primary-dark);">1. eGFR (CKD-EPI 2021 Race-Free)</div>
                 <div style="margin-top:10px;">
                   <label style="font-size:11.5px; font-weight:bold;">Serum Creatinine (mg/dL):</label>
-                  <input type="text" id="calc-scr" value="1.2">
+                  <input type="number" step="0.1" id="calc-scr" value="1.2" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border); font-size:13px; margin-top:4px;">
                 </div>
                 <div style="margin-top:8px;">
                   <label style="font-size:11.5px; font-weight:bold;">Age (Years):</label>
-                  <input type="text" id="calc-age" value="58">
+                  <input type="number" id="calc-age" value="58" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border); font-size:13px; margin-top:4px;">
                 </div>
-                <button class="btn" style="margin-top:12px; width:100%;" onclick="runEgfr()">Calculate eGFR</button>
-                <div id="egfr-out" style="margin-top:10px; font-size:13px; font-weight:700; color:var(--primary-dark);"></div>
+                <div style="margin-top:8px;">
+                  <label style="font-size:11.5px; font-weight:bold;">Biological Sex:</label>
+                  <select id="calc-gender" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border); font-size:13px; margin-top:4px;">
+                    <option value="female" selected>Female</option>
+                    <option value="male">Male</option>
+                  </select>
+                </div>
+                <button class="btn" style="margin-top:12px; width:100%; justify-content:center;" onclick="runEgfr()">Calculate eGFR</button>
+                <div id="egfr-out" style="margin-top:12px; padding:10px; border-radius:10px; background:var(--primary-light); font-size:13px; font-weight:700; color:var(--primary-dark); text-align:center;"></div>
               </div>
 
               <!-- Anion Gap Calc -->
@@ -483,18 +477,18 @@
                 <div style="font-weight:700; font-size:14px; color:var(--primary-dark);">2. Serum Anion Gap</div>
                 <div style="margin-top:10px;">
                   <label style="font-size:11.5px; font-weight:bold;">Na+ (mEq/L):</label>
-                  <input type="text" id="calc-na" value="138">
+                  <input type="number" id="calc-na" value="138" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border); font-size:13px; margin-top:4px;">
                 </div>
                 <div style="margin-top:6px;">
                   <label style="font-size:11.5px; font-weight:bold;">Cl- (mEq/L):</label>
-                  <input type="text" id="calc-cl" value="100">
+                  <input type="number" id="calc-cl" value="100" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border); font-size:13px; margin-top:4px;">
                 </div>
                 <div style="margin-top:6px;">
                   <label style="font-size:11.5px; font-weight:bold;">HCO3- (mEq/L):</label>
-                  <input type="text" id="calc-hco3" value="12">
+                  <input type="number" id="calc-hco3" value="12" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border); font-size:13px; margin-top:4px;">
                 </div>
-                <button class="btn" style="margin-top:12px; width:100%;" onclick="runAnionGap()">Calculate Anion Gap</button>
-                <div id="ag-out" style="margin-top:10px; font-size:13px; font-weight:700; color:var(--primary-dark);"></div>
+                <button class="btn" style="margin-top:12px; width:100%; justify-content:center;" onclick="runAnionGap()">Calculate Anion Gap</button>
+                <div id="ag-out" style="margin-top:12px; padding:10px; border-radius:10px; background:var(--danger-bg); border:1px solid var(--danger); font-size:13px; font-weight:700; color:var(--danger); text-align:center;"></div>
               </div>
 
             </div>
@@ -715,33 +709,169 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // QBank Functions
+    // QBank Engine State & Data
+    const Q_DATA = [
+      {
+        id: "q-101",
+        system: "CARDIOVASCULAR",
+        vignette: "A 64-year-old male presents to the emergency department complaining of sudden onset palpitations and mild lightheadedness lasting 3 hours. Vital signs: BP 118/74 mmHg, HR 142 bpm (irregular), RR 18/min, SpO2 98% on room air. An ECG reveals irregular narrow-complex tachycardia without distinct P waves. Which of the following is the most appropriate initial management step?",
+        options: [
+          "A. Immediate synchronized electrical cardioversion at 100J",
+          "B. Intravenous Metoprolol or Diltiazem for rate control",
+          "C. High-dose oral Amiodarone for 14 days",
+          "D. Immediate cardiac catheterization for coronary stenting"
+        ],
+        correctIndex: 1,
+        correctReason: "In hemodynamically stable Atrial Fibrillation with Rapid Ventricular Response (RVR), initial rate control using IV Beta-blockers (Metoprolol) or Non-dihydropyridine CCBs (Diltiazem) is recommended to control HR < 110 bpm.",
+        incorrectReasons: [
+          "Synchronized cardioversion is indicated ONLY if the patient exhibits hemodynamic instability (hypotension, altered mental status, acute pulmonary edema, chest pain).",
+          "Amiodarone is a rhythm-control option that carries higher toxicities and is not first-line for acute rate control in stable patients.",
+          "Cardiac catheterization is indicated for acute ST-elevation myocardial infarction (STEMI), not isolated primary atrial fibrillation without ischemia."
+        ],
+        pearl: "On USMLE & NCLEX, never administer AV-node blocking agents (Metoprolol, Diltiazem, Digoxin) in WPW patients with AFib, as it precipitates Ventricular Fibrillation! Use Procainamide instead."
+      },
+      {
+        id: "q-102",
+        system: "RENAL & ACID-BASE",
+        vignette: "A 52-year-old female with type 1 diabetes mellitus presents to the emergency department with altered mental status and deep, rapid respirations. Serum labs: Na+ 138 mEq/L, Cl- 100 mEq/L, HCO3- 10 mEq/L, Glucose 480 mg/dL. Arterial Blood Gas: pH 7.20. Which of the following is the underlying acid-base disorder?",
+        options: [
+          "A. Normal Anion Gap Metabolic Acidosis",
+          "B. High Anion Gap Metabolic Acidosis (Anion Gap = 28 mEq/L)",
+          "C. Primary Respiratory Acidosis with Metabolic Compensation",
+          "D. Metabolic Alkalosis secondary to volume depletion"
+        ],
+        correctIndex: 1,
+        correctReason: "Anion Gap = Na - (Cl + HCO3) = 138 - (100 + 10) = 28 mEq/L. An anion gap > 12 mEq/L confirms High Anion Gap Metabolic Acidosis (HAGMA), secondary to ketoacidosis (DKA).",
+        incorrectReasons: [
+          "Normal anion gap acidosis (8-12 mEq/L) occurs with diarrhea or renal tubular acidosis, not ketoacidosis.",
+          "Respiratory compensation causes Kussmaul breathing (hyperventilation to lower PaCO2), but the primary disorder is metabolic acidosis.",
+          "Metabolic alkalosis features elevated pH (> 7.45) and elevated HCO3- (> 28 mEq/L)."
+        ],
+        pearl: "Remember the GOLD MARK or MUDPILES mnemonic for High Anion Gap Metabolic Acidosis: Glycols, Oxoproline, L-lactate, D-lactate, Methanol, Aspirin, Renal failure, Ketoacidosis."
+      },
+      {
+        id: "q-103",
+        system: "PULMONOLOGY",
+        vignette: "A 28-year-old female 4 days post-op after right femoral fracture fixation suddenly develops pleuritic chest pain and shortness of breath. Vital signs: HR 118 bpm, BP 122/78 mmHg, SpO2 91% on room air. ECG shows sinus tachycardia. What is the most appropriate initial diagnostic imaging test of choice?",
+        options: [
+          "A. Portable Bedside Chest X-Ray",
+          "B. CT Pulmonary Angiography (CTPA)",
+          "C. High-Resolution CT (HRCT) of Chest",
+          "D. Transthoracic Echocardiogram (TTE)"
+        ],
+        correctIndex: 1,
+        correctReason: "In patients with high clinical probability for Acute Pulmonary Embolism (Wells Score > 4) and normal renal function without contrast allergy, CT Pulmonary Angiography (CTPA) is the gold-standard initial diagnostic imaging.",
+        incorrectReasons: [
+          "Chest X-Ray is performed to rule out alternative diagnoses (e.g. pneumothorax), but cannot confirm PE.",
+          "HRCT is used to assess interstitial lung disease, not pulmonary vascular perfusion.",
+          "TTE evaluates right ventricular strain in massive PE, but is not the primary diagnostic imaging modality for PE."
+        ],
+        pearl: "If CT contrast is contraindicated (e.g. severe renal impairment or pregnancy), order a Ventilation/Perfusion (V/Q) Scan as the next diagnostic step."
+      }
+    ];
+
+    let currentQIdx = 0;
     let selectedChoiceIdx = null;
+    let hasSubmitted = false;
+    let userStreak = 14;
+
+    function renderQuestion() {
+      const q = Q_DATA[currentQIdx];
+      document.getElementById('q-num-text').innerText = `${currentQIdx + 1} of ${Q_DATA.length}`;
+      document.getElementById('q-system-tag').innerText = q.system;
+      document.getElementById('user-streak-tag').innerText = `🔥 Streak: ${userStreak}`;
+      document.getElementById('qbank-vignette-text').innerText = q.vignette;
+
+      const choicesList = document.getElementById('qbank-choices-list');
+      choicesList.innerHTML = '';
+
+      q.options.forEach((optText, idx) => {
+        const choiceDiv = document.createElement('div');
+        choiceDiv.className = 'q-choice';
+        choiceDiv.onclick = () => selectChoice(idx);
+
+        let optClass = '';
+        if (hasSubmitted) {
+          if (idx === q.correctIndex) {
+            optClass = 'correct';
+          } else if (idx === selectedChoiceIdx && idx !== q.correctIndex) {
+            optClass = 'incorrect';
+          }
+        } else if (idx === selectedChoiceIdx) {
+          optClass = 'selected';
+        }
+
+        if (optClass) choiceDiv.classList.add(optClass);
+
+        choiceDiv.innerHTML = `
+          <span>${optText}</span>
+          <span class="key-badge">Press ${idx + 1}</span>
+        `;
+        choicesList.appendChild(choiceDiv);
+      });
+
+      const submitBtn = document.getElementById('submit-answer-btn');
+      if (!hasSubmitted) {
+        submitBtn.classList.remove('hidden');
+        if (selectedChoiceIdx !== null) {
+          submitBtn.removeAttribute('disabled');
+          submitBtn.style.opacity = '1';
+          submitBtn.style.cursor = 'pointer';
+          submitBtn.classList.add('btn-success');
+        } else {
+          submitBtn.setAttribute('disabled', 'true');
+          submitBtn.style.opacity = '0.5';
+          submitBtn.style.cursor = 'not-allowed';
+          submitBtn.classList.remove('btn-success');
+        }
+        document.getElementById('next-question-btn').classList.add('hidden');
+        document.getElementById('qbank-explanation-box').classList.add('hidden');
+        document.getElementById('qbank-feedback-badge').innerHTML = '';
+      } else {
+        submitBtn.classList.add('hidden');
+        document.getElementById('next-question-btn').classList.remove('hidden');
+      }
+    }
 
     function selectChoice(idx) {
+      if (hasSubmitted) return;
       selectedChoiceIdx = idx;
-      const choices = document.querySelectorAll('.q-choice');
-      choices.forEach((c, i) => {
-        if (i === idx) c.classList.add('selected');
-        else c.classList.remove('selected');
-      });
+      renderQuestion();
     }
 
     function confirmAnswer() {
-      if (selectedChoiceIdx === null) return alert('Please select a choice first!');
-      const choices = document.querySelectorAll('.q-choice');
-      choices.forEach((c, i) => {
-        if (i === 1) c.classList.add('correct');
-        else if (i === selectedChoiceIdx) c.classList.add('incorrect');
+      if (selectedChoiceIdx === null || hasSubmitted) return;
+
+      hasSubmitted = true;
+      const q = Q_DATA[currentQIdx];
+      const isCorrect = selectedChoiceIdx === q.correctIndex;
+
+      if (isCorrect) {
+        userStreak++;
+        document.getElementById('qbank-feedback-badge').innerHTML = `<span style="background:#ECFDF5; color:#047857; padding:6px 14px; border-radius:20px; font-weight:bold; font-size:12px; border:1px solid #A7F3D0;">✅ Correct (+10 pts)</span>`;
+      } else {
+        userStreak = 0;
+        document.getElementById('qbank-feedback-badge').innerHTML = `<span style="background:#FEF2F2; color:#B91C1C; padding:6px 14px; border-radius:20px; font-weight:bold; font-size:12px; border:1px solid #FECACA;">❌ Incorrect</span>`;
+      }
+
+      // Render rationale
+      let rationaleHTML = `<p style="margin-bottom:8px;"><strong style="color:var(--success);">✅ Why Choice ${String.fromCharCode(65 + q.correctIndex)} is Correct:</strong> ${q.correctReason}</p>`;
+      q.incorrectReasons.forEach((reason) => {
+        rationaleHTML += `<p style="margin-bottom:8px;"><strong style="color:var(--danger);">❌ Distractor Note:</strong> ${reason}</p>`;
       });
+
+      document.getElementById('explanation-body-text').innerHTML = rationaleHTML;
+      document.getElementById('board-pearl-text').innerText = q.pearl;
+
+      renderQuestion();
       document.getElementById('qbank-explanation-box').classList.remove('hidden');
     }
 
     function nextQuestionBlock() {
-      alert("Next high-yield item loaded in block!");
-      document.getElementById('qbank-explanation-box').classList.add('hidden');
+      currentQIdx = (currentQIdx + 1) % Q_DATA.length;
       selectedChoiceIdx = null;
-      document.querySelectorAll('.q-choice').forEach(c => c.classList.remove('selected', 'correct', 'incorrect', 'strikethrough'));
+      hasSubmitted = false;
+      renderQuestion();
     }
 
     function toggleTestMode() {
@@ -760,19 +890,165 @@
 
     function strikethroughMode() {
       if (selectedChoiceIdx !== null) {
-        document.querySelectorAll('.q-choice')[selectedChoiceIdx].classList.toggle('strikethrough');
+        const choices = document.querySelectorAll('.q-choice');
+        if (choices[selectedChoiceIdx]) {
+          choices[selectedChoiceIdx].classList.toggle('strikethrough');
+        }
       }
     }
 
-    // Keyboard shortcuts for QBank
+    // Flashcard SM-2 State & Data
+    const FC_DATA = [
+      {
+        id: "fc-1",
+        system: "CARDIOVASCULAR • PHARMACOLOGY",
+        front: "What is the first-line pharmacotherapy for acute symptomatic Wolff-Parkinson-White (WPW) syndrome presenting with Atrial Fibrillation?",
+        back: "✅ IV Procainamide or Ibutilide",
+        notes: "(Contraindicated: Metoprolol, Diltiazem, Digoxin, Adenosine)"
+      },
+      {
+        id: "fc-2",
+        system: "RENAL & ACID-BASE",
+        front: "What formula is used to calculate the Serum Anion Gap, and what threshold defines High Anion Gap Metabolic Acidosis?",
+        back: "✅ Anion Gap = Na⁺ - (Cl⁻ + HCO₃⁻)",
+        notes: "Normal range is 8-12 mEq/L. A gap > 12 mEq/L indicates HAGMA."
+      },
+      {
+        id: "fc-3",
+        system: "PULMONOLOGY • CRITICAL CARE",
+        front: "What classic triad on ECG is suggestive of acute Cor Pulmonale secondary to massive Pulmonary Embolism?",
+        back: "✅ S1Q3T3 Pattern",
+        notes: "S wave in lead I, Q wave in lead III, Inverted T wave in lead III (plus sinus tachycardia)."
+      }
+    ];
+
+    let fcIdx = 0;
+    let isFlipped = false;
+    let reviewedCount = 380;
+
+    function renderFlashcard() {
+      const fc = FC_DATA[fcIdx];
+      document.getElementById('fc-num-text').innerText = `${fcIdx + 1} of ${FC_DATA.length}`;
+      document.getElementById('fc-system-tag').innerText = fc.system;
+      document.getElementById('fc-front-text').innerText = fc.front;
+      document.getElementById('fc-answer-content').innerText = fc.back;
+      document.getElementById('fc-notes-content').innerText = fc.notes || "";
+      document.getElementById('fc-reviewed-count').innerText = reviewedCount;
+
+      const backElem = document.getElementById('fc-back-text');
+      const ratingElem = document.getElementById('fc-rating-buttons');
+
+      if (isFlipped) {
+        backElem.classList.remove('hidden');
+        ratingElem.classList.remove('hidden');
+      } else {
+        backElem.classList.add('hidden');
+        ratingElem.classList.add('hidden');
+      }
+    }
+
+    function flipCard() {
+      isFlipped = !isFlipped;
+      renderFlashcard();
+    }
+
+    function rateCard(score, intervalLabel) {
+      reviewedCount++;
+      isFlipped = false;
+
+      const toast = document.getElementById('fc-feedback-toast');
+      toast.innerText = `✓ Card reviewed with SM-2 score ${score}. Scheduled for ${intervalLabel}.`;
+      toast.classList.remove('hidden');
+
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2500);
+
+      fcIdx = (fcIdx + 1) % FC_DATA.length;
+      renderFlashcard();
+    }
+
+    // Calculators Engine
+    function runEgfr() {
+      const scr = parseFloat(document.getElementById('calc-scr').value);
+      const age = parseFloat(document.getElementById('calc-age').value);
+      const gender = document.getElementById('calc-gender').value;
+
+      if (isNaN(scr) || scr <= 0 || isNaN(age) || age <= 0) {
+        document.getElementById('egfr-out').innerText = "Please enter valid numeric inputs.";
+        return;
+      }
+
+      let egfr = 0;
+      if (gender === 'female') {
+        const kappa = 0.7;
+        const alpha = scr <= kappa ? -0.241 : -1.2;
+        egfr = 142 * Math.pow(Math.min(scr / kappa, 1), alpha) * Math.pow(Math.max(scr / kappa, 1), -1.2) * Math.pow(0.9938, age) * 1.012;
+      } else {
+        const kappa = 0.9;
+        const alpha = scr <= kappa ? -0.302 : -1.2;
+        egfr = 142 * Math.pow(Math.min(scr / kappa, 1), alpha) * Math.pow(Math.max(scr / kappa, 1), -1.2) * Math.pow(0.9938, age);
+      }
+
+      const val = Math.round(egfr);
+      let stage = "";
+      if (val >= 90) stage = "CKD Stage 1 (Normal GFR)";
+      else if (val >= 60) stage = "CKD Stage 2 (Mildly Decreased)";
+      else if (val >= 45) stage = "CKD Stage 3a (Mild-Moderate)";
+      else if (val >= 30) stage = "CKD Stage 3b (Moderate-Severe)";
+      else if (val >= 15) stage = "CKD Stage 4 (Severely Decreased)";
+      else stage = "CKD Stage 5 (Kidney Failure)";
+
+      document.getElementById('egfr-out').innerHTML = `Result eGFR: <strong>${val} mL/min/1.73m²</strong><br><span style="font-size:11.5px; opacity:0.9;">Interpretation: ${stage}</span>`;
+    }
+
+    function runAnionGap() {
+      const na = parseFloat(document.getElementById('calc-na').value);
+      const cl = parseFloat(document.getElementById('calc-cl').value);
+      const hco3 = parseFloat(document.getElementById('calc-hco3').value);
+
+      if (isNaN(na) || isNaN(cl) || isNaN(hco3)) {
+        document.getElementById('ag-out').innerText = "Please enter valid electrolyte values.";
+        return;
+      }
+
+      const ag = Math.round((na - (cl + hco3)) * 10) / 10;
+      const isHigh = ag > 12;
+
+      const outDiv = document.getElementById('ag-out');
+      if (isHigh) {
+        outDiv.style.background = 'var(--danger-bg)';
+        outDiv.style.border = '1px solid var(--danger)';
+        outDiv.style.color = 'var(--danger)';
+        outDiv.innerHTML = `Result Anion Gap: <strong>${ag} mEq/L</strong><br><span style="font-size:11.5px;">⚠️ High Anion Gap Metabolic Acidosis (> 12 mEq/L)</span>`;
+      } else {
+        outDiv.style.background = 'var(--success-bg)';
+        outDiv.style.border = '1px solid var(--success)';
+        outDiv.style.color = '#047857';
+        outDiv.innerHTML = `Result Anion Gap: <strong>${ag} mEq/L</strong><br><span style="font-size:11.5px;">✅ Normal Anion Gap (8-12 mEq/L)</span>`;
+      }
+    }
+
+    function filterCalc(cat) {
+      alert(`Filtering clinical calculators by category: ${cat.toUpperCase()}`);
+    }
+
+    // Keyboard navigation binding
     document.addEventListener('keydown', (e) => {
-      if (!document.getElementById('section-qbank').classList.contains('hidden')) {
+      const qSection = document.getElementById('section-qbank');
+      const fcSection = document.getElementById('section-flashcards');
+
+      if (qSection && !qSection.classList.contains('hidden')) {
         if (['1', '2', '3', '4'].includes(e.key)) {
           selectChoice(parseInt(e.key) - 1);
         } else if (e.key === 'Enter') {
-          confirmAnswer();
+          if (!hasSubmitted && selectedChoiceIdx !== null) {
+            confirmAnswer();
+          } else if (hasSubmitted) {
+            nextQuestionBlock();
+          }
         }
-      } else if (!document.getElementById('section-flashcards').classList.contains('hidden')) {
+      } else if (fcSection && !fcSection.classList.contains('hidden')) {
         if (e.code === 'Space') {
           e.preventDefault();
           flipCard();
@@ -780,31 +1056,13 @@
       }
     });
 
-    // Flashcard Flip
-    function flipCard() {
-      document.getElementById('fc-back-text').classList.toggle('hidden');
-    }
-
-    function rateCard(score) {
-      alert(`Flashcard reviewed with SM-2 score ${score}. Scheduled for next interval.`);
-      document.getElementById('fc-back-text').classList.add('hidden');
-    }
-
-    // Calculators
-    function runEgfr() {
-      const scr = parseFloat(document.getElementById('calc-scr').value) || 1.2;
-      const age = parseFloat(document.getElementById('calc-age').value) || 58;
-      const egfr = Math.round(142 * Math.pow(scr / 0.9, -1.2) * Math.pow(0.9938, age));
-      document.getElementById('egfr-out').innerText = `Result eGFR: ${egfr} mL/min/1.73m² (Clinical Interpretation: ${egfr >= 60 ? 'Normal / Mild Reduction' : 'CKD Stage 3a Moderate Decrease'})`;
-    }
-
-    function runAnionGap() {
-      const na = parseFloat(document.getElementById('calc-na').value) || 138;
-      const cl = parseFloat(document.getElementById('calc-cl').value) || 100;
-      const hco3 = parseFloat(document.getElementById('calc-hco3').value) || 12;
-      const ag = na - (cl + hco3);
-      document.getElementById('ag-out').innerText = `Result Anion Gap: ${ag} mEq/L (${ag > 12 ? 'High Anion Gap Metabolic Acidosis - Check GOLD MARK' : 'Normal Anion Gap Metabolic Acidosis'})`;
-    }
+    // Initial render call on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderQuestion();
+      renderFlashcard();
+      runEgfr();
+      runAnionGap();
+    });
 
     function filterCalc(cat) {
       alert(`Filtering clinical calculators by category: ${cat.toUpperCase()}`);
