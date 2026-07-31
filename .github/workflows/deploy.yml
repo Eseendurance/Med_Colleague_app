@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -17,9 +18,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci || npm install
+
+      - name: Type Check & Verify Build
+        run: npm run build
+
+      - name: Run Test Suite
+        run: npm test
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25

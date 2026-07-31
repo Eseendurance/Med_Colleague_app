@@ -4,7 +4,7 @@
   "description": "MedColleague Clinical Educator & Board Exam AI Engine",
   "main": "public/index.html",
   "scripts": {
-    "build": "echo 'Vercel static build complete'",
+    "build": "tsc --noEmit",
     "test": "node --test tests/clinical.test.js",
     "start": "serve public"
   },
