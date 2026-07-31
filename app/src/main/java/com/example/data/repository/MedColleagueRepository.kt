@@ -254,7 +254,7 @@ class MedColleagueRepository(private val dao: MedColleagueDao) {
 
         val prompt = if (studentQuestion.isNullOrBlank()) {
             """
-            You are Dr. Maya, a senior medical professor and AI board exam tutor.
+            You are Dr. Ese, a senior medical professor and AI board exam tutor.
             A medical student uploaded the following question or document:
             
             "$documentText"
@@ -267,7 +267,7 @@ class MedColleagueRepository(private val dao: MedColleagueDao) {
             """.trimIndent()
         } else {
             """
-            You are Dr. Maya, a senior medical professor and AI board exam tutor.
+            You are Dr. Ese, a senior medical professor and AI board exam tutor.
             The student is studying this document:
             "$documentText"
             
@@ -301,7 +301,7 @@ class MedColleagueRepository(private val dao: MedColleagueDao) {
         return if (studentQuestion.isNullOrBlank()) {
             when {
                 doc.contains("ecg") || doc.contains("tachycardia") || doc.contains("palpitations") || doc.contains("arrhythmia") -> """
-                    👩‍🏫 **Dr. Maya's Clinical Walkthrough**:
+                    👩‍🏫 **Dr. Ese's Clinical Walkthrough**:
                     
                     • **Core Pathophysiology**: The document describes an acute cardiac arrhythmia presentation. Irregular narrow-complex tachycardia without p waves indicates Atrial Fibrillation with Rapid Ventricular Response (RVR).
                     • **Diagnostic Rationale**: First, assess hemodynamic stability! If hemodynamically unstable (hypotension, altered mental status, chest pain), immediate synchronized cardioversion is required. If stable, proceed to rate control (Beta-blockers like Metoprolol or CCBs like Diltiazem) and CHADS2-VASc stroke risk assessment for anticoagulation.
@@ -311,7 +311,7 @@ class MedColleagueRepository(private val dao: MedColleagueDao) {
                     In a stable patient with Atrial Fibrillation lasting > 48 hours, what imaging or pre-cardioversion step is required before attempting rhythm conversion?
                 """.trimIndent()
                 doc.contains("renal") || doc.contains("acid") || doc.contains("ph 7.") || doc.contains("anion gap") || doc.contains("diabetes") -> """
-                    👩‍🏫 **Dr. Maya's Clinical Walkthrough**:
+                    👩‍🏫 **Dr. Ese's Clinical Walkthrough**:
                     
                     • **Core Pathophysiology**: The blood gas reveals an acute High Anion Gap Metabolic Acidosis (HAGMA). Calculate the Anion Gap using [Na+] - ([Cl-] + [HCO3-]). Normal range is 8-12.
                     • **Diagnostic Rationale**: Use the mnemonic **GOLD MARK** or **MUDPILES** (Methanol, Uremia, DKA, Paracetamol, Isoniazid/Iron, Lactic acidosis, Ethylene glycol, Salicylates) to rapidly narrow down the etiology.
@@ -321,7 +321,7 @@ class MedColleagueRepository(private val dao: MedColleagueDao) {
                     What is the next immediate diagnostic urine test you would order to evaluate this metabolic acidosis?
                 """.trimIndent()
                 else -> """
-                    👩‍🏫 **Dr. Maya's Clinical Walkthrough**:
+                    👩‍🏫 **Dr. Ese's Clinical Walkthrough**:
                     
                     • **Core Pathophysiology**: Based on the uploaded document, the patient presents with clinical signs requiring a structured algorithmic evaluation.
                     • **Diagnostic Rationale**: Always prioritize stabilizing vital functions (Airway, Breathing, Circulation) prior to invasive workups or complex diagnostic imaging.
@@ -335,17 +335,17 @@ class MedColleagueRepository(private val dao: MedColleagueDao) {
             val q = studentQuestion.lowercase()
             when {
                 q.contains("why") || q.contains("incorrect") || q.contains("wrong") -> """
-                    👩‍🏫 **Dr. Maya's Explanation**:
+                    👩‍🏫 **Dr. Ese's Explanation**:
                     
                     Great question! Distractor options in board questions are designed to catch common clinical missteps. That option is incorrect because it represents a treatment for a secondary condition or chronic management, whereas board questions specifically ask for the *immediate initial action* in the acute phase. Always match the acuity of your intervention with the patient's current hemodynamic status!
                 """.trimIndent()
                 q.contains("mechanism") || q.contains("how") || q.contains("simpler") -> """
-                    👩‍🏫 **Dr. Maya's Explanation**:
+                    👩‍🏫 **Dr. Ese's Explanation**:
                     
                     Let's simplify the mechanism! Think of the physiological system like a pressure valve. When cellular injury or metabolic stress occurs, normal receptors fire signals causing vasodilation or fluid shifts. By administering targeted medication, we lock those receptors, restoring normal pressure and organ perfusion.
                 """.trimIndent()
                 else -> """
-                    👩‍🏫 **Dr. Maya's Explanation**:
+                    👩‍🏫 **Dr. Ese's Explanation**:
                     
                     Excellent question regarding "$studentQuestion"! In board exams and clinical practice, remembering the step-by-step diagnostic order is essential. Always start with non-invasive bedside tests (like ECG or Point-of-Care Ultrasound) before proceeding to invasive procedures or CT angiography unless immediate emergency surgical intervention is indicated.
                 """.trimIndent()

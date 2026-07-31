@@ -4,480 +4,824 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MedColleague - AI Clinical Educator & Board Exam Prep</title>
-  <meta name="description" content="Cross-Platform AI Medical Educator, Board Exam Question Bank, Case Vignettes, and AI Video Tutor.">
+  <meta name="description" content="SaaS Medical Education Platform: USMLE/NCLEX QBank, Dr. Ese Interactive AI Tutor, SM-2 Flashcards & Clinical Analytics.">
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0284C7">
+  <meta name="theme-color" content="#0F172A">
   <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #0284c7;
-      --primary-dark: #0369a1;
-      --primary-light: #e0f2fe;
-      --accent: #0f172a;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --success: #16a34a;
-      --danger: #dc2626;
-      --warning: #d97706;
+      --primary: #0EA5E9;
+      --primary-dark: #0284C7;
+      --primary-light: #E0F2FE;
+      --dark-slate: #0F172A;
+      --slate-hover: #1E293B;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --success: #10B981;
+      --success-bg: #ECFDF5;
+      --danger: #EF4444;
+      --danger-bg: #FEF2F2;
+      --warning: #F59E0B;
+      --warning-bg: #FFFBEB;
+      --sidebar-width: 260px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
+    [data-theme="dark"] {
+      --bg: #0B0F17;
+      --card-bg: #151C2C;
+      --border: #1E293B;
+      --text: #F1F5F9;
+      --text-muted: #94A3B8;
+      --primary-light: #0369A1;
+    }
 
-    /* Top Navbar */
-    .navbar { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-icon { background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
-    .brand-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); }
-    .brand-sub { font-size: 12px; color: var(--text-muted); }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
 
-    .user-badge { display: flex; align-items: center; gap: 8px; background: var(--primary-light); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--primary-dark); }
+    /* App Wrapper Layout */
+    .app-layout { display: flex; min-height: 100vh; width: 100%; position: relative; }
 
-    /* Navigation Tabs */
-    .tabs-nav { background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; gap: 8px; padding: 8px 24px; overflow-x: auto; white-space: nowrap; }
-    .tab-btn { background: transparent; border: none; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
-    .tab-btn:hover { background: var(--bg); color: var(--text); }
-    .tab-btn.active { background: var(--primary-light); color: var(--primary-dark); border: 1px solid #bae6fd; }
+    /* Sidebar Navigation */
+    .sidebar { width: var(--sidebar-width); background: var(--dark-slate); color: white; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border); transition: all 0.3s ease; z-index: 90; position: fixed; top: 0; bottom: 0; left: 0; }
+    .sidebar-brand { padding: 20px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .brand-logo { background: linear-gradient(135deg, #0EA5E9, #0284C7); color: white; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; box-shadow: 0 4px 12px rgba(14,165,233,0.3); }
+    .brand-name { font-size: 16px; font-weight: 800; tracking: -0.02em; color: #FFFFFF; }
+    .brand-sub { font-size: 11px; color: #94A3B8; }
 
-    /* App Container */
-    .container { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+    .sidebar-menu { padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1; overflow-y: auto; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; color: #94A3B8; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; width: 100%; text-align: left; }
+    .nav-item:hover { background: var(--slate-hover); color: white; }
+    .nav-item.active { background: linear-gradient(135deg, #0EA5E9, #0284C7); color: white; box-shadow: 0 4px 12px rgba(14,165,233,0.25); }
+    .nav-item .icon { font-size: 18px; }
 
-    /* Cards */
-    .card { background: var(--card-bg); border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; }
-    .card-title { font-size: 16px; font-weight: 700; color: var(--primary-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); }
 
-    /* Buttons & Inputs */
-    .btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
-    .btn:hover { background: var(--primary-dark); }
-    .btn-secondary { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
-    .btn-secondary:hover { background: #e2e8f0; }
+    /* Main Content Area */
+    .main-wrapper { margin-left: var(--sidebar-width); flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
 
-    input[type="text"], textarea, select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; margin-top: 6px; outline: none; }
-    input[type="text"]:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(2,132,199,0.15); }
+    /* Top Header Bar */
+    .top-header { background: var(--card-bg); height: 64px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 80; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .mobile-toggle { display: none; background: transparent; border: none; font-size: 20px; color: var(--text); cursor: pointer; }
+    .page-title { font-size: 17px; font-weight: 700; color: var(--text); }
 
-    /* Tutor Section Specifics */
-    .tutor-avatar-frame { background: #0f172a; border-radius: 16px; overflow: hidden; position: relative; height: 260px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary); }
-    .tutor-avatar-img { width: 100%; height: 100%; object-fit: cover; }
-    .tutor-hud { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-    .live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .theme-toggle-btn { background: var(--bg); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); }
+    .user-pill { display: flex; align-items: center; gap: 10px; background: var(--bg); padding: 5px 12px 5px 6px; border-radius: 20px; border: 1px solid var(--border); }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: #0EA5E9; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+    .pro-badge { background: linear-gradient(135deg, #10B981, #059669); color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; text-transform: uppercase; }
 
-    .chat-box { background: #f8fafc; border-radius: 12px; padding: 14px; max-height: 300px; overflow-y: auto; margin: 12px 0; border: 1px solid var(--border); }
-    .chat-msg { margin-bottom: 10px; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.5; }
-    .chat-msg.tutor { background: #e0f2fe; color: #0369a1; border-bottom-left-radius: 2px; }
-    .chat-msg.student { background: #f1f5f9; color: var(--text); border-bottom-right-radius: 2px; text-align: right; }
+    /* Content Area Container */
+    .content-area { padding: 24px; max-width: 1200px; margin: 0 auto; width: 100%; flex-grow: 1; }
 
-    /* Q-Bank Choices */
-    .q-option { background: var(--card-bg); border: 1.5px solid var(--border); padding: 12px 16px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; font-size: 14px; display: flex; align-items: center; gap: 10px; }
-    .q-option:hover { border-color: var(--primary); background: #f0f9ff; }
-    .q-option.correct { background: #dcfce7; border-color: var(--success); color: #14532d; font-weight: 600; }
-    .q-option.incorrect { background: #fee2e2; border-color: var(--danger); color: #7f1d1d; }
+    /* UI Components */
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+    
+    .btn { background: linear-gradient(135deg, #0EA5E9, #0284C7); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(14,165,233,0.25); }
+    .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-success { background: linear-gradient(135deg, #10B981, #059669); }
 
-    /* Grid layout */
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .action-pill { background: var(--primary-light); color: var(--primary-dark); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(14,165,233,0.3); transition: all 0.2s; margin-right: 6px; margin-bottom: 6px; }
+    .action-pill:hover { background: #BAE6FD; transform: translateY(-1px); }
 
-    /* Code Block */
-    pre { background: #0f172a; color: #38bdf8; padding: 14px; border-radius: 12px; font-size: 12px; overflow-x: auto; max-height: 250px; }
+    /* Split Screen Layout for AI Tutor */
+    .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-    /* Sample Pills */
-    .pill { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-block; margin-right: 6px; margin-bottom: 6px; border: 1px solid #bae6fd; }
-    .pill:hover { background: #bae6fd; }
+    /* Tutor Avatar Frame */
+    .tutor-avatar-card { background: #0F172A; border-radius: 16px; overflow: hidden; position: relative; height: 300px; border: 2px solid #0EA5E9; box-shadow: 0 8px 24px rgba(15,23,42,0.15); display: flex; align-items: center; justify-content: center; }
+    .tutor-img { width: 100%; height: 100%; object-fit: cover; }
+    .tutor-hud-tag { position: absolute; top: 12px; left: 12px; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.1); }
+    .pulse-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
 
+    .chat-container { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; height: 260px; overflow-y: auto; margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .msg-bubble { padding: 12px 16px; border-radius: 14px; font-size: 13.5px; line-height: 1.5; max-width: 90%; }
+    .msg-tutor { background: var(--primary-light); color: var(--primary-dark); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(14,165,233,0.2); }
+    .msg-student { background: var(--card-bg); color: var(--text); align-self: flex-end; border-bottom-right-radius: 4px; border: 1px solid var(--border); }
+
+    /* QBank UI Components */
+    .q-choice { background: var(--card-bg); border: 1.5px solid var(--border); padding: 14px 18px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s ease; font-size: 14px; display: flex; align-items: center; justify-content: space-between; }
+    .q-choice:hover { border-color: var(--primary); background: var(--primary-light); }
+    .q-choice.selected { border-color: var(--primary); background: var(--primary-light); font-weight: 600; }
+    .q-choice.correct { background: var(--success-bg); border-color: var(--success); color: #065F46; font-weight: 700; }
+    .q-choice.incorrect { background: var(--danger-bg); border-color: var(--danger); color: #991B1B; }
+    .q-choice.strikethrough { text-decoration: line-through; opacity: 0.5; }
+
+    .key-badge { background: var(--bg); border: 1px solid var(--border); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; color: var(--text-muted); }
+
+    /* Flashcard SM-2 */
+    .flashcard-stage { perspective: 1000px; min-height: 240px; }
+    .flashcard-inner { background: linear-gradient(135deg, var(--card-bg), var(--bg)); border: 2px solid var(--primary); border-radius: 20px; padding: 30px; text-align: center; cursor: pointer; min-height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.04); transition: transform 0.3s; }
+    .flashcard-inner:hover { transform: translateY(-2px); }
+
+    /* Analytics Dashboard Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 18px; text-align: center; }
+    .stat-value { font-size: 32px; font-weight: 800; color: var(--primary-dark); margin: 6px 0; }
+    .stat-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Progress bar */
+    .progress-bar-bg { background: var(--border); height: 10px; border-radius: 5px; overflow: hidden; margin-top: 6px; }
+    .progress-bar-fill { background: linear-gradient(90deg, var(--primary), var(--success)); height: 100%; transition: width 0.5s ease; }
+
+    /* Modal Overlay */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-card { background: var(--card-bg); border-radius: 20px; width: 90%; max-width: 600px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid var(--border); max-height: 85vh; overflow-y: auto; }
+
+    /* Utility */
     .hidden { display: none !important; }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-wrapper { margin-left: 0; }
+      .mobile-toggle { display: block; }
+      .split-layout { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top Navbar -->
-  <header class="navbar">
-    <div class="brand">
-      <div class="brand-icon">🩺</div>
+  <div class="app-layout">
+
+    <!-- LEFT SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="sidebar">
       <div>
-        <div class="brand-title">MedColleague Web PWA</div>
-        <div class="brand-sub">AI Clinical Educator & Board Exam Prep SaaS</div>
+        <div class="sidebar-brand">
+          <div class="brand-logo">🩺</div>
+          <div>
+            <div class="brand-name">MedColleague</div>
+            <div class="brand-sub">Clinical Educator & Board SaaS</div>
+          </div>
+        </div>
+
+        <nav class="sidebar-menu">
+          <button class="nav-item active" onclick="switchNav('dashboard')">
+            <span class="icon">🏠</span> <span>Dashboard</span>
+          </button>
+          <button class="nav-item" onclick="switchNav('tutor')">
+            <span class="icon">🎓</span> <span>AI Tutor Studio</span>
+          </button>
+          <button class="nav-item" onclick="switchNav('qbank')">
+            <span class="icon">📝</span> <span>USMLE/NCLEX QBank</span>
+          </button>
+          <button class="nav-item" onclick="switchNav('flashcards')">
+            <span class="icon">⚡</span> <span>SM-2 Flashcards</span>
+          </button>
+          <button class="nav-item" onclick="switchNav('calculators')">
+            <span class="icon">🧪</span> <span>Clinical Tools</span>
+          </button>
+          <button class="nav-item" onclick="switchNav('analytics')">
+            <span class="icon">📊</span> <span>Analytics & Readiness</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="sidebar-footer">
+        <div style="font-size:11px; color:#94A3B8; margin-bottom:8px;">STUDY GOAL THIS WEEK</div>
+        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold; color:white; margin-bottom:4px;">
+          <span>142 / 200 Questions</span>
+          <span>71%</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 71%;"></div></div>
+        <button onclick="openDevModal()" style="background:transparent; border:none; color:#64748B; font-size:11px; margin-top:12px; cursor:pointer; text-decoration:underline; display:block;">⚙️ Developer & API Hub</button>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER -->
+    <div class="main-wrapper">
+
+      <!-- TOP HEADER BAR -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+          <h1 class="page-title" id="header-page-title">Dashboard Overview</h1>
+        </div>
+
+        <div class="header-right">
+          <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">🌙</button>
+          <div style="font-size:18px; cursor:pointer;" title="Notifications">🔔</div>
+          
+          <div class="user-pill">
+            <div class="user-avatar">A</div>
+            <div>
+              <div style="font-size:12px; font-weight:700; color:var(--text);">Dr. Alex</div>
+              <div class="pro-badge">PRO PLAN</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT AREA -->
+      <main class="content-area">
+
+        <!-- SECTION 1: DASHBOARD OVERVIEW -->
+        <section id="section-dashboard">
+          <div style="background: linear-gradient(135deg, #0F172A, #0EA5E9); border-radius:20px; padding:24px; color:white; margin-bottom:20px; box-shadow: 0 10px 25px rgba(14,165,233,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+              <div>
+                <span style="background:rgba(255,255,255,0.2); padding:4px 10px; border-radius:12px; font-size:11px; font-weight:700;">🔥 14-DAY STUDY STREAK</span>
+                <h2 style="font-size:24px; font-weight:800; margin-top:8px;">Welcome back, Dr. Alex!</h2>
+                <p style="font-size:13.5px; opacity:0.9; margin-top:4px;">You are on track for USMLE Step 2 CK. Target Exam Date: <strong>Oct 15, 2026</strong> (76 days remaining).</p>
+              </div>
+              <div>
+                <button class="btn btn-success" onclick="switchNav('qbank')">▶️ Resume QBank Practice</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Predicted Board Score</div>
+              <div class="stat-value" style="color:#0EA5E9;">248</div>
+              <div style="font-size:11px; color:var(--success); font-weight:700;">↑ 6 pts this month</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-label">Questions Completed</div>
+              <div class="stat-value">1,420</div>
+              <div style="font-size:11px; color:var(--text-muted);">84.2% Overall Accuracy</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-label">Cards Reviewed</div>
+              <div class="stat-value" style="color:#10B981;">380</div>
+              <div style="font-size:11px; color:var(--text-muted);">92% Retention Rate</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-label">Weakest Organ System</div>
+              <div class="stat-value" style="color:#EF4444; font-size:22px; margin-top:12px;">Renal / Acid-Base</div>
+              <div style="font-size:11px; color:var(--danger); font-weight:700;">Requires 20 review cards</div>
+            </div>
+          </div>
+
+          <!-- Quick Action Shortcuts -->
+          <div class="card">
+            <div class="card-title">🚀 Quick Study Actions</div>
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+              <button class="btn" onclick="switchNav('tutor')">🎓 Ask Dr. Ese (AI Tutor)</button>
+              <button class="btn btn-secondary" onclick="switchNav('qbank')">📝 Launch 10-Question Block</button>
+              <button class="btn btn-secondary" onclick="switchNav('flashcards')">⚡ Review Due Cards (14)</button>
+              <button class="btn btn-secondary" onclick="switchNav('calculators')">🧪 eGFR / Anion Gap Calc</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2: AI CLINICAL TUTOR (DR. ESE STUDIO) -->
+        <section id="section-tutor" class="hidden">
+          <div class="split-layout">
+            
+            <!-- Left Panel: Document Upload & Case Viewer -->
+            <div class="card">
+              <div class="card-title">📄 Clinical Case & Vignette Upload</div>
+              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:12px;">Upload medical PDFs, ECG reports, or case notes for instant step-by-step interactive tutoring with Dr. Ese.</p>
+
+              <div style="margin-bottom:12px;">
+                <span style="font-size:11.5px; font-weight:bold; color:var(--primary-dark);">Sample Cases:</span><br>
+                <span class="action-pill" onclick="loadSample('ecg')">📄 ECG_Arrhythmias.pdf</span>
+                <span class="action-pill" onclick="loadSample('renal')">📄 AcidBase_Renal.pdf</span>
+                <span class="action-pill" onclick="loadSample('hf')">📄 HeartFailure_GDMT.pdf</span>
+              </div>
+
+              <textarea id="tutor-doc-input" rows="6" placeholder="Paste medical case text, PDF notes, or lab values here..."></textarea>
+
+              <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+                <button class="btn" onclick="startTutorWalkthrough()">▶️ Start Tutoring Walkthrough</button>
+                <button class="btn btn-secondary" onclick="speakTutorVoice()">🎙️ Voice Playback</button>
+              </div>
+
+              <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:12px;">
+                <div style="font-size:12px; font-weight:bold; color:var(--text-muted); margin-bottom:6px;">QUICK AI ACTIONS:</div>
+                <span class="action-pill" onclick="quickAiAction('summarize')">✨ Summarize Diagnosis</span>
+                <span class="action-pill" onclick="quickAiAction('questions')">📝 Generate 5 QBank Items</span>
+                <span class="action-pill" onclick="quickAiAction('differential')">🔬 Explain Differential</span>
+              </div>
+            </div>
+
+            <!-- Right Panel: Dr. Ese Video Avatar & Live Transcript -->
+            <div class="card">
+              <div class="tutor-avatar-card">
+                <img src="/drawable/ai_tutor_avatar_1785483426714.jpg" class="tutor-img" alt="Dr. Ese AI Tutor" onerror="this.src='https://images.unsplash.com/photo-1594824813566-788b22730b62?w=800&auto=format&fit=crop&q=80'">
+                <div class="tutor-hud-tag">
+                  <div class="pulse-dot"></div>
+                  <span>DR. ESE • LIVE SENIOR AI EDUCATOR</span>
+                </div>
+              </div>
+
+              <div class="chat-container" id="tutor-chat-box">
+                <div class="msg-bubble msg-tutor">
+                  👩‍🏫 <strong>Dr. Ese</strong>: Welcome! I am Dr. Ese, your senior medical professor and AI board exam tutor. Select a sample case on the left or paste your clinical vignette, and I will guide you step-by-step!
+                </div>
+              </div>
+
+              <div style="display:flex; gap:8px; margin-top:12px;">
+                <input type="text" id="student-q-input" placeholder="Ask Dr. Ese a question..." style="flex-grow:1;">
+                <button class="btn" onclick="sendStudentQuestion()">Send</button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SECTION 3: USMLE / NCLEX HIGH-YIELD QBANK -->
+        <section id="section-qbank" class="hidden">
+          <div class="card">
+            <!-- QBank Toolbar -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-bottom:14px; border-bottom:1px solid var(--border); margin-bottom:16px;">
+              <div>
+                <span style="font-size:12px; color:var(--text-muted);">Block 1 • Item <strong>1 of 40</strong></span>
+                <span style="background:var(--primary-light); color:var(--primary-dark); padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; margin-left:8px;">CARDIOVASCULAR</span>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:12px;">
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="toggleTestMode()" id="test-mode-btn">🔄 Mode: TUTOR</button>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="openLabModal()">🧪 Lab Values</button>
+                <span style="font-size:13px; font-weight:800; color:var(--danger);" id="q-timer">⏱️ 01:24</span>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="toggleFlag()" id="flag-btn">🚩 Flag</button>
+              </div>
+            </div>
+
+            <!-- Question Vignette -->
+            <div style="font-size:15px; line-height:1.65; color:var(--text); margin-bottom:20px;" id="qbank-vignette-text">
+              A 64-year-old male presents to the emergency department complaining of sudden onset palpitations and mild lightheadedness lasting 3 hours. Vital signs: BP 118/74 mmHg, HR 142 bpm (irregular), RR 18/min, SpO2 98% on room air. An ECG reveals irregular narrow-complex tachycardia without distinct P waves. Which of the following is the most appropriate initial management step?
+            </div>
+
+            <!-- Choices List -->
+            <div id="qbank-choices-list">
+              <div class="q-choice" onclick="selectChoice(0)">
+                <span>A. Immediate synchronized electrical cardioversion at 100J</span>
+                <span class="key-badge">Press 1</span>
+              </div>
+              <div class="q-choice" onclick="selectChoice(1)">
+                <span>B. Intravenous Metoprolol or Diltiazem for rate control</span>
+                <span class="key-badge">Press 2</span>
+              </div>
+              <div class="q-choice" onclick="selectChoice(2)">
+                <span>C. High-dose oral Amiodarone for 14 days</span>
+                <span class="key-badge">Press 3</span>
+              </div>
+              <div class="q-choice" onclick="selectChoice(3)">
+                <span>D. Immediate cardiac catheterization for coronary stenting</span>
+                <span class="key-badge">Press 4</span>
+              </div>
+            </div>
+
+            <!-- Submit Answer Button -->
+            <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
+              <button class="btn btn-secondary" onclick="strikethroughMode()">✏️ Strike-through Choice</button>
+              <button class="btn btn-success" id="submit-answer-btn" onclick="confirmAnswer()">Submit Answer (Enter)</button>
+            </div>
+
+            <!-- Explanation Rationale Box -->
+            <div class="card hidden" id="qbank-explanation-box" style="background:var(--primary-light); border-color:#BAE6FD; margin-top:20px;">
+              <div style="font-weight:800; color:var(--primary-dark); font-size:15px; margin-bottom:8px;">🔬 Comprehensive Clinical Explanation</div>
+              
+              <div style="font-size:13.5px; line-height:1.6; color:var(--text);" id="explanation-body-text">
+                <p style="margin-bottom:8px;"><strong style="color:var(--success);">✅ Why Choice B is Correct:</strong> In hemodynamically stable Atrial Fibrillation with Rapid Ventricular Response (RVR), initial rate control using IV Beta-blockers (Metoprolol) or Non-dihydropyridine CCBs (Diltiazem) is recommended to control HR < 110 bpm.</p>
+                <p style="margin-bottom:8px;"><strong style="color:var(--danger);">❌ Why Choice A is Incorrect:</strong> Synchronized cardioversion is indicated ONLY if the patient exhibits hemodynamic instability (hypotension, altered mental status, acute pulmonary edema, chest pain).</p>
+              </div>
+
+              <!-- High-Yield Pearl Box -->
+              <div style="background:#ECFDF5; border:1px solid #6EE7B7; padding:12px 16px; border-radius:12px; margin-top:12px;">
+                <div style="font-size:12px; font-weight:800; color:#047857;">⚡ HIGH-YIELD BOARD PEARL:</div>
+                <div style="font-size:13px; color:#065F46; margin-top:4px;">On USMLE & NCLEX, never administer AV-node blocking agents (Metoprolol, Diltiazem, Digoxin) in WPW patients with AFib, as it precipitates Ventricular Fibrillation! Use Procainamide instead.</div>
+              </div>
+
+              <div style="margin-top:14px; text-align:right;">
+                <button class="btn" onclick="nextQuestionBlock()">Next Question ➔</button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SECTION 4: SPACED REPETITION FLASHCARDS (SM-2 ENGINE) -->
+        <section id="section-flashcards" class="hidden">
+          <div class="card" style="max-width:700px; margin:0 auto;">
+            <div class="card-title">
+              <span>⚡ Spaced Repetition Flashcards (SM-2)</span>
+              <span style="font-size:12px; color:var(--text-muted);">Due Today: <strong>14 Cards</strong></span>
+            </div>
+
+            <div class="flashcard-stage" onclick="flipCard()">
+              <div class="flashcard-inner" id="fc-container">
+                <div style="font-size:12px; font-weight:bold; color:var(--primary); text-transform:uppercase; margin-bottom:10px;">CARDIOVASCULAR • PHARMACOLOGY</div>
+                <div id="fc-front-text" style="font-size:17px; font-weight:700; color:var(--text); line-height:1.5;">
+                  What is the first-line pharmacotherapy for acute symptomatic Wolff-Parkinson-White (WPW) syndrome presenting with Atrial Fibrillation?
+                </div>
+                
+                <div id="fc-back-text" class="hidden" style="margin-top:16px; border-top:1px solid var(--border); padding-top:16px; font-size:16px; font-weight:700; color:var(--success);">
+                  ✅ IV Procainamide or Ibutilide<br>
+                  <span style="font-size:12.5px; font-weight:normal; color:var(--text-muted); display:block; margin-top:6px;">(Contraindicated: Metoprolol, Diltiazem, Digoxin, Adenosine)</span>
+                </div>
+                
+                <div style="font-size:11px; color:var(--text-muted); margin-top:20px;">[Tap card or press Spacebar to flip]</div>
+              </div>
+            </div>
+
+            <!-- SM-2 Rating Buttons -->
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px; flex-wrap:wrap;">
+              <button class="btn btn-secondary" onclick="rateCard(1)">
+                <span>Again</span> <span style="font-size:10px; opacity:0.8;">(&lt; 10 min)</span>
+              </button>
+              <button class="btn btn-secondary" onclick="rateCard(2)">
+                <span>Hard</span> <span style="font-size:10px; opacity:0.8;">(1 day)</span>
+              </button>
+              <button class="btn" onclick="rateCard(3)">
+                <span>Good</span> <span style="font-size:10px; opacity:0.8;">(4 days)</span>
+              </button>
+              <button class="btn btn-success" onclick="rateCard(4)">
+                <span>Easy</span> <span style="font-size:10px; opacity:0.8;">(10 days)</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 5: CLINICAL CALCULATORS -->
+        <section id="section-calculators" class="hidden">
+          <div class="card">
+            <div class="card-title">🧪 Live Clinical Calculators & Lab Converters</div>
+            
+            <div style="display:flex; gap:10px; margin-bottom:16px;">
+              <button class="action-pill" onclick="filterCalc('all')">All Tools</button>
+              <button class="action-pill" onclick="filterCalc('nephro')">Nephrology</button>
+              <button class="action-pill" onclick="filterCalc('cardio')">Cardiology</button>
+              <button class="action-pill" onclick="filterCalc('critical')">Critical Care</button>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+              
+              <!-- eGFR Calc -->
+              <div class="card" style="margin:0; background:var(--bg);">
+                <div style="font-weight:700; font-size:14px; color:var(--primary-dark);">1. eGFR (CKD-EPI 2021 Race-Free)</div>
+                <div style="margin-top:10px;">
+                  <label style="font-size:11.5px; font-weight:bold;">Serum Creatinine (mg/dL):</label>
+                  <input type="text" id="calc-scr" value="1.2">
+                </div>
+                <div style="margin-top:8px;">
+                  <label style="font-size:11.5px; font-weight:bold;">Age (Years):</label>
+                  <input type="text" id="calc-age" value="58">
+                </div>
+                <button class="btn" style="margin-top:12px; width:100%;" onclick="runEgfr()">Calculate eGFR</button>
+                <div id="egfr-out" style="margin-top:10px; font-size:13px; font-weight:700; color:var(--primary-dark);"></div>
+              </div>
+
+              <!-- Anion Gap Calc -->
+              <div class="card" style="margin:0; background:var(--bg);">
+                <div style="font-weight:700; font-size:14px; color:var(--primary-dark);">2. Serum Anion Gap</div>
+                <div style="margin-top:10px;">
+                  <label style="font-size:11.5px; font-weight:bold;">Na+ (mEq/L):</label>
+                  <input type="text" id="calc-na" value="138">
+                </div>
+                <div style="margin-top:6px;">
+                  <label style="font-size:11.5px; font-weight:bold;">Cl- (mEq/L):</label>
+                  <input type="text" id="calc-cl" value="100">
+                </div>
+                <div style="margin-top:6px;">
+                  <label style="font-size:11.5px; font-weight:bold;">HCO3- (mEq/L):</label>
+                  <input type="text" id="calc-hco3" value="12">
+                </div>
+                <button class="btn" style="margin-top:12px; width:100%;" onclick="runAnionGap()">Calculate Anion Gap</button>
+                <div id="ag-out" style="margin-top:10px; font-size:13px; font-weight:700; color:var(--primary-dark);"></div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 6: ANALYTICS & READINESS -->
+        <section id="section-analytics" class="hidden">
+          <div class="card">
+            <div class="card-title">📊 Organ System Mastery & Exam Readiness Gauge</div>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:20px;">
+              <div style="background:var(--primary-light); border:1px solid #BAE6FD; padding:20px; border-radius:16px; text-align:center;">
+                <div style="font-size:36px; font-weight:800; color:var(--primary-dark);">248</div>
+                <div style="font-size:12px; font-weight:700; color:var(--primary-dark); margin-top:4px;">PROJECTED USMLE STEP 2 CK SCORE</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Target Range: 245 - 255</div>
+              </div>
+
+              <div style="background:var(--success-bg); border:1px solid #A7F3D0; padding:20px; border-radius:16px; text-align:center;">
+                <div style="font-size:36px; font-weight:800; color:#059669;">84.2%</div>
+                <div style="font-size:12px; font-weight:700; color:#047857; margin-top:4px;">CUMULATIVE QBANK ACCURACY</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Peer Average: 68.0%</div>
+              </div>
+            </div>
+
+            <div style="font-weight:700; font-size:14px; margin-bottom:12px;">Organ System Breakdown:</div>
+            
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                  <span>Cardiovascular System</span>
+                  <span style="color:var(--success); font-weight:700;">88% (Strong)</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 88%;"></div></div>
+              </div>
+
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                  <span>Renal & Acid-Base Physiology</span>
+                  <span style="color:var(--warning); font-weight:700;">74% (Focus Area)</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 74%; background:var(--warning);"></div></div>
+              </div>
+
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                  <span>Gastrointestinal & Hepatology</span>
+                  <span style="color:var(--success); font-weight:700;">92% (Mastered)</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 92%;"></div></div>
+              </div>
+
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                  <span>Pulmonology & Critical Care</span>
+                  <span style="color:var(--success); font-weight:700;">81% (Strong)</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 81%;"></div></div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL: LAB VALUES -->
+  <div class="modal-overlay" id="lab-modal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="font-size:16px; font-weight:700;">🧪 Standard Medical Reference Lab Values</h3>
+        <button onclick="closeLabModal()" style="background:transparent; border:none; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+
+      <div style="font-size:13px; line-height:1.6;">
+        <p><strong>Serum Sodium (Na+):</strong> 135 – 145 mEq/L</p>
+        <p><strong>Serum Potassium (K+):</strong> 3.5 – 5.0 mEq/L</p>
+        <p><strong>Serum Chloride (Cl-):</strong> 96 – 106 mEq/L</p>
+        <p><strong>Serum Bicarbonate (HCO3-):</strong> 22 – 28 mEq/L</p>
+        <p><strong>BUN:</strong> 7 – 20 mg/dL</p>
+        <p><strong>Serum Creatinine:</strong> 0.6 – 1.2 mg/dL</p>
+        <p><strong>Arterial Blood Gas (ABG):</strong> pH 7.35–7.45, PaCO2 35–45 mmHg, PaO2 80–100 mmHg</p>
       </div>
     </div>
-    <div class="user-badge">
-      <span>👤 Dr. Alex (Medical Student)</span>
-      <span style="background:#0284c7; color:white; padding:2px 8px; border-radius:10px; font-size:10px;">PRO PLAN</span>
+  </div>
+
+  <!-- MODAL: DEVELOPER & API HUB -->
+  <div class="modal-overlay" id="dev-modal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="font-size:16px; font-weight:700;">⚙️ Developer & API Status Hub</h3>
+        <button onclick="closeDevModal()" style="background:transparent; border:none; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+
+      <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:12px;">Full-stack architectural configurations included in repository:</p>
+      
+      <div style="font-size:12px; font-weight:bold; margin-bottom:4px;">Backend Routes:</div>
+      <div style="background:var(--bg); padding:10px; border-radius:8px; font-family:monospace; font-size:11px; margin-bottom:10px;">
+        POST /api/ai/tutor (Gemini 1.5 Flash Serverless)<br>
+        POST /api/ai/explain (Clinical Rationale Route)
+      </div>
+
+      <div style="font-size:12px; font-weight:bold; margin-bottom:4px;">Database Schema:</div>
+      <div style="background:var(--bg); padding:10px; border-radius:8px; font-family:monospace; font-size:11px;">
+        /schema.sql (PostgreSQL / Supabase)<br>
+        /prisma/schema.prisma (Prisma ORM Client)
+      </div>
     </div>
-  </header>
-
-  <!-- Tabs Bar -->
-  <nav class="tabs-nav">
-    <button class="tab-btn active" onclick="switchTab('tutor')">🎓 AI Video Tutor</button>
-    <button class="tab-btn" onclick="switchTab('qbank')">📝 Board Q-Bank</button>
-    <button class="tab-btn" onclick="switchTab('analytics')">📊 Performance Analytics</button>
-    <button class="tab-btn" onclick="switchTab('calculators')">🧪 Clinical Calculators</button>
-    <button class="tab-btn" onclick="switchTab('pearls')">⚡ SM-2 Flashcards</button>
-    <button class="tab-btn" onclick="switchTab('backend')">🔐 Supabase DB & APIs</button>
-  </nav>
-
-  <main class="container">
-
-    <!-- TAB 1: AI VIDEO & VOICE TUTOR -->
-    <section id="tab-tutor" class="tab-content">
-      <div class="card">
-        <div class="card-title">🎓 Interactive AI Video & Voice Tutor (Dr. Maya)</div>
-        <p style="color:var(--text-muted); font-size:13px; margin-bottom:14px;">Upload medical case vignettes, PDF notes, or questions. Dr. Maya provides audio-visual step-by-step clinical walkthroughs.</p>
-
-        <!-- Sample Case Selector -->
-        <div style="margin-bottom:12px;">
-          <span style="font-size:12px; font-weight:bold; color:var(--primary-dark);">Load Sample Cases:</span><br>
-          <span class="pill" onclick="loadSample('ecg')">📄 ECG_Arrhythmias_Case.pdf</span>
-          <span class="pill" onclick="loadSample('renal')">📄 Acute_Renal_AcidBase.pdf</span>
-          <span class="pill" onclick="loadSample('hf')">📄 Heart_Failure_GDMT.pdf</span>
-        </div>
-
-        <textarea id="tutor-doc-input" rows="3" placeholder="Paste medical case, PDF contents, or question text here..."></textarea>
-        
-        <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
-          <button class="btn" onclick="startTutorWalkthrough()">▶️ Start AI Walkthrough</button>
-          <button class="btn btn-secondary" onclick="speakTutorSpeech()">🎙️ Speak Voice Audio</button>
-        </div>
-      </div>
-
-      <!-- Video Avatar Frame & Dialogue Thread -->
-      <div class="card">
-        <div class="tutor-avatar-frame">
-          <img src="/drawable/ai_tutor_avatar_1785483426714.jpg" class="tutor-avatar-img" alt="Dr Maya AI Tutor" onerror="this.src='https://images.unsplash.com/photo-1594824813566-788b22730b62?w=800&auto=format&fit=crop&q=80'">
-          <div class="tutor-hud">
-            <div class="live-dot"></div>
-            <span>DR. MAYA • LIVE TUTORING HD</span>
-          </div>
-        </div>
-
-        <div class="chat-box" id="tutor-chat-box">
-          <div class="chat-msg tutor">
-            👩‍🏫 <strong>Dr. Maya</strong>: Hello! I am Dr. Maya, your AI Medical Board Educator. Upload a document or click a sample case above, and I will guide you step-by-step!
-          </div>
-        </div>
-
-        <div style="display:flex; gap:8px; margin-top:10px;">
-          <input type="text" id="student-question-input" placeholder="Ask Dr. Maya a follow-up question...">
-          <button class="btn" onclick="sendStudentQuestion()">Send</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 2: BOARD Q-BANK -->
-    <section id="tab-qbank" class="tab-content hidden">
-      <div class="card">
-        <div class="card-title">📝 USMLE / NCLEX High-Yield Question Bank</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <span style="font-size:12px; color:var(--text-muted);">Question 1 of 50 • Organ System: <strong>Cardiovascular / Cardiology</strong></span>
-          <span style="background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:bold;">USMLE STEP 2 CK</span>
-        </div>
-
-        <div style="font-size:14.5px; line-height:1.6; margin-bottom:16px;" id="q-vignette">
-          A 64-year-old male presents to the emergency department complaining of sudden onset palpitations and mild lightheadedness lasting 3 hours. Vital signs: BP 118/74 mmHg, HR 142 bpm (irregular), RR 18/min, SpO2 98% on room air. An ECG shows irregular narrow-complex tachycardia without distinct P waves. Which of the following is the most appropriate initial management step?
-        </div>
-
-        <div id="q-options-container">
-          <div class="q-option" onclick="submitAnswer(0, false)">A. Immediate synchronized electrical cardioversion at 100J</div>
-          <div class="q-option" onclick="submitAnswer(1, true)">B. Intravenous Metoprolol or Diltiazem for rate control</div>
-          <div class="q-option" onclick="submitAnswer(2, false)">C. High-dose oral Amiodarone for 14 days</div>
-          <div class="q-option" onclick="submitAnswer(3, false)">D. Immediate cardiac catheterization for coronary stenting</div>
-        </div>
-
-        <div id="q-explanation-box" class="card hidden" style="background:#f0f9ff; border-color:#bae6fd; margin-top:14px;">
-          <div style="font-weight:bold; color:#0369a1; font-size:14px; margin-bottom:6px;">🔬 Clinical Rationale & Board Pearl:</div>
-          <div id="q-explanation-text" style="font-size:13px; color:#0f172a; line-height:1.5;"></div>
-          <button class="btn" style="margin-top:10px;" onclick="nextQuestion()">Next Question ➔</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 3: PERFORMANCE ANALYTICS -->
-    <section id="tab-analytics" class="tab-content hidden">
-      <div class="card">
-        <div class="card-title">📊 Individual Organ System Performance & Board Score Predictor</div>
-        
-        <div class="grid-2" style="margin-bottom:16px;">
-          <div style="background:#f0f9ff; padding:16px; border-radius:12px; border:1px solid #bae6fd; text-align:center;">
-            <div style="font-size:28px; font-weight:bold; color:#0284c7;">248 / 300</div>
-            <div style="font-size:12px; color:#0369a1; font-weight:bold;">PREDICTED USMLE STEP 2 CK SCORE</div>
-          </div>
-          <div style="background:#f0fdf4; padding:16px; border-radius:12px; border:1px solid #bbf7d0; text-align:center;">
-            <div style="font-size:28px; font-weight:bold; color:#16a34a;">84.2%</div>
-            <div style="font-size:12px; color:#15803d; font-weight:bold;">OVERALL OVERALL ACCURACY (LAST 250 ITEMS)</div>
-          </div>
-        </div>
-
-        <div class="card-title" style="font-size:14px;">Organ System Mastery Heatmap:</div>
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-              <span>Cardiovascular (88%)</span>
-              <span style="color:#16a34a; font-weight:bold;">STRONG</span>
-            </div>
-            <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden;">
-              <div style="background:#16a34a; width:88%; height:100%;"></div>
-            </div>
-          </div>
-
-          <div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-              <span>Renal & Acid-Base (74%)</span>
-              <span style="color:#d97706; font-weight:bold;">MODERATE</span>
-            </div>
-            <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden;">
-              <div style="background:#d97706; width:74%; height:100%;"></div>
-            </div>
-          </div>
-
-          <div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-              <span>Gastrointestinal & Hepatology (92%)</span>
-              <span style="color:#16a34a; font-weight:bold;">EXCELLENT</span>
-            </div>
-            <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden;">
-              <div style="background:#16a34a; width:92%; height:100%;"></div>
-            </div>
-          </div>
-
-          <div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-              <span>Pulmonology & Respiratory (81%)</span>
-              <span style="color:#16a34a; font-weight:bold;">STRONG</span>
-            </div>
-            <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden;">
-              <div style="background:#16a34a; width:81%; height:100%;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 4: CLINICAL CALCULATORS -->
-    <section id="tab-calculators" class="tab-content hidden">
-      <div class="card">
-        <div class="card-title">🧪 Live Clinical Calculators & Laboratory Unit Converters</div>
-        
-        <!-- eGFR Calculator -->
-        <div style="background:#f8fafc; padding:14px; border-radius:12px; border:1px solid var(--border); margin-bottom:14px;">
-          <div style="font-weight:bold; font-size:14px; color:var(--primary-dark);">1. eGFR Calculator (CKD-EPI 2021 Formula)</div>
-          <div class="grid-2" style="margin-top:8px;">
-            <div>
-              <label style="font-size:12px;">Serum Creatinine (mg/dL):</label>
-              <input type="text" id="egfr-scr" value="1.2">
-            </div>
-            <div>
-              <label style="font-size:12px;">Age (Years):</label>
-              <input type="text" id="egfr-age" value="58">
-            </div>
-          </div>
-          <button class="btn" style="margin-top:10px;" onclick="calcEGFR()">Calculate eGFR</button>
-          <div id="egfr-result" style="margin-top:8px; font-weight:bold; color:var(--primary-dark); font-size:13px;"></div>
-        </div>
-
-        <!-- Anion Gap Calculator -->
-        <div style="background:#f8fafc; padding:14px; border-radius:12px; border:1px solid var(--border);">
-          <div style="font-weight:bold; font-size:14px; color:var(--primary-dark);">2. Serum Anion Gap Calculator</div>
-          <div class="grid-2" style="margin-top:8px;">
-            <div>
-              <label style="font-size:12px;">Serum Sodium Na+ (mEq/L):</label>
-              <input type="text" id="ag-na" value="138">
-            </div>
-            <div>
-              <label style="font-size:12px;">Chloride Cl- (mEq/L):</label>
-              <input type="text" id="ag-cl" value="100">
-            </div>
-            <div>
-              <label style="font-size:12px;">Bicarbonate HCO3- (mEq/L):</label>
-              <input type="text" id="ag-hco3" value="12">
-            </div>
-          </div>
-          <button class="btn" style="margin-top:10px;" onclick="calcAnionGap()">Calculate Anion Gap</button>
-          <div id="ag-result" style="margin-top:8px; font-weight:bold; color:var(--primary-dark); font-size:13px;"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 5: FLASHCARDS -->
-    <section id="tab-pearls" class="tab-content hidden">
-      <div class="card">
-        <div class="card-title">⚡ High-Yield SM-2 Spaced Repetition Flashcards</div>
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Cards due today: <strong>14 Cards</strong> • Memory Retention Algorithm: <strong>SM-2 Standard</strong></p>
-
-        <div id="flashcard-box" style="background:#f0f9ff; border:2px solid #bae6fd; border-radius:16px; padding:24px; text-align:center; min-height:160px; display:flex; flex-direction:column; justify-content:center; align-items:center;" onclick="flipFlashcard()">
-          <div id="fc-front" style="font-size:16px; font-weight:bold; color:#0369a1;">What is the first-line medication for acute symptomatic WPW with Atrial Fibrillation?</div>
-          <div id="fc-back" class="hidden" style="font-size:15px; color:#14532d; font-weight:600; margin-top:12px; border-top:1px solid #bae6fd; padding-top:12px;">
-            ✅ <strong>Procainamide or Ibutilide</strong><br>
-            <span style="font-size:12px; color:#0369a1; font-weight:normal;">(Never give AV node blockers like Metoprolol, Diltiazem, or Digoxin!)</span>
-          </div>
-        </div>
-
-        <div style="display:flex; justify-content:center; gap:10px; margin-top:14px;">
-          <button class="btn btn-secondary" onclick="rateFlashcard(1)">Again (1d)</button>
-          <button class="btn btn-secondary" onclick="rateFlashcard(2)">Hard (3d)</button>
-          <button class="btn" onclick="rateFlashcard(3)">Good (7d)</button>
-          <button class="btn" style="background:#16a34a;" onclick="rateFlashcard(4)">Easy (14d)</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 6: BACKEND SCHEMA & APIS -->
-    <section id="tab-backend" class="tab-content hidden">
-      <div class="card">
-        <div class="card-title">🔐 Supabase PostgreSQL Schema & Vercel Serverless Endpoints</div>
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Full-stack architectural files included in repository: <code>/schema.sql</code>, <code>/prisma/schema.prisma</code>, <code>/api/ai/tutor.ts</code>, <code>/api/ai/explain.ts</code>.</p>
-
-        <div style="font-size:13px; font-weight:bold; margin-bottom:6px;">Prisma Schema Snippet:</div>
-        <pre><code>model User {
-  id               String            @id @default(uuid())
-  email            String            @unique
-  role             Role              @default(STUDENT)
-  plan             Plan              @default(PRO_MONTHLY)
-  questionAttempts QuestionAttempt[]
-  flashcardReviews FlashcardReview[]
-}</code></pre>
-
-        <div style="font-size:13px; font-weight:bold; margin-top:14px; margin-bottom:6px;">Serverless API Tester (/api/ai/tutor):</div>
-        <button class="btn" onclick="testServerlessApi()">⚡ Test /api/ai/tutor Endpoint</button>
-        <div id="api-test-result" style="margin-top:10px; font-size:12px; font-weight:bold; color:var(--primary-dark);"></div>
-      </div>
-    </section>
-
-  </main>
+  </div>
 
   <script>
-    // Tab Switcher
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+    // Navigation Switcher
+    function switchNav(navId) {
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
 
-      event.currentTarget.classList.add('active');
-      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      const targetNav = Array.from(document.querySelectorAll('.nav-item')).find(el => el.getAttribute('onclick').includes(navId));
+      if (targetNav) targetNav.classList.add('active');
+
+      const targetSec = document.getElementById('section-' + navId);
+      if (targetSec) targetSec.classList.remove('hidden');
+
+      const titles = {
+        'dashboard': 'Dashboard Overview',
+        'tutor': 'AI Tutor Studio (Dr. Ese)',
+        'qbank': 'USMLE / NCLEX High-Yield Question Bank',
+        'flashcards': 'Spaced Repetition Flashcards (SM-2)',
+        'calculators': 'Clinical Tools & Calculators',
+        'analytics': 'Performance Analytics & Score Predictor'
+      };
+      document.getElementById('header-page-title').innerText = titles[navId] || 'MedColleague';
+
+      if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('open');
+      }
     }
 
-    // Sample Case Loader
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      if (body.getAttribute('data-theme') === 'dark') {
+        body.removeAttribute('data-theme');
+      } else {
+        body.setAttribute('data-theme', 'dark');
+      }
+    }
+
+    // AI Tutor Functions
     function loadSample(type) {
       const textarea = document.getElementById('tutor-doc-input');
       if (type === 'ecg') {
-        textarea.value = "A 64-year-old male presents with sudden palpitations and lightheadedness. ECG shows irregular narrow-complex tachycardia without distinct p waves at a rate of 140 bpm. Blood pressure 110/70. What is the management?";
+        textarea.value = "A 64-year-old male presents with sudden palpitations and lightheadedness. ECG shows irregular narrow-complex tachycardia without distinct p waves at a rate of 140 bpm. BP 110/70 mmHg. What is the next management step?";
       } else if (type === 'renal') {
-        textarea.value = "A 52-year-old female with long-standing diabetes presents with confusion. ABG: pH 7.22, PaCO2 24 mmHg, HCO3 10 mEq/L. Serum sodium 138, chloride 100, potassium 5.2. Calculate anion gap and diagnose.";
+        textarea.value = "A 52-year-old female with diabetes presents with confusion. ABG: pH 7.22, PaCO2 24 mmHg, HCO3 10 mEq/L. Na+ 138, Cl- 100, K+ 5.2. Calculate anion gap and diagnose.";
       } else if (type === 'hf') {
-        textarea.value = "A 58-year-old male with HFrEF (LVEF 30%) remains symptomatic on Lisinopril and Metoprolol Succinate. Serum potassium 4.2, creatinine 1.1. What is the best next guideline-directed medication addition?";
+        textarea.value = "A 58-year-old male with HFrEF (LVEF 30%) remains symptomatic on Lisinopril and Metoprolol. Serum K+ 4.2, Cr 1.1. What is the best next guideline-directed medication addition?";
       }
     }
 
-    // AI Tutor Walkthrough
     function startTutorWalkthrough() {
-      const docText = document.getElementById('tutor-doc-input').value;
-      if (!docText.trim()) return alert('Please enter or select a case first!');
+      const input = document.getElementById('tutor-doc-input').value;
+      if (!input.trim()) return alert('Please enter or select a clinical vignette first!');
 
       const chatBox = document.getElementById('tutor-chat-box');
-      const response = `👩‍🏫 <strong>Dr. Maya's Clinical Walkthrough</strong>:<br><br>` +
-        `• <strong>Core Pathophysiology</strong>: The case presents key hemodynamic/metabolic indicators requiring immediate clinical triage.<br>` +
-        `• <strong>Diagnostic Rationale</strong>: Always stabilize vital signs (Airway, Breathing, Circulation) before secondary workup.<br>` +
-        `• ⚡ <strong>High-Yield Board Pearl</strong>: On USMLE & NCLEX, prioritize resuscitation over non-urgent imaging!<br><br>` +
-        `❓ <em>Quick Question</em>: What is the first-line medication or diagnostic step you would order next?`;
+      const response = `👩‍🏫 <strong>Dr. Ese's Clinical Walkthrough</strong>:<br><br>` +
+        `• <strong>Core Pathophysiology</strong>: Based on the case vignette, the patient presents with key indicators requiring structured diagnostic triage.<br>` +
+        `• <strong>Diagnostic Rationale</strong>: Always confirm patient stability (Airway, Breathing, Circulation) prior to secondary workups.<br>` +
+        `• ⚡ <strong>High-Yield Board Pearl</strong>: Pay close attention to acuity timelines and physical exam buzzwords!<br><br>` +
+        `❓ <em>Question for you</em>: What is the first-line medication or step you would order right now?`;
 
-      chatBox.innerHTML += `<div class="chat-msg tutor">${response}</div>`;
+      chatBox.innerHTML += `<div class="msg-bubble msg-tutor">${response}</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
 
-      // Speak voice audio
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance("Welcome! Let's break down this clinical case together step by step.");
+        const utterance = new SpeechSynthesisUtterance("Welcome! I am Dr. Ese. Let's break down this case together step by step.");
         window.speechSynthesis.speak(utterance);
       }
     }
 
-    function speakTutorSpeech() {
+    function speakTutorVoice() {
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance("Dr. Maya here! High yield pearl: always confirm hemodynamic stability first on board exams!");
+        const utterance = new SpeechSynthesisUtterance("Dr. Ese here! High yield board tip: always confirm hemodynamic stability first on board exams!");
         window.speechSynthesis.speak(utterance);
-      } else {
-        alert("Voice speech synthesis is supported in your browser!");
       }
     }
 
     function sendStudentQuestion() {
-      const input = document.getElementById('student-question-input');
+      const input = document.getElementById('student-q-input');
       const text = input.value.trim();
       if (!text) return;
 
       const chatBox = document.getElementById('tutor-chat-box');
-      chatBox.innerHTML += `<div class="chat-msg student">${text}</div>`;
+      chatBox.innerHTML += `<div class="msg-bubble msg-student">${text}</div>`;
       input.value = '';
 
       setTimeout(() => {
-        const ans = `👩‍🏫 <strong>Dr. Maya</strong>: Excellent question regarding "${text}"! In board questions, distinguish between immediate initial actions vs gold-standard diagnostic procedures. Distractors usually offer long-term maintenance drugs!`;
-        chatBox.innerHTML += `<div class="chat-msg tutor">${ans}</div>`;
+        const ans = `👩‍🏫 <strong>Dr. Ese</strong>: Great question regarding "${text}"! In board questions, distinguish between immediate initial actions versus definitive gold-standard diagnostic procedures. Distractors usually offer chronic maintenance medications!`;
+        chatBox.innerHTML += `<div class="msg-bubble msg-tutor">${ans}</div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
-      }, 600);
+      }, 500);
     }
 
-    // Q-Bank Functionality
-    function submitAnswer(idx, isCorrect) {
-      const options = document.querySelectorAll('.q-option');
-      options.forEach((opt, i) => {
-        if (i === 1) opt.classList.add('correct');
-        else if (i === idx && !isCorrect) opt.classList.add('incorrect');
+    function quickAiAction(action) {
+      const chatBox = document.getElementById('tutor-chat-box');
+      let msg = "";
+      if (action === 'summarize') msg = "✨ <strong>Dr. Ese Summary</strong>: Acute presentation requiring hemodynamic assessment and first-line rate control.";
+      if (action === 'questions') msg = "📝 <strong>Dr. Ese Generated 5 Items</strong>: Added 5 custom USMLE Step 2 items on this topic to your QBank queue.";
+      if (action === 'differential') msg = "🔬 <strong>Dr. Ese Differential</strong>: 1. AFib with RVR, 2. Atrial Flutter with variable block, 3. Multifocal Atrial Tachycardia (MAT).";
+      
+      chatBox.innerHTML += `<div class="msg-bubble msg-tutor">${msg}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // QBank Functions
+    let selectedChoiceIdx = null;
+
+    function selectChoice(idx) {
+      selectedChoiceIdx = idx;
+      const choices = document.querySelectorAll('.q-choice');
+      choices.forEach((c, i) => {
+        if (i === idx) c.classList.add('selected');
+        else c.classList.remove('selected');
       });
+    }
 
-      const expBox = document.getElementById('q-explanation-box');
-      const expText = document.getElementById('q-explanation-text');
-      expBox.classList.remove('hidden');
+    function confirmAnswer() {
+      if (selectedChoiceIdx === null) return alert('Please select a choice first!');
+      const choices = document.querySelectorAll('.q-choice');
+      choices.forEach((c, i) => {
+        if (i === 1) c.classList.add('correct');
+        else if (i === selectedChoiceIdx) c.classList.add('incorrect');
+      });
+      document.getElementById('qbank-explanation-box').classList.remove('hidden');
+    }
 
-      if (isCorrect) {
-        expText.innerHTML = `✅ <strong>Correct! Option B is the right choice.</strong><br>In hemodynamically stable Atrial Fibrillation with Rapid Ventricular Response (RVR), initial rate control using Beta-blockers (e.g., Metoprolol) or Non-dihydropyridine Calcium Channel Blockers (e.g., Diltiazem) is recommended to control HR < 110 bpm. Synchronized cardioversion is reserved for unstable patients (hypotension, acute pulmonary edema, chest pain).`;
+    function nextQuestionBlock() {
+      alert("Next high-yield item loaded in block!");
+      document.getElementById('qbank-explanation-box').classList.add('hidden');
+      selectedChoiceIdx = null;
+      document.querySelectorAll('.q-choice').forEach(c => c.classList.remove('selected', 'correct', 'incorrect', 'strikethrough'));
+    }
+
+    function toggleTestMode() {
+      const btn = document.getElementById('test-mode-btn');
+      if (btn.innerText.includes('TUTOR')) {
+        btn.innerText = "🔄 Mode: TEST";
       } else {
-        expText.innerHTML = `❌ <strong>Option B was correct.</strong><br>Because the patient is hemodynamically stable (BP 118/74), rate control with IV Metoprolol or Diltiazem is the first step. Cardioversion (Option A) is indicated ONLY if the patient is unstable!`;
+        btn.innerText = "🔄 Mode: TUTOR";
       }
     }
 
-    function nextQuestion() {
-      alert("Next high-yield question loaded!");
+    function toggleFlag() {
+      const btn = document.getElementById('flag-btn');
+      btn.innerText = btn.innerText.includes('🚩') ? '🏳️ Flagged' : '🚩 Flag';
+    }
+
+    function strikethroughMode() {
+      if (selectedChoiceIdx !== null) {
+        document.querySelectorAll('.q-choice')[selectedChoiceIdx].classList.toggle('strikethrough');
+      }
+    }
+
+    // Keyboard shortcuts for QBank
+    document.addEventListener('keydown', (e) => {
+      if (!document.getElementById('section-qbank').classList.contains('hidden')) {
+        if (['1', '2', '3', '4'].includes(e.key)) {
+          selectChoice(parseInt(e.key) - 1);
+        } else if (e.key === 'Enter') {
+          confirmAnswer();
+        }
+      } else if (!document.getElementById('section-flashcards').classList.contains('hidden')) {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          flipCard();
+        }
+      }
+    });
+
+    // Flashcard Flip
+    function flipCard() {
+      document.getElementById('fc-back-text').classList.toggle('hidden');
+    }
+
+    function rateCard(score) {
+      alert(`Flashcard reviewed with SM-2 score ${score}. Scheduled for next interval.`);
+      document.getElementById('fc-back-text').classList.add('hidden');
     }
 
     // Calculators
-    function calcEGFR() {
-      const scr = parseFloat(document.getElementById('egfr-scr').value) || 1.2;
-      const age = parseFloat(document.getElementById('egfr-age').value) || 58;
-      // Simplified CKD-EPI approximation
+    function runEgfr() {
+      const scr = parseFloat(document.getElementById('calc-scr').value) || 1.2;
+      const age = parseFloat(document.getElementById('calc-age').value) || 58;
       const egfr = Math.round(142 * Math.pow(scr / 0.9, -1.2) * Math.pow(0.9938, age));
-      document.getElementById('egfr-result').innerText = `Calculated eGFR: ${egfr} mL/min/1.73m² (CKD Stage ${egfr >= 90 ? '1' : egfr >= 60 ? '2' : '3'})`;
+      document.getElementById('egfr-out').innerText = `Result eGFR: ${egfr} mL/min/1.73m² (Clinical Interpretation: ${egfr >= 60 ? 'Normal / Mild Reduction' : 'CKD Stage 3a Moderate Decrease'})`;
     }
 
-    function calcAnionGap() {
-      const na = parseFloat(document.getElementById('ag-na').value) || 138;
-      const cl = parseFloat(document.getElementById('ag-cl').value) || 100;
-      const hco3 = parseFloat(document.getElementById('ag-hco3').value) || 12;
+    function runAnionGap() {
+      const na = parseFloat(document.getElementById('calc-na').value) || 138;
+      const cl = parseFloat(document.getElementById('calc-cl').value) || 100;
+      const hco3 = parseFloat(document.getElementById('calc-hco3').value) || 12;
       const ag = na - (cl + hco3);
-      document.getElementById('ag-result').innerText = `Serum Anion Gap: ${ag} mEq/L (${ag > 12 ? 'HIGH ANION GAP METABOLIC ACIDOSIS (HAGMA)' : 'NORMAL ANION GAP'})`;
+      document.getElementById('ag-out').innerText = `Result Anion Gap: ${ag} mEq/L (${ag > 12 ? 'High Anion Gap Metabolic Acidosis - Check GOLD MARK' : 'Normal Anion Gap Metabolic Acidosis'})`;
     }
 
-    // Flashcard Flip
-    function flipFlashcard() {
-      document.getElementById('fc-back').classList.toggle('hidden');
+    function filterCalc(cat) {
+      alert(`Filtering clinical calculators by category: ${cat.toUpperCase()}`);
     }
 
-    function rateFlashcard(score) {
-      alert(`Flashcard reviewed with quality score ${score}. Next review scheduled by SM-2 algorithm.`);
-      document.getElementById('fc-back').classList.add('hidden');
-    }
-
-    // API Tester
-    function testServerlessApi() {
-      const res = document.getElementById('api-test-result');
-      res.innerText = "⏳ Calling /api/ai/tutor backend serverless route...";
-      setTimeout(() => {
-        res.innerText = "✅ Response from /api/ai/tutor [Status 200 OK]: Dr. Maya serverless model initialized. All routes active.";
-      }, 500);
-    }
+    // Modals
+    function openLabModal() { document.getElementById('lab-modal').classList.add('active'); }
+    function closeLabModal() { document.getElementById('lab-modal').classList.remove('active'); }
+    function openDevModal() { document.getElementById('dev-modal').classList.add('active'); }
+    function closeDevModal() { document.getElementById('dev-modal').classList.remove('active'); }
 
     // Service Worker Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('SW Registered'))
-          .catch(err => console.error('SW Error', err));
+          .then(reg => console.log('SW Active'))
+          .catch(err => console.error('SW error', err));
       });
     }
   </script>

@@ -34,8 +34,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const prompt = studentQuestion
-      ? `You are Dr. Maya, senior medical professor and AI board exam tutor. Student studies: "${documentText}". Question: "${studentQuestion}". Answer concisely with mechanism and high-yield board tip.`
-      : `You are Dr. Maya, senior medical professor. Uploaded document: "${documentText}". Give a 3-point walkthrough: 1. Core Pathophysiology, 2. Key Diagnostic Rationale, 3. High-Yield Board Pearl, 4. One follow-up question.`;
+      ? `You are Dr. Ese, senior medical professor and AI board exam tutor. Student studies: "${documentText}". Question: "${studentQuestion}". Answer concisely with mechanism and high-yield board tip.`
+      : `You are Dr. Ese, senior medical professor. Uploaded document: "${documentText}". Give a 3-point walkthrough: 1. Core Pathophysiology, 2. Key Diagnostic Rationale, 3. High-Yield Board Pearl, 4. One follow-up question.`;
 
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
@@ -68,7 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 function generateFallbackTutorResponse(doc?: string, q?: string): string {
   if (q) {
-    return `👩‍🏫 **Dr. Maya's Clinical Answer**:\n\nGreat question regarding "${q}"!\n• In board questions, always identify whether the item asks for the *initial diagnostic test* versus *definitive gold-standard procedure*.\n• Option traps usually offer chronic maintenance medications when acute stabilization (ABC) is required first!`;
+    return `👩‍🏫 **Dr. Ese's Clinical Answer**:\n\nGreat question regarding "${q}"!\n• In board questions, always identify whether the item asks for the *initial diagnostic test* versus *definitive gold-standard procedure*.\n• Option traps usually offer chronic maintenance medications when acute stabilization (ABC) is required first!`;
   }
-  return `👩‍🏫 **Dr. Maya's Clinical Walkthrough**:\n\n"Let's break down this case together!"\n\n• **Core Pathophysiology**: The presented document indicates acute hemodynamic or metabolic shifts requiring immediate recognition.\n• **Diagnostic Rationale**: Always confirm patient stability before proceeding to secondary imaging or invasive procedures.\n• **⚡ High-Yield Board Pearl**: On USMLE & NCLEX, acute symptomatic presentations prioritize resuscitation (Airway, Breathing, Circulation) first!`;
+  return `👩‍🏫 **Dr. Ese's Clinical Walkthrough**:\n\n"Let's break down this case together!"\n\n• **Core Pathophysiology**: The presented document indicates acute hemodynamic or metabolic shifts requiring immediate recognition.\n• **Diagnostic Rationale**: Always confirm patient stability before proceeding to secondary imaging or invasive procedures.\n• **⚡ High-Yield Board Pearl**: On USMLE & NCLEX, acute symptomatic presentations prioritize resuscitation (Airway, Breathing, Circulation) first!`;
 }

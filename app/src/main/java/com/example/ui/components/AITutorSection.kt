@@ -106,7 +106,7 @@ fun AITutorSection(
             listOf(
                 TutorMessage(
                     sender = "tutor",
-                    text = "Hello! I am Dr. Maya, your AI Medical Educator. Upload a PDF, case note, or exam question below and allow me to teach you step-by-step!"
+                    text = "Hello! I am Dr. Ese, your AI Medical Educator. Upload a PDF, case note, or exam question below and allow me to teach you step-by-step!"
                 )
             )
         )
@@ -178,7 +178,7 @@ fun AITutorSection(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Dr. Maya • Senior Medical AI Board Educator",
+                        text = "Dr. Ese • Senior Medical AI Board Educator",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
