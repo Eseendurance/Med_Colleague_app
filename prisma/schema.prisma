@@ -1,0 +1,100 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  RESIDENT
+  ATTENDING
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PRO_MONTHLY
+  PRO_ANNUAL
+  INSTITUTIONAL
+}
+
+enum ExamType {
+  USMLE_STEP_1
+  USMLE_STEP_2_CK
+  USMLE_STEP_3
+  NCLEX_RN
+  MRCP_UK
+  GENERAL_CLINICAL
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  name             String
+  role             Role              @default(STUDENT)
+  plan             Plan              @default(FREE)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  questionAttempts QuestionAttempt[]
+  flashcardReviews FlashcardReview[]
+  tutorSessions    TutorSession[]
+}
+
+model Question {
+  id            String            @id @default(uuid())
+  examType      ExamType
+  organSystem   String
+  vignette      String
+  options       Json // Array of option strings
+  correctIndex  Int
+  explanation   String
+  highYieldPearl String
+  difficulty    String            @default("Medium")
+  createdAt     DateTime          @default(now())
+  attempts      QuestionAttempt[]
+}
+
+model QuestionAttempt {
+  id             String   @id @default(uuid())
+  userId         String
+  questionId     String
+  selectedIndex  Int
+  isCorrect      Boolean
+  timeTakenSec   Int
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question       Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Flashcard {
+  id          String            @id @default(uuid())
+  organSystem String
+  front       String
+  back        String
+  pearl       String
+  reviews     FlashcardReview[]
+}
+
+model FlashcardReview {
+  id           String    @id @default(uuid())
+  userId       String
+  flashcardId  String
+  easeFactor   Float     @default(2.5)
+  intervalDays Int       @default(1)
+  repetitions  Int       @default(0)
+  nextReviewAt DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flashcard    Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+}
+
+model TutorSession {
+  id           String   @id @default(uuid())
+  userId       String
+  documentText String
+  dialogue     Json     // Chat transcript array
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
