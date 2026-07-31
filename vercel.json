@@ -3,19 +3,18 @@
   "name": "medcolleague-pwa",
   "cleanUrls": true,
   "outputDirectory": "public",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/sw.js",
-      "headers": { "cache-control": "no-cache" },
-      "dest": "/sw.js"
+      "source": "/sw.js",
+      "destination": "/sw.js"
     },
     {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
+      "source": "/manifest.json",
+      "destination": "/manifest.json"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { loadFlashcardStorage, saveFlashcardStorage } from "../utils/storage";
 
 export interface FlashcardItem {
   id: string;
@@ -44,6 +45,28 @@ export const FlashcardDeck: React.FC = () => {
   const [lastRatingFeedback, setLastRatingFeedback] = useState<string | null>(
     null
   );
+
+  // Load state on mount
+  useEffect(() => {
+    const saved = loadFlashcardStorage({
+      fcIdx: 0,
+      isFlipped: false,
+      reviewedCount: 380,
+    });
+    setCurrentIndex(saved.fcIdx || 0);
+    setIsFlipped(saved.isFlipped || false);
+    setReviewedCount(saved.reviewedCount || 380);
+  }, []);
+
+  // Save state on change
+  useEffect(() => {
+    saveFlashcardStorage({
+      fcIdx: currentIndex,
+      isFlipped,
+      reviewedCount,
+      lastRatingFeedback,
+    });
+  }, [currentIndex, isFlipped, reviewedCount, lastRatingFeedback]);
 
   const currentCard = SAMPLE_FLASHCARDS[currentIndex];
 

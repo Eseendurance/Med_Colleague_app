@@ -173,6 +173,9 @@
           <button class="nav-item" onclick="switchNav('tutor')">
             <span class="icon">🎓</span> <span>AI Tutor Studio</span>
           </button>
+          <button class="nav-item" onclick="switchNav('search')">
+            <span class="icon">🔍</span> <span>MedSearch AI (Perplexity)</span>
+          </button>
           <button class="nav-item" onclick="switchNav('qbank')">
             <span class="icon">📝</span> <span>USMLE/NCLEX QBank</span>
           </button>
@@ -272,6 +275,7 @@
             <div class="card-title">🚀 Quick Study Actions</div>
             <div style="display:flex; flex-wrap:wrap; gap:10px;">
               <button class="btn" onclick="switchNav('tutor')">🎓 Ask Dr. Ese (AI Tutor)</button>
+              <button class="btn btn-secondary" onclick="switchNav('search')">🔍 MedSearch AI (Perplexity)</button>
               <button class="btn btn-secondary" onclick="switchNav('qbank')">📝 Launch 10-Question Block</button>
               <button class="btn btn-secondary" onclick="switchNav('flashcards')">⚡ Review Due Cards (14)</button>
               <button class="btn btn-secondary" onclick="switchNav('calculators')">🧪 eGFR / Anion Gap Calc</button>
@@ -335,6 +339,62 @@
           </div>
         </section>
 
+        <!-- SECTION: MEDSEARCH AI (PERPLEXITY CLINICAL ENGINE) -->
+        <section id="section-search" class="hidden">
+          <div class="card">
+            <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span>🔍 MedSearch-AI</span>
+                <span style="background:var(--primary-light); color:var(--primary-dark); padding:3px 10px; border-radius:12px; font-size:11px; font-weight:800;">EVIDENCE SYNTHESIS ENGINE</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-muted);">
+                Targeting: PubMed • WHO • FDA • CDC • Cochrane • NEJM • Lancet
+              </div>
+            </div>
+
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px; line-height:1.5;">
+              Synthesizes medical literature with Oxford Centre for Evidence-Based Medicine (OCEBM) hierarchy, explicit inline citations <code>[1]</code>, high-yield practice pearls, and verified reference links.
+            </p>
+
+            <!-- Quick Search Buttons -->
+            <div style="margin-bottom:16px;">
+              <span style="font-size:11.5px; font-weight:bold; color:var(--primary-dark); display:block; margin-bottom:6px;">HIGH-YIELD CLINICAL SEARCHES:</span>
+              <span class="action-pill" onclick="runSearchQuery('SGLT2 inhibitors in Heart Failure with Preserved Ejection Fraction (HFpEF)')">🔎 SGLT2i in HFpEF</span>
+              <span class="action-pill" onclick="runSearchQuery('GLP-1 receptor agonists and MACE reduction in Type 2 Diabetes')">🔎 GLP-1 RAs & MACE</span>
+              <span class="action-pill" onclick="runSearchQuery('DOACs vs Warfarin in Non-Valvular Atrial Fibrillation with CKD Stage 4')">🔎 DOACs vs Warfarin in CKD</span>
+              <span class="action-pill" onclick="runSearchQuery('D-dimer age-adjusted cutoffs for Pulmonary Embolism rule-out')">🔎 D-Dimer Age-Adjusted PE</span>
+            </div>
+
+            <!-- Search Input Bar -->
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+              <input type="text" id="medsearch-input" placeholder="Ask a complex medical, pharmacological, or clinical guidelines query..." style="flex-grow:1; padding:12px; border-radius:12px; border:1px solid var(--border); font-size:14px;">
+              <button class="btn" style="padding:12px 20px; font-weight:bold;" onclick="executeSearchFromInput()">Search Evidence ➔</button>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="medsearch-loading" class="hidden" style="padding:24px; text-align:center; background:var(--primary-light); border-radius:16px; border:1px solid #BAE6FD;">
+              <div style="font-size:24px; margin-bottom:8px;">⚡</div>
+              <div style="font-size:14px; font-weight:bold; color:var(--primary-dark);">Querying Biomedical Databases & Guideline Authorities...</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Constructing PICO parameters, ranking OCEBM evidence levels & formatting inline citations.</div>
+            </div>
+
+            <!-- Synthesis Output Container -->
+            <div id="medsearch-output-card" class="hidden" style="margin-top:20px; background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:16px;">
+                <span style="font-size:13px; font-weight:800; color:var(--success);">✅ Synthesized Evidence Response</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px; color:var(--text-muted);" id="medsearch-timestamp">Updated Live</span>
+                  <button class="btn btn-secondary" style="font-size:11px; padding:3px 10px;" onclick="exportMedSearchPDF()">📄 Export PDF Report</button>
+                </div>
+              </div>
+
+              <div id="medsearch-content-body" style="font-size:14px; line-height:1.65; color:var(--text);">
+                <!-- Synthesized result rendered here -->
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- SECTION 3: USMLE / NCLEX HIGH-YIELD QBANK -->
         <section id="section-qbank" class="hidden">
           <div class="card">
@@ -387,6 +447,11 @@
                 <div style="font-size:12px; font-weight:800; color:#047857;">⚡ HIGH-YIELD BOARD PEARL:</div>
                 <div style="font-size:13px; color:#065F46; margin-top:4px;" id="board-pearl-text">Loading pearl...</div>
               </div>
+
+              <!-- Export Button -->
+              <div style="margin-top:14px; display:flex; justify-content:flex-end;">
+                <button class="btn btn-secondary" style="font-size:12px; padding:6px 14px;" onclick="exportQBankExplanationPDF()">📄 Export Explanation to PDF</button>
+              </div>
             </div>
 
           </div>
@@ -395,9 +460,12 @@
         <!-- SECTION 4: SPACED REPETITION FLASHCARDS (SM-2 ENGINE) -->
         <section id="section-flashcards" class="hidden">
           <div class="card" style="max-width:700px; margin:0 auto;">
-            <div class="card-title">
+            <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
               <span>⚡ Spaced Repetition Flashcards (SM-2)</span>
-              <span style="font-size:12px; color:var(--text-muted);">Reviewed: <strong id="fc-reviewed-count">380</strong> • Card <span id="fc-num-text">1 of 3</span></span>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:12px; color:var(--text-muted);">Reviewed: <strong id="fc-reviewed-count">380</strong> • Card <span id="fc-num-text">1 of 3</span></span>
+                <button class="btn btn-secondary" style="font-size:11px; padding:4px 10px;" onclick="exportFlashcardsPDF()">📄 Export PDF Deck</button>
+              </div>
             </div>
 
             <div class="flashcard-stage" onclick="flipCard()">
@@ -618,6 +686,7 @@
       const titles = {
         'dashboard': 'Dashboard Overview',
         'tutor': 'AI Tutor Studio (Dr. Ese)',
+        'search': 'MedSearch AI • Clinical Search & Evidence Synthesis',
         'qbank': 'USMLE / NCLEX High-Yield Question Bank',
         'flashcards': 'Spaced Repetition Flashcards (SM-2)',
         'calculators': 'Clinical Tools & Calculators',
@@ -775,6 +844,57 @@
     let hasSubmitted = false;
     let userStreak = 14;
 
+    // QBank LocalStorage State Management
+    function saveQBankState() {
+      try {
+        const state = {
+          currentQIdx,
+          selectedChoiceIdx,
+          hasSubmitted,
+          userStreak,
+          isFlagged: document.getElementById('flag-btn')?.innerText.includes('Flagged') || false
+        };
+        localStorage.setItem('medcolleague_qbank_state', JSON.stringify(state));
+      } catch (e) {
+        console.warn('LocalStorage save failed:', e);
+      }
+    }
+
+    function loadQBankState() {
+      try {
+        const saved = localStorage.getItem('medcolleague_qbank_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (typeof parsed.currentQIdx === 'number' && parsed.currentQIdx >= 0 && parsed.currentQIdx < Q_DATA.length) {
+            currentQIdx = parsed.currentQIdx;
+          }
+          if (typeof parsed.userStreak === 'number' && parsed.userStreak >= 0) {
+            userStreak = parsed.userStreak;
+          }
+          if (parsed.selectedChoiceIdx !== undefined) {
+            selectedChoiceIdx = parsed.selectedChoiceIdx;
+          }
+          hasSubmitted = !!parsed.hasSubmitted;
+          if (parsed.isFlagged) {
+            const flagBtn = document.getElementById('flag-btn');
+            if (flagBtn) flagBtn.innerText = '🏳️ Flagged';
+          }
+        }
+      } catch (e) {
+        console.warn('LocalStorage load failed:', e);
+      }
+    }
+
+    function populateExplanationUI(q) {
+      let rationaleHTML = `<p style="margin-bottom:8px;"><strong style="color:var(--success);">✅ Why Choice ${String.fromCharCode(65 + q.correctIndex)} is Correct:</strong> ${q.correctReason}</p>`;
+      q.incorrectReasons.forEach((reason) => {
+        rationaleHTML += `<p style="margin-bottom:8px;"><strong style="color:var(--danger);">❌ Distractor Note:</strong> ${reason}</p>`;
+      });
+
+      document.getElementById('explanation-body-text').innerHTML = rationaleHTML;
+      document.getElementById('board-pearl-text').innerText = q.pearl;
+    }
+
     function renderQuestion() {
       const q = Q_DATA[currentQIdx];
       document.getElementById('q-num-text').innerText = `${currentQIdx + 1} of ${Q_DATA.length}`;
@@ -830,7 +950,11 @@
       } else {
         submitBtn.classList.add('hidden');
         document.getElementById('next-question-btn').classList.remove('hidden');
+        populateExplanationUI(q);
+        document.getElementById('qbank-explanation-box').classList.remove('hidden');
       }
+
+      saveQBankState();
     }
 
     function selectChoice(idx) {
@@ -854,17 +978,7 @@
         document.getElementById('qbank-feedback-badge').innerHTML = `<span style="background:#FEF2F2; color:#B91C1C; padding:6px 14px; border-radius:20px; font-weight:bold; font-size:12px; border:1px solid #FECACA;">❌ Incorrect</span>`;
       }
 
-      // Render rationale
-      let rationaleHTML = `<p style="margin-bottom:8px;"><strong style="color:var(--success);">✅ Why Choice ${String.fromCharCode(65 + q.correctIndex)} is Correct:</strong> ${q.correctReason}</p>`;
-      q.incorrectReasons.forEach((reason) => {
-        rationaleHTML += `<p style="margin-bottom:8px;"><strong style="color:var(--danger);">❌ Distractor Note:</strong> ${reason}</p>`;
-      });
-
-      document.getElementById('explanation-body-text').innerHTML = rationaleHTML;
-      document.getElementById('board-pearl-text').innerText = q.pearl;
-
       renderQuestion();
-      document.getElementById('qbank-explanation-box').classList.remove('hidden');
     }
 
     function nextQuestionBlock() {
@@ -886,6 +1000,7 @@
     function toggleFlag() {
       const btn = document.getElementById('flag-btn');
       btn.innerText = btn.innerText.includes('🚩') ? '🏳️ Flagged' : '🚩 Flag';
+      saveQBankState();
     }
 
     function strikethroughMode() {
@@ -926,6 +1041,37 @@
     let isFlipped = false;
     let reviewedCount = 380;
 
+    function saveFlashcardState() {
+      try {
+        const state = {
+          fcIdx,
+          isFlipped,
+          reviewedCount
+        };
+        localStorage.setItem('medcolleague_flashcard_state', JSON.stringify(state));
+      } catch (e) {
+        console.warn('LocalStorage save fc failed:', e);
+      }
+    }
+
+    function loadFlashcardState() {
+      try {
+        const saved = localStorage.getItem('medcolleague_flashcard_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (typeof parsed.fcIdx === 'number' && parsed.fcIdx >= 0 && parsed.fcIdx < FC_DATA.length) {
+            fcIdx = parsed.fcIdx;
+          }
+          if (typeof parsed.reviewedCount === 'number') {
+            reviewedCount = parsed.reviewedCount;
+          }
+          isFlipped = !!parsed.isFlipped;
+        }
+      } catch (e) {
+        console.warn('LocalStorage load fc failed:', e);
+      }
+    }
+
     function renderFlashcard() {
       const fc = FC_DATA[fcIdx];
       document.getElementById('fc-num-text').innerText = `${fcIdx + 1} of ${FC_DATA.length}`;
@@ -945,6 +1091,8 @@
         backElem.classList.add('hidden');
         ratingElem.classList.add('hidden');
       }
+
+      saveFlashcardState();
     }
 
     function flipCard() {
@@ -966,6 +1114,102 @@
 
       fcIdx = (fcIdx + 1) % FC_DATA.length;
       renderFlashcard();
+    }
+
+    // PDF Export Utility for Offline Study
+    function exportToPDF(title, contentHTML) {
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        alert('Please allow popups in your browser to export the study document as PDF.');
+        return;
+      }
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>${title} - MedColleague Board Prep</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 28px; color: #0F172A; line-height: 1.6; }
+              .header { border-bottom: 2.5px solid #0284C7; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+              .title { font-size: 20px; font-weight: 800; color: #0369A1; }
+              .subtitle { font-size: 12px; color: #64748B; margin-top: 2px; }
+              .badge { background: #E0F2FE; color: #0369A1; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; border: 1px solid #BAE6FD; }
+              .content { font-size: 14px; margin-top: 16px; }
+              .pearl-box { background: #ECFDF5; border: 1px solid #6EE7B7; border-radius: 10px; padding: 14px; margin-top: 16px; color: #065F46; }
+              .footer { margin-top: 40px; border-top: 1px solid #E2E8F0; padding-top: 12px; font-size: 11px; color: #64748B; text-align: center; }
+              @media print { body { padding: 0; } }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <div>
+                <div class="title">🩺 MedColleague AI • Board Study Note</div>
+                <div class="subtitle">Evidence-Based Clinical Educator & Board Exam Engine</div>
+              </div>
+              <div class="badge">${new Date().toLocaleDateString()}</div>
+            </div>
+            <h2 style="font-size:17px; color:#0F172A; margin-bottom:12px;">${title}</h2>
+            <div class="content">${contentHTML}</div>
+            <div class="footer">Exported for Offline Study • MedColleague Medical Platform</div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+      }, 300);
+    }
+
+    function exportQBankExplanationPDF() {
+      const q = Q_DATA[currentQIdx];
+      if (!q) return;
+      const vignette = document.getElementById('qbank-vignette-text').innerText;
+      const rationale = document.getElementById('explanation-body-text').innerHTML;
+      const pearl = document.getElementById('board-pearl-text').innerText;
+
+      const html = `
+        <div style="margin-bottom:16px;">
+          <span style="font-size:12px; font-weight:bold; color:#0284C7; text-transform:uppercase;">ORGAN SYSTEM: ${q.system}</span>
+          <p style="font-size:14px; margin-top:8px; line-height:1.6; background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;"><strong>Vignette:</strong> ${vignette}</p>
+        </div>
+        <div style="margin-bottom:16px;">
+          <h3 style="color:#0369A1; font-size:15px; margin-bottom:8px;">🔬 Clinical Rationale & Distractor Analysis</h3>
+          <div>${rationale}</div>
+        </div>
+        <div class="pearl-box">
+          <strong>⚡ HIGH-YIELD BOARD PEARL:</strong>
+          <p style="margin-top:4px; font-size:13px;">${pearl}</p>
+        </div>
+      `;
+      exportToPDF(`USMLE / NCLEX Question #${currentQIdx + 1} Explanation`, html);
+    }
+
+    function exportFlashcardsPDF() {
+      let cardsHTML = `<h3 style="color:#0369A1; margin-bottom:16px;">⚡ Spaced Repetition Flashcard Set (${FC_DATA.length} High-Yield Cards)</h3>`;
+      FC_DATA.forEach((card, index) => {
+        cardsHTML += `
+          <div style="border:1px solid #CBD5E1; border-radius:10px; padding:14px; margin-bottom:14px; page-break-inside:avoid; background:#FAFBFD;">
+            <div style="font-size:11px; font-weight:bold; color:#0284C7; text-transform:uppercase;">CARD ${index + 1} • ${card.system}</div>
+            <div style="font-size:14px; font-weight:bold; margin-top:6px; color:#0F172A;">Q: ${card.front}</div>
+            <div style="font-size:14px; font-weight:bold; color:#047857; margin-top:10px; border-top:1px dashed #CBD5E1; padding-top:8px;">A: ${card.back}</div>
+            ${card.notes ? `<div style="font-size:12px; color:#64748B; margin-top:4px;">Note: ${card.notes}</div>` : ''}
+          </div>
+        `;
+      });
+      exportToPDF("High-Yield Medical Flashcard Deck", cardsHTML);
+    }
+
+    function exportMedSearchPDF() {
+      const bodyContainer = document.getElementById('medsearch-content-body');
+      if (!bodyContainer) return;
+      const bodyHTML = bodyContainer.innerHTML;
+      if (!bodyHTML || bodyHTML.includes('Unable to retrieve')) {
+        alert('No active search results available to export.');
+        return;
+      }
+      const queryVal = document.getElementById('medsearch-input')?.value || 'Clinical Evidence Report';
+      exportToPDF(`MedSearch-AI Evidence Report: ${queryVal}`, `<div>${bodyHTML}</div>`);
     }
 
     // Calculators Engine
@@ -1058,14 +1302,79 @@
 
     // Initial render call on page load
     window.addEventListener('DOMContentLoaded', () => {
+      loadQBankState();
+      loadFlashcardState();
       renderQuestion();
       renderFlashcard();
       runEgfr();
       runAnionGap();
     });
 
-    function filterCalc(cat) {
-      alert(`Filtering clinical calculators by category: ${cat.toUpperCase()}`);
+    // MedSearch AI Search Engine Logic
+    function formatMarkdownJS(str) {
+      if (!str) return '';
+      let html = str
+        .replace(/^### (.*$)/gim, '<h3 style="font-size:16px; font-weight:800; color:var(--primary-dark); margin-top:16px; margin-bottom:8px;">$1</h3>')
+        .replace(/^#### (.*$)/gim, '<h4 style="font-size:14px; font-weight:700; color:var(--text); margin-top:12px; margin-bottom:6px;">$1</h4>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code style="background:var(--primary-light); color:var(--primary-dark); padding:2px 6px; border-radius:4px; font-size:12px;">$1</code>')
+        .replace(/\[(\d+)\]/g, '<sup style="color:var(--primary); font-weight:bold; font-size:11px; padding:0 2px;">[$1]</sup>')
+        .replace(/^> (.*$)/gim, '<div style="background:var(--primary-light); border-left:4px solid var(--primary); padding:10px 14px; border-radius:0 8px 8px 0; margin:10px 0; font-size:13px; color:var(--primary-dark);">$1</div>')
+        .replace(/\n\n/g, '<br><br>');
+      return html;
+    }
+
+    async function executeSearch(queryStr) {
+      if (!queryStr || !queryStr.trim()) return;
+
+      const input = document.getElementById('medsearch-input');
+      if (input) input.value = queryStr;
+
+      const loading = document.getElementById('medsearch-loading');
+      const outputCard = document.getElementById('medsearch-output-card');
+      const contentBody = document.getElementById('medsearch-content-body');
+      const timestamp = document.getElementById('medsearch-timestamp');
+
+      if (loading) loading.classList.remove('hidden');
+      if (outputCard) outputCard.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/ai/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: queryStr })
+        });
+
+        const data = await res.json();
+        const resultText = data?.result || data?.explanation;
+
+        if (loading) loading.classList.add('hidden');
+
+        if (resultText && contentBody) {
+          contentBody.innerHTML = formatMarkdownJS(resultText);
+          if (timestamp) timestamp.innerText = 'Retrieved Live at ' + new Date().toLocaleTimeString();
+          if (outputCard) outputCard.classList.remove('hidden');
+        } else if (contentBody) {
+          contentBody.innerHTML = `<div style="color:var(--danger); font-weight:bold;">⚠️ Unable to retrieve search results. Please try again.</div>`;
+          if (outputCard) outputCard.classList.remove('hidden');
+        }
+      } catch (err) {
+        if (loading) loading.classList.add('hidden');
+        if (contentBody) {
+          contentBody.innerHTML = `<div style="color:var(--danger); font-weight:bold;">⚠️ Network connection issue. Unable to connect to MedSearch-AI endpoint.</div>`;
+          if (outputCard) outputCard.classList.remove('hidden');
+        }
+      }
+    }
+
+    function runSearchQuery(q) {
+      switchNav('search');
+      executeSearch(q);
+    }
+
+    function executeSearchFromInput() {
+      const q = document.getElementById('medsearch-input').value;
+      executeSearch(q);
     }
 
     // Modals

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { loadQBankStorage, saveQBankStorage } from "../utils/storage";
 
 export interface QuestionItem {
   id: string;
@@ -100,6 +101,35 @@ export const QBankBlock: React.FC = () => {
     totalAnswered: 40,
     correctCount: 34,
   });
+
+  // Load state from localStorage on mount
+  useEffect(() => {
+    const savedState = loadQBankStorage({
+      currentQIdx: 0,
+      selectedChoiceIdx: null,
+      hasSubmitted: false,
+      userStreak: 14,
+      scoreMetrics: { totalAnswered: 40, correctCount: 34 },
+    });
+    setCurrentIndex(savedState.currentQIdx || 0);
+    setSelectedOption(savedState.selectedChoiceIdx);
+    setHasSubmitted(savedState.hasSubmitted);
+    setUserStreak(savedState.userStreak);
+    if (savedState.scoreMetrics) {
+      setScoreMetrics(savedState.scoreMetrics);
+    }
+  }, []);
+
+  // Save state on changes
+  useEffect(() => {
+    saveQBankStorage({
+      currentQIdx: currentIndex,
+      selectedChoiceIdx: selectedOption,
+      hasSubmitted,
+      userStreak,
+      scoreMetrics,
+    });
+  }, [currentIndex, selectedOption, hasSubmitted, userStreak, scoreMetrics]);
 
   const currentQ = SAMPLE_QUESTIONS[currentIndex];
 

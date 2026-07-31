@@ -1,0 +1,20 @@
+{
+  "name": "medcolleague-pwa",
+  "version": "1.0.0",
+  "description": "MedColleague Clinical Educator & Board Exam AI Engine",
+  "main": "public/index.html",
+  "scripts": {
+    "build": "echo 'Vercel static build complete'",
+    "start": "serve public"
+  },
+  "dependencies": {
+    "@vercel/node": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
