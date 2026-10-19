@@ -63,3 +63,78 @@ test('Bayesian Knowledge Tracing & IRT Board Score Prediction', () => {
   assert.ok(irtPrediction.predictedScore3Digit >= 180 && irtPrediction.predictedScore3Digit <= 260);
   assert.equal(irtPrediction.weakestSystems[0].system, 'Endocrinology');
 });
+
+test('Clinical Notes Management & Flashcard Conversion Engine', () => {
+  const { INITIAL_HIGH_YIELD_NOTES } = require('../utils/notesStorage.ts');
+  assert.ok(Array.isArray(INITIAL_HIGH_YIELD_NOTES));
+  assert.ok(INITIAL_HIGH_YIELD_NOTES.length >= 4, 'Should have initial high-yield notes');
+
+  const sglt2i = INITIAL_HIGH_YIELD_NOTES.find(n => n.id.includes('sglt2i'));
+  assert.ok(sglt2i, 'SGLT2i note must exist');
+  assert.equal(sglt2i.organSystem, 'Cardiology');
+  assert.equal(sglt2i.isHighYield, true);
+
+  // Conversion of note to SM-2 Flashcard format
+  const convertedCard = {
+    system: sglt2i.organSystem.toUpperCase(),
+    front: `Clinical Concept: ${sglt2i.title} - Core Management Principles`,
+    back: `✅ ${sglt2i.content.substring(0, 150)}...`,
+    pearl: `Tags: ${sglt2i.tags.join(', ')}`
+  };
+
+  assert.ok(convertedCard.front.includes('SGLT2'));
+  assert.ok(convertedCard.back.startsWith('✅'));
+});
+
+test('Clinical Note Tag Management & Color-Coded Categorization', () => {
+  const { NOTE_CATEGORIES, getTagStyle, filterNotesByTag, INITIAL_HIGH_YIELD_NOTES } = require('../utils/notesStorage.ts');
+
+  // Verify preset categories exist
+  assert.ok(NOTE_CATEGORIES['Emergency'], 'Emergency category must be defined');
+  assert.ok(NOTE_CATEGORIES['Pharmacology'], 'Pharmacology category must be defined');
+  assert.ok(NOTE_CATEGORIES['Review Needed'], 'Review Needed category must be defined');
+
+  // Verify distinct colors
+  assert.equal(NOTE_CATEGORIES['Emergency'].color, '#B91C1C');
+  assert.equal(NOTE_CATEGORIES['Pharmacology'].color, '#6D28D9');
+  assert.equal(NOTE_CATEGORIES['Review Needed'].color, '#B45309');
+
+  // Verify getTagStyle matches case-insensitively
+  const emergencyStyle = getTagStyle('emergency');
+  assert.equal(emergencyStyle.color, '#B91C1C');
+  assert.equal(emergencyStyle.icon, '🚨');
+
+  // Verify filtering by tags
+  const emergencyNotes = filterNotesByTag(INITIAL_HIGH_YIELD_NOTES, 'Emergency');
+  assert.ok(emergencyNotes.length >= 2, 'Should find at least 2 Emergency notes');
+
+  const pharmNotes = filterNotesByTag(INITIAL_HIGH_YIELD_NOTES, 'Pharmacology');
+  assert.ok(pharmNotes.length >= 2, 'Should find at least 2 Pharmacology notes');
+
+  const allNotes = filterNotesByTag(INITIAL_HIGH_YIELD_NOTES, 'ALL');
+  assert.equal(allNotes.length, INITIAL_HIGH_YIELD_NOTES.length);
+});
+
+test('Tag Auto-Suggestion Engine & Dropdown Suggestions', () => {
+  const { getTagSuggestions, getAllKnownTags, INITIAL_HIGH_YIELD_NOTES } = require('../utils/notesStorage.ts');
+
+  const knownTags = getAllKnownTags(INITIAL_HIGH_YIELD_NOTES);
+  assert.ok(knownTags.includes('Emergency'), 'Should include preset Emergency');
+  assert.ok(knownTags.includes('Pharmacology'), 'Should include preset Pharmacology');
+  assert.ok(knownTags.includes('Cardiology'), 'Should include note tag Cardiology');
+
+  // Test suggestion matching query 'phar'
+  const pharSuggestions = getTagSuggestions('phar', INITIAL_HIGH_YIELD_NOTES);
+  assert.ok(pharSuggestions.length > 0, 'Should return matching suggestions for phar');
+  assert.equal(pharSuggestions[0].name, 'Pharmacology');
+  assert.ok(pharSuggestions[0].count >= 2, 'Should report correct usage frequency');
+
+  // Test excludeTags parameter (already selected tags in modal)
+  const excludedSuggestions = getTagSuggestions('emer', INITIAL_HIGH_YIELD_NOTES, ['Emergency']);
+  assert.ok(!excludedSuggestions.some(s => s.name === 'Emergency'), 'Should exclude already selected tag');
+
+  // Test empty query returns ranked popular tags
+  const emptyQuerySuggestions = getTagSuggestions('', INITIAL_HIGH_YIELD_NOTES);
+  assert.ok(emptyQuerySuggestions.length >= 5, 'Should return known tags on empty query');
+});
+

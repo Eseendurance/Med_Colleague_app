@@ -15,14 +15,15 @@
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <style>
     :root {
-      --primary: #0EA5E9;
-      --primary-dark: #0284C7;
-      --primary-light: #E0F2FE;
-      --dark-slate: #0F172A;
-      --slate-hover: #1E293B;
-      --bg: #F8FAFC;
+      --primary: #0D9488; /* Medical Teal */
+      --primary-dark: #0F766E;
+      --primary-light: #F0FDFA;
+      --primary-blue: #0284C7; /* Clinical Sky */
+      --primary-blue-light: #E0F2FE;
+      --bg: #F8FAFC; /* Soothing Light Canvas */
       --card-bg: #FFFFFF;
       --border: #E2E8F0;
+      --border-subtle: #F1F5F9;
       --text: #0F172A;
       --text-muted: #64748B;
       --success: #10B981;
@@ -31,38 +32,54 @@
       --danger-bg: #FEF2F2;
       --warning: #F59E0B;
       --warning-bg: #FFFBEB;
-      --sidebar-width: 260px;
+      --sidebar-width: 270px;
+      --sidebar-bg: #FFFFFF;
+      --sidebar-text: #334155;
+      --sidebar-hover: #F8FAFC;
     }
 
     [data-theme="dark"] {
       --bg: #0B0F17;
       --card-bg: #151C2C;
       --border: #1E293B;
+      --border-subtle: #1E293B;
       --text: #F1F5F9;
       --text-muted: #94A3B8;
-      --primary-light: #0369A1;
+      --primary-light: #134E4A;
+      --primary-blue-light: #075985;
+      --sidebar-bg: #101623;
+      --sidebar-text: #94A3B8;
+      --sidebar-hover: #1E293B;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; transition: background-color 0.25s ease, color 0.25s ease; }
 
     /* App Wrapper Layout */
     .app-layout { display: flex; min-height: 100vh; width: 100%; position: relative; }
 
     /* Sidebar Navigation */
-    .sidebar { width: var(--sidebar-width); background: var(--dark-slate); color: white; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border); transition: all 0.3s ease; z-index: 90; position: fixed; top: 0; bottom: 0; left: 0; }
-    .sidebar-brand { padding: 20px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .brand-logo { background: linear-gradient(135deg, #0EA5E9, #0284C7); color: white; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; box-shadow: 0 4px 12px rgba(14,165,233,0.3); }
-    .brand-name { font-size: 16px; font-weight: 800; tracking: -0.02em; color: #FFFFFF; }
-    .brand-sub { font-size: 11px; color: #94A3B8; }
+    .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 90; position: fixed; top: 0; bottom: 0; left: 0; box-shadow: 1px 0 3px rgba(0,0,0,0.02); }
+    .sidebar-brand { padding: 20px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+    .brand-logo { background: linear-gradient(135deg, #0D9488, #0284C7); color: white; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; box-shadow: 0 4px 12px rgba(13,148,136,0.25); }
+    .brand-name { font-size: 16px; font-weight: 800; tracking: -0.02em; color: var(--text); }
+    .brand-sub { font-size: 11px; color: var(--text-muted); font-weight: 500; }
 
     .sidebar-menu { padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1; overflow-y: auto; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; color: #94A3B8; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; width: 100%; text-align: left; }
-    .nav-item:hover { background: var(--slate-hover); color: white; }
-    .nav-item.active { background: linear-gradient(135deg, #0EA5E9, #0284C7); color: white; box-shadow: 0 4px 12px rgba(14,165,233,0.25); }
-    .nav-item .icon { font-size: 18px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; color: var(--sidebar-text); font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; border: none; background: transparent; width: 100%; text-align: left; }
+    .nav-item:hover { background: var(--sidebar-hover); color: var(--primary); transform: translateX(2px); }
+    .nav-item.active { background: linear-gradient(135deg, #0D9488, #0284C7); color: white; box-shadow: 0 4px 12px rgba(13,148,136,0.25); }
+    .nav-item.active:hover { color: white; transform: none; }
+    .nav-item .icon { font-size: 17px; }
 
-    .sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); }
+    .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); background: var(--border-subtle); }
+
+    /* Theme Toggle Switch */
+    .theme-switch-container { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 10px; background: var(--card-bg); border: 1px solid var(--border); margin-top: 10px; }
+    .theme-switch-btn { width: 44px; height: 24px; background: #CBD5E1; border-radius: 12px; border: none; cursor: pointer; position: relative; transition: background 0.25s ease; padding: 2px; display: flex; align-items: center; }
+    .theme-switch-btn.active { background: #0D9488; }
+    .theme-switch-knob { width: 20px; height: 20px; background: white; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.25s ease; transform: translateX(0); }
+    .theme-switch-btn.active .theme-switch-knob { transform: translateX(20px); }
 
     /* Main Content Area */
     .main-wrapper { margin-left: var(--sidebar-width); flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -73,10 +90,9 @@
     .mobile-toggle { display: none; background: transparent; border: none; font-size: 20px; color: var(--text); cursor: pointer; }
     .page-title { font-size: 17px; font-weight: 700; color: var(--text); }
 
-    .header-right { display: flex; align-items: center; gap: 16px; }
-    .theme-toggle-btn { background: var(--bg); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); }
+    .header-right { display: flex; align-items: center; gap: 14px; }
     .user-pill { display: flex; align-items: center; gap: 10px; background: var(--bg); padding: 5px 12px 5px 6px; border-radius: 20px; border: 1px solid var(--border); }
-    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: #0EA5E9; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: #0D9488; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
     .pro-badge { background: linear-gradient(135deg, #10B981, #059669); color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; text-transform: uppercase; }
 
     /* Content Area Container */
@@ -84,22 +100,42 @@
 
     /* UI Components */
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
     .card-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
     
-    .btn { background: linear-gradient(135deg, #0EA5E9, #0284C7); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
-    .btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(14,165,233,0.25); }
+    .btn { background: linear-gradient(135deg, #0D9488, #0284C7); color: white; border: none; padding: 9px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn:hover { opacity: 0.94; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,148,136,0.25); }
+    .btn:active { transform: scale(0.98); }
     .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-    .btn-secondary:hover { background: var(--border); }
+    .btn-secondary:hover { background: var(--border-subtle); color: var(--text); }
     .btn-success { background: linear-gradient(135deg, #10B981, #059669); }
+    .btn-primary { background: linear-gradient(135deg, #0D9488, #0284C7); }
 
-    .action-pill { background: var(--primary-light); color: var(--primary-dark); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(14,165,233,0.3); transition: all 0.2s; margin-right: 6px; margin-bottom: 6px; }
-    .action-pill:hover { background: #BAE6FD; transform: translateY(-1px); }
+    .action-pill { background: var(--primary-light); color: var(--primary-dark); padding: 5px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(13,148,136,0.25); transition: all 0.15s ease; }
+    .action-pill:hover, .action-pill.active { background: #CCFBF1; border-color: #0D9488; transform: translateY(-1px); }
+
+    /* Sound Wave Animation for Google Voice */
+    .sound-wave { display: inline-flex; align-items: center; gap: 2px; height: 12px; margin-left: 4px; }
+    .sound-wave span { width: 2.5px; background: currentColor; border-radius: 2px; animation: soundWaveAnim 0.8s infinite ease-in-out; }
+    .sound-wave span:nth-child(1) { height: 4px; animation-delay: 0.1s; }
+    .sound-wave span:nth-child(2) { height: 12px; animation-delay: 0.2s; }
+    .sound-wave span:nth-child(3) { height: 7px; animation-delay: 0.3s; }
+    .sound-wave span:nth-child(4) { height: 10px; animation-delay: 0.4s; }
+    @keyframes soundWaveAnim { 0%, 100% { height: 3px; } 50% { height: 12px; } }
+
+    /* Clinical Note Card Styles */
+    .note-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; position: relative; transition: all 0.2s ease; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; }
+    .note-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); border-color: #0D9488; }
+    .note-card.pinned { border-top: 3px solid #0D9488; background: linear-gradient(180deg, var(--primary-light) 0%, var(--card-bg) 20%); }
+    .note-title { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 6px; line-height: 1.4; }
+    .note-content { font-size: 12.5px; color: var(--text); line-height: 1.55; flex-grow: 1; margin-bottom: 12px; opacity: 0.92; }
+    .note-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 10px; font-size: 11px; }
 
     /* Split Screen Layout for AI Tutor */
     .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
     /* Tutor Avatar Frame */
-    .tutor-avatar-card { background: #0F172A; border-radius: 16px; overflow: hidden; position: relative; height: 300px; border: 2px solid #0EA5E9; box-shadow: 0 8px 24px rgba(15,23,42,0.15); display: flex; align-items: center; justify-content: center; }
+    .tutor-avatar-card { background: #0F172A; border-radius: 16px; overflow: hidden; position: relative; height: 300px; border: 2px solid #0D9488; box-shadow: 0 8px 24px rgba(15,23,42,0.15); display: flex; align-items: center; justify-content: center; }
     .tutor-img { width: 100%; height: 100%; object-fit: cover; }
     .tutor-hud-tag { position: absolute; top: 12px; left: 12px; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.1); }
     .pulse-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; animation: pulse 1.5s infinite; }
@@ -107,7 +143,7 @@
 
     .chat-container { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; height: 260px; overflow-y: auto; margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
     .msg-bubble { padding: 12px 16px; border-radius: 14px; font-size: 13.5px; line-height: 1.5; max-width: 90%; }
-    .msg-tutor { background: var(--primary-light); color: var(--primary-dark); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(14,165,233,0.2); }
+    .msg-tutor { background: var(--primary-light); color: var(--primary-dark); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(13,148,136,0.2); }
     .msg-student { background: var(--card-bg); color: var(--text); align-self: flex-end; border-bottom-right-radius: 4px; border: 1px solid var(--border); }
 
     /* QBank UI Components */
@@ -132,8 +168,8 @@
     .stat-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
     /* Progress bar */
-    .progress-bar-bg { background: var(--border); height: 10px; border-radius: 5px; overflow: hidden; margin-top: 6px; }
-    .progress-bar-fill { background: linear-gradient(90deg, var(--primary), var(--success)); height: 100%; transition: width 0.5s ease; }
+    .progress-bar-bg { background: var(--border); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .progress-bar-fill { background: linear-gradient(90deg, var(--primary), #0284C7); height: 100%; transition: width 0.5s ease; }
 
     /* Skeleton Pulse Loader */
     .skeleton-box { background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%); background-size: 200% 100%; animation: skeleton-pulse 1.5s infinite; border-radius: 8px; }
@@ -159,6 +195,68 @@
     /* Utility */
     .hidden { display: none !important; }
 
+    /* Lecture & Tutor Studio Styles */
+    .tutor-tab-bar { display: flex; gap: 8px; border-bottom: 2px solid var(--border); margin-bottom: 20px; padding-bottom: 8px; flex-wrap: wrap; }
+    .tutor-tab-btn { background: transparent; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; }
+    .tutor-tab-btn:hover { background: var(--bg); color: var(--text); }
+    .tutor-tab-btn.active { background: var(--primary-light); color: var(--primary-dark); border-bottom: 3px solid #0D9488; }
+    
+    .lecture-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .lecture-card { background: var(--card-bg); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; justify-content: space-between; }
+    .lecture-card:hover { border-color: #0D9488; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(13,148,136,0.12); }
+    .lecture-card.active { border-color: #0D9488; background: linear-gradient(180deg, var(--primary-light) 0%, var(--card-bg) 25%); box-shadow: 0 0 0 2px rgba(13,148,136,0.25); }
+
+    .tag-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; border: 1px solid transparent; transition: all 0.15s ease; }
+    .color-swatch { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.15s; }
+    .color-swatch:hover { transform: scale(1.15); }
+    .color-swatch.selected { border-color: #0F172A; box-shadow: 0 0 0 2px white; }
+
+    /* Tag Auto-Suggestion Dropdown Styles */
+    .tag-suggestions-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+      z-index: 10000;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 6px;
+    }
+    .tag-suggestion-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text);
+      transition: background 0.15s ease;
+      user-select: none;
+    }
+    .tag-suggestion-item:hover, .tag-suggestion-item.active {
+      background: var(--bg);
+      outline: none;
+    }
+    .tag-suggestion-match {
+      font-weight: 800;
+      color: #0D9488;
+      text-decoration: underline;
+    }
+    .tag-suggestion-count {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      background: var(--border);
+      padding: 1px 6px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); }
@@ -180,28 +278,37 @@
           <div class="brand-logo">🩺</div>
           <div>
             <div class="brand-name">MedColleague</div>
-            <div class="brand-sub">Clinical Educator & Board SaaS</div>
+            <div class="brand-sub">Clinical & Board Exam Platform</div>
           </div>
+        </div>
+
+        <!-- System Status & Compliance -->
+        <div style="margin: 12px 14px 4px 14px; padding: 7px 10px; background: var(--primary-light); border-radius: 10px; border: 1px solid rgba(13,148,136,0.25); display: flex; align-items: center; gap: 8px;">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; animation: pulse 1.5s infinite;"></span>
+          <span style="font-size: 11px; font-weight: 700; color: var(--primary-dark);">99.98% Operational • HIPAA Protected</span>
         </div>
 
         <nav class="sidebar-menu">
           <button class="nav-item active" onclick="switchNav('dashboard')">
-            <span class="icon">🏠</span> <span>Dashboard</span>
+            <span class="icon">🏠</span> <span>Dashboard Overview</span>
+          </button>
+          <button class="nav-item" onclick="scrollToNotes()">
+            <span class="icon">📝</span> <span>My Clinical Notes</span> <span class="action-pill" style="margin-left:auto; font-size:10px; padding:1px 6px;">New</span>
           </button>
           <button class="nav-item" onclick="switchNav('tutor')">
-            <span class="icon">🎓</span> <span>AI Tutor Studio</span>
+            <span class="icon">🎓</span> <span>Dr. Ese AI Tutor</span>
           </button>
           <button class="nav-item" onclick="switchNav('search')">
-            <span class="icon">🔍</span> <span>MedSearch AI (Perplexity)</span>
+            <span class="icon">🔍</span> <span>MedSearch AI (Evidence)</span>
           </button>
           <button class="nav-item" onclick="switchNav('qbank')">
-            <span class="icon">📝</span> <span>USMLE/NCLEX QBank</span>
+            <span class="icon">📋</span> <span>USMLE / NCLEX QBank</span>
           </button>
           <button class="nav-item" onclick="switchNav('flashcards')">
             <span class="icon">⚡</span> <span>SM-2 Flashcards</span>
           </button>
           <button class="nav-item" onclick="switchNav('calculators')">
-            <span class="icon">🧪</span> <span>Clinical Tools</span>
+            <span class="icon">🧪</span> <span>Clinical Tools & eGFR</span>
           </button>
           <button class="nav-item" onclick="switchNav('analytics')">
             <span class="icon">📊</span> <span>Analytics & Readiness</span>
@@ -210,13 +317,29 @@
       </div>
 
       <div class="sidebar-footer">
-        <div style="font-size:11px; color:#94A3B8; margin-bottom:8px;">STUDY GOAL THIS WEEK</div>
-        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold; color:white; margin-bottom:4px;">
-          <span>142 / 200 Questions</span>
-          <span>71%</span>
+        <!-- 14-Day Trial Tracker -->
+        <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+            <span>PRO TRIAL STATUS</span>
+            <span style="color: #0D9488;">11 Days Left</span>
+          </div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 78%;"></div></div>
+          <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 5px;">142 / 200 Weekly Target (71%)</div>
         </div>
-        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 71%;"></div></div>
-        <button onclick="openDevModal()" style="background:transparent; border:none; color:#64748B; font-size:11px; margin-top:12px; cursor:pointer; text-decoration:underline; display:block;">⚙️ Developer & API Hub</button>
+
+        <!-- Light / Dark Mode Toggle Switch -->
+        <div class="theme-switch-container">
+          <span id="sidebar-theme-text" style="font-size: 12px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px;">
+            ☀️ Light Theme
+          </span>
+          <button onclick="toggleTheme()" class="theme-switch-btn" id="theme-switch-btn" title="Toggle Light / Dark Mode" aria-label="Toggle Light and Dark Mode">
+            <span class="theme-switch-knob"></span>
+          </button>
+        </div>
+
+        <button onclick="openDevModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 11px; margin-top: 10px; cursor: pointer; text-decoration: underline; display: block; text-align: center; width: 100%;">
+          ⚙️ Developer & API Hub
+        </button>
       </div>
     </aside>
 
@@ -231,14 +354,27 @@
         </div>
 
         <div class="header-right">
-          <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">🌙</button>
-          <div style="font-size:18px; cursor:pointer;" title="Notifications">🔔</div>
+          <!-- Live Voice Engine Badge -->
+          <div style="display: flex; align-items: center; gap: 6px; background: var(--primary-light); color: var(--primary-dark); padding: 4px 10px; border-radius: 16px; font-size: 11px; font-weight: 700;" title="Google Voice Speech Synthesis Ready">
+            <span>🔊 Google Voice</span>
+            <span id="global-voice-wave" class="sound-wave hidden">
+              <span></span><span></span><span></span><span></span>
+            </span>
+          </div>
+
+          <!-- 14-Day Trial Indicator -->
+          <div style="display: flex; align-items: center; gap: 6px; background: var(--bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 16px; font-size: 11.5px; font-weight: 700; color: var(--text);">
+            <span>⏳</span> <span>11d Pro Trial</span>
+          </div>
+
+          <!-- Quick Theme Toggle Icon -->
+          <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme (Light / Dark)">🌓</button>
           
           <div class="user-pill">
-            <div class="user-avatar">A</div>
+            <div class="user-avatar">E</div>
             <div>
-              <div style="font-size:12px; font-weight:700; color:var(--text);">Dr. Alex</div>
-              <div class="pro-badge">PRO PLAN</div>
+              <div style="font-size: 12px; font-weight: 700; color: var(--text);">Dr. Ese</div>
+              <div class="pro-badge">PRO TRIAL</div>
             </div>
           </div>
         </div>
@@ -246,8 +382,8 @@
 
       <!-- EDUCATIONAL USE DISCLAIMER BANNER -->
       <div class="compliance-banner">
-        <span>⚠️ <strong>Educational & Board Exam Prep Notice</strong>: MedColleague content is for study and USMLE/NCLEX exam preparation only, not direct clinical decision support or patient care.</span>
-        <span style="cursor:pointer; font-size:14px; margin-left:12px;" onclick="this.parentElement.style.display='none'">✕</span>
+        <span>🔒 <strong>HIPAA-Compliant Educational Notice</strong>: MedColleague is designed for clinical concept review, USMLE/ABIM board exam prep, and evidence synthesis. No Protected Health Information (PHI) is stored.</span>
+        <span style="cursor: pointer; font-size: 14px; margin-left: 12px;" onclick="this.parentElement.style.display='none'">✕</span>
       </div>
 
       <!-- CONTENT AREA -->
@@ -255,15 +391,17 @@
 
         <!-- SECTION 1: DASHBOARD OVERVIEW -->
         <section id="section-dashboard">
-          <div style="background: linear-gradient(135deg, #0F172A, #0EA5E9); border-radius:20px; padding:24px; color:white; margin-bottom:20px; box-shadow: 0 10px 25px rgba(14,165,233,0.2);">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <!-- Hero Banner with Clinical Design -->
+          <div style="background: linear-gradient(135deg, #0D9488 0%, #0284C7 100%); border-radius: 20px; padding: 24px; color: white; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(13,148,136,0.2); position: relative; overflow: hidden;">
+            <div style="position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
               <div>
-                <span style="background:rgba(255,255,255,0.2); padding:4px 10px; border-radius:12px; font-size:11px; font-weight:700;">🔥 14-DAY STUDY STREAK</span>
-                <h2 style="font-size:24px; font-weight:800; margin-top:8px;">Welcome back, Dr. Alex!</h2>
-                <p style="font-size:13.5px; opacity:0.9; margin-top:4px;">You are on track for USMLE Step 2 CK. Target Exam Date: <strong>Oct 15, 2026</strong> (76 days remaining).</p>
+                <span style="background: rgba(255,255,255,0.22); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">🔥 14-DAY STUDY STREAK • USMLE STEP 2 CK</span>
+                <h2 style="font-size: 24px; font-weight: 800; margin-top: 8px;">Welcome back, Dr. Ese!</h2>
+                <p style="font-size: 13.5px; opacity: 0.95; margin-top: 4px;">You have <strong>4 high-yield clinical concept notes</strong> saved. Exam countdown: <strong>76 days</strong>.</p>
               </div>
-              <div>
-                <button class="btn btn-success" onclick="switchNav('qbank')">▶️ Resume QBank Practice</button>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-success" onclick="openNewNoteModal()" style="background: white; color: #0D9488; font-weight: 800;">➕ Jot Down Concept</button>
+                <button class="btn btn-secondary" onclick="switchNav('qbank')" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.3);">▶️ Resume Practice</button>
               </div>
             </div>
           </div>
@@ -271,34 +409,93 @@
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-label">Predicted Board Score</div>
-              <div class="stat-value" style="color:#0EA5E9;">248</div>
-              <div style="font-size:11px; color:var(--success); font-weight:700;">↑ 6 pts this month</div>
+              <div class="stat-value" style="color: #0D9488;">248</div>
+              <div style="font-size: 11px; color: var(--success); font-weight: 700;">↑ 6 pts this month</div>
             </div>
 
             <div class="stat-card">
               <div class="stat-label">Questions Completed</div>
               <div class="stat-value">1,420</div>
-              <div style="font-size:11px; color:var(--text-muted);">84.2% Overall Accuracy</div>
+              <div style="font-size: 11px; color: var(--text-muted);">84.2% Overall Accuracy</div>
             </div>
 
             <div class="stat-card">
-              <div class="stat-label">Cards Reviewed</div>
-              <div class="stat-value" style="color:#10B981;">380</div>
-              <div style="font-size:11px; color:var(--text-muted);">92% Retention Rate</div>
+              <div class="stat-label">Saved Concept Notes</div>
+              <div class="stat-value" style="color: #0284C7;" id="dash-notes-stat-count">4</div>
+              <div style="font-size: 11px; color: var(--success); font-weight: 700;">All synced to SM-2</div>
             </div>
 
             <div class="stat-card">
               <div class="stat-label">Weakest Organ System</div>
-              <div class="stat-value" style="color:#EF4444; font-size:22px; margin-top:12px;">Renal / Acid-Base</div>
-              <div style="font-size:11px; color:var(--danger); font-weight:700;">Requires 20 review cards</div>
+              <div class="stat-value" style="color: #EF4444; font-size: 20px; margin-top: 12px;">Renal / Acid-Base</div>
+              <div style="font-size: 11px; color: var(--danger); font-weight: 700;">Requires 20 review cards</div>
+            </div>
+          </div>
+
+          <!-- NEW: MY CLINICAL NOTES & MEDICAL CONCEPTS CARD -->
+          <div class="card" id="my-notes-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 22px;">📝</span>
+                <div>
+                  <h3 style="font-size: 16px; font-weight: 800; color: var(--text); margin: 0;">My Clinical Notes & Medical Concepts</h3>
+                  <p style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0 0;">Jot down quick diagnostic pearls, contraindications, and high-yield board concepts.</p>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="openNewNoteModal()" style="font-size: 12px; padding: 7px 14px;">
+                  ➕ Add Medical Note
+                </button>
+                <button class="btn btn-secondary" onclick="startNoteVoiceDictation()" id="dictate-note-btn" style="font-size: 12px; padding: 7px 14px;">
+                  🎤 Dictate Note
+                </button>
+                <button class="btn btn-secondary" onclick="exportNotesPDF()" style="font-size: 12px; padding: 7px 14px;">
+                  📄 Export Notes
+                </button>
+              </div>
+            </div>
+
+            <!-- Notes Search & Filter Bar -->
+            <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;">
+              <input type="text" id="notes-search-input" placeholder="🔍 Search clinical notes by concept, drug, or organ system..." oninput="filterNotes(this.value)" style="flex-grow: 1; min-width: 240px; padding: 9px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; background: var(--bg); color: var(--text);">
+              
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="notes-filter-pills">
+                <button class="action-pill active" onclick="setNoteCategoryFilter('ALL', this)">All (<span id="count-all-notes">4</span>)</button>
+                <button class="action-pill" onclick="setNoteCategoryFilter('Cardiology', this)">Cardiology</button>
+                <button class="action-pill" onclick="setNoteCategoryFilter('Renal / Acid-Base', this)">Renal</button>
+                <button class="action-pill" onclick="setNoteCategoryFilter('Endocrinology', this)">Endocrine</button>
+                <button class="action-pill" onclick="setNoteCategoryFilter('PINNED', this)">📌 Pinned</button>
+              </div>
+            </div>
+
+            <!-- Category Tag Filter Bar (Color-Coded) -->
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px;">
+              <span style="font-size: 11.5px; font-weight: 800; color: var(--primary-dark); display: inline-flex; align-items: center; gap: 4px;">
+                🏷️ Filter by Tag:
+              </span>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="notes-tag-filter-pills">
+                <button class="action-pill active" onclick="setNoteTagFilter('ALL', this)">All Tags</button>
+                <button class="action-pill" style="border-left: 3px solid #EF4444; color: #991B1B;" onclick="setNoteTagFilter('Emergency', this)">🚨 Emergency</button>
+                <button class="action-pill" style="border-left: 3px solid #7C3AED; color: #5B21B6;" onclick="setNoteTagFilter('Pharmacology', this)">💊 Pharmacology</button>
+                <button class="action-pill" style="border-left: 3px solid #D97706; color: #92400E;" onclick="setNoteTagFilter('Review Needed', this)">⚠️ Review Needed</button>
+                <button class="action-pill" style="border-left: 3px solid #0D9488; color: #115E59;" onclick="setNoteTagFilter('High-Yield', this)">⚡ High-Yield</button>
+                <button class="action-pill" style="border-left: 3px solid #0284C7; color: #075985;" onclick="setNoteTagFilter('Diagnostic', this)">🩺 Diagnostic</button>
+                <button class="action-pill" style="border-left: 3px solid #BE123C; color: #9F1239;" onclick="setNoteTagFilter('Contraindication', this)">🚫 Contraindication</button>
+              </div>
+            </div>
+
+            <!-- Notes Grid Container -->
+            <div id="notes-grid-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px;">
+              <!-- Dynamically populated note cards -->
             </div>
           </div>
 
           <!-- Quick Action Shortcuts -->
           <div class="card">
-            <div class="card-title">🚀 Quick Study Actions</div>
-            <div style="display:flex; flex-wrap:wrap; gap:10px;">
-              <button class="btn" onclick="switchNav('tutor')">🎓 Ask Dr. Ese (AI Tutor)</button>
+            <div class="card-title">🚀 Quick Clinical Actions</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+              <button class="btn" onclick="openNewNoteModal()">📝 Jot Medical Concept</button>
+              <button class="btn btn-secondary" onclick="switchNav('tutor')">🎓 Ask Dr. Ese (AI Tutor)</button>
               <button class="btn btn-secondary" onclick="switchNav('search')">🔍 MedSearch AI (Perplexity)</button>
               <button class="btn btn-secondary" onclick="switchNav('qbank')">📝 Launch 10-Question Block</button>
               <button class="btn btn-secondary" onclick="switchNav('flashcards')">⚡ Review Due Cards (14)</button>
@@ -307,86 +504,277 @@
           </div>
         </section>
 
-        <!-- SECTION 2: AI CLINICAL TUTOR (DR. ESE STUDIO) -->
+        <!-- SECTION 2: AI CLINICAL TUTOR & LECTURE STUDIO (DR. ESE STUDIO) -->
         <section id="section-tutor" class="hidden">
-          <div class="split-layout">
-            
-            <!-- Left Panel: Document Upload & Case Viewer -->
-            <div class="card">
-              <div class="card-title">📄 Clinical Case & Vignette Upload</div>
-              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">Upload medical PDFs, ECG reports, or case notes for instant step-by-step interactive tutoring with Dr. Ese.</p>
-
-              <!-- Anti-PHI Compliance Warning -->
-              <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:10px; padding:8px 12px; margin-bottom:12px; font-size:11.5px; color:#B45309;">
-                🔒 <strong>HIPAA & Anti-PHI Warning</strong>: Do not upload protected patient health information (names, DOBs, MRNs). Ensure all case notes are de-identified.
+          <!-- Studio Header Banner -->
+          <div style="background: linear-gradient(135deg, #0F766E 0%, #0369A1 100%); border-radius: 18px; padding: 20px 24px; color: white; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(15,118,110,0.18); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div style="width: 56px; height: 56px; border-radius: 50%; overflow: hidden; border: 2.5px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
+                <img src="/drawable/ai_tutor_avatar_1785483426714.jpg" style="width: 100%; height: 100%; object-fit: cover;" alt="Dr. Ese AI Tutor" onerror="this.src='https://images.unsplash.com/photo-1594824813566-788b22730b62?w=800&auto=format&fit=crop&q=80'">
               </div>
-
-              <!-- PDF File Upload Interface -->
-              <div style="margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                <input type="file" id="pdf-file-picker" accept=".pdf,.txt" style="display:none;" onchange="handlePDFFileSelect(event)">
-                <button class="btn btn-secondary" style="font-size:11.5px; padding:6px 12px;" onclick="document.getElementById('pdf-file-picker').click()">📁 Select Case PDF File (Max 10MB)</button>
-                <span id="pdf-file-status" style="font-size:11.5px; color:var(--text-muted);">No file selected</span>
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="background: rgba(255,255,255,0.22); padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 800;">DR. ESE • SENIOR CLINICAL EDUCATOR</span>
+                  <span style="font-size: 11px; opacity: 0.9;">USMLE / ABIM / Board Prep</span>
+                </div>
+                <h2 style="font-size: 22px; font-weight: 800; margin: 4px 0 2px 0;">Dr. Ese Medical Lecture & Tutoring Studio</h2>
+                <p style="font-size: 12.5px; opacity: 0.92; margin: 0;">Receive structured high-yield board lectures with voice synthesis, or ask ANY question on medicine and general health.</p>
               </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.35); font-size: 12px; padding: 6px 12px;" onclick="switchTutorTab('lectures', this)">
+                🎓 Board Lectures
+              </button>
+              <button class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.35); font-size: 12px; padding: 6px 12px;" onclick="switchTutorTab('qa', this)">
+                💬 Ask Any Medical Question
+              </button>
+            </div>
+          </div>
 
-              <div style="margin-bottom:12px;">
-                <span style="font-size:11.5px; font-weight:bold; color:var(--primary-dark);">Sample Cases:</span><br>
-                <span class="action-pill" onclick="loadSample('ecg')">📄 ECG_Arrhythmias.pdf</span>
-                <span class="action-pill" onclick="loadSample('renal')">📄 AcidBase_Renal.pdf</span>
-                <span class="action-pill" onclick="loadSample('hf')">📄 HeartFailure_GDMT.pdf</span>
+          <!-- Studio Navigation Tabs -->
+          <div class="tutor-tab-bar">
+            <button class="tutor-tab-btn active" id="tab-btn-lectures" onclick="switchTutorTab('lectures', this)">
+              <span>🎓</span> <span>Masterclass Lectures from Dr. Ese</span>
+            </button>
+            <button class="tutor-tab-btn" id="tab-btn-qa" onclick="switchTutorTab('qa', this)">
+              <span>💬</span> <span>Ask Dr. Ese (Medicine & General Health Q&A)</span>
+            </button>
+            <button class="tutor-tab-btn" id="tab-btn-cases" onclick="switchTutorTab('cases', this)">
+              <span>📄</span> <span>Case Vignette & PDF Walkthrough</span>
+            </button>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- TAB 1: MASTERCLASS LECTURES FROM DR. ESE -->
+          <!-- ========================================== -->
+          <div id="tutor-panel-lectures">
+            <!-- Custom On-Demand Lecture Request Bar -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                <div style="font-size: 14px; font-weight: 800; color: var(--text);">
+                  🎙️ Request an On-Demand Lecture from Dr. Ese
+                </div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">
+                  Dr. Ese delivers a structured, voice-ready lecture on ANY medical topic or clinical syndrome
+                </div>
               </div>
-
-              <textarea id="tutor-doc-input" rows="5" placeholder="Paste medical case text, PDF notes, or lab values here..."></textarea>
-
-              <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
-                <button class="btn" onclick="startTutorWalkthrough()">▶️ Start Tutoring Walkthrough</button>
-                <button class="btn btn-success" onclick="runVignettePipeline()">⚡ Vignette-to-Everything Pipeline</button>
-              </div>
-
-              <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:12px;">
-                <div style="font-size:12px; font-weight:bold; color:var(--text-muted); margin-bottom:6px;">QUICK AI ACTIONS:</div>
-                <span class="action-pill" onclick="quickAiAction('summarize')">✨ Summarize Diagnosis</span>
-                <span class="action-pill" onclick="quickAiAction('questions')">📝 Generate 5 QBank Items</span>
-                <span class="action-pill" onclick="quickAiAction('differential')">🔬 Explain Differential</span>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="custom-lecture-topic-input" placeholder="Enter ANY topic (e.g. Diabetic Ketoacidosis, WPW syndrome, Sepsis Bundle, Kawasaki Disease)..." style="flex-grow: 1; min-width: 260px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 13.5px; background: var(--bg); color: var(--text);" onkeydown="if(event.key==='Enter'){event.preventDefault();deliverCustomLecture();}">
+                <button class="btn btn-primary" onclick="deliverCustomLecture()" style="font-weight: 800; padding: 10px 18px;">
+                  🎓 Deliver Lecture
+                </button>
               </div>
             </div>
 
-            <!-- Right Panel: Dr. Ese Video Avatar & Live Transcript -->
-            <div class="card">
-              <div class="tutor-avatar-card">
-                <img src="/drawable/ai_tutor_avatar_1785483426714.jpg" class="tutor-img" alt="Dr. Ese AI Tutor" onerror="this.src='https://images.unsplash.com/photo-1594824813566-788b22730b62?w=800&auto=format&fit=crop&q=80'">
-                <div class="tutor-hud-tag">
-                  <div class="pulse-dot"></div>
-                  <span>DR. ESE • LIVE SENIOR AI EDUCATOR</span>
-                </div>
+            <!-- Featured High-Yield Lecture Catalog -->
+            <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-size: 13px; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: 0.05em;">
+                Featured High-Yield Board Lectures:
               </div>
-
-              <!-- Voice Playback Control Bar -->
-              <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg); padding:8px 14px; border-radius:10px; border:1px solid var(--border); margin-top:10px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:12px; font-weight:bold; color:var(--primary-dark);">🔊 Voice Controls:</span>
-                  <button class="btn btn-secondary" style="font-size:11px; padding:3px 8px;" onclick="speakTutorVoice()">▶️ Speak</button>
-                  <button class="btn btn-secondary" style="font-size:11px; padding:3px 8px;" onclick="stopTutorVoice()">⏸️ Stop</button>
-                </div>
-                <div style="display:flex; align-items:center; gap:4px; font-size:11px; color:var(--text-muted);">
-                  <span>Speed:</span>
-                  <button class="btn btn-secondary" style="font-size:10px; padding:2px 6px;" onclick="setVoiceSpeed(1.0)">1.0x</button>
-                  <button class="btn btn-secondary" style="font-size:10px; padding:2px 6px;" onclick="setVoiceSpeed(1.25)">1.25x</button>
-                  <button class="btn btn-secondary" style="font-size:10px; padding:2px 6px;" onclick="setVoiceSpeed(1.5)">1.5x</button>
-                </div>
-              </div>
-
-              <div class="chat-container" id="tutor-chat-box">
-                <div class="msg-bubble msg-tutor">
-                  👩‍🏫 <strong>Dr. Ese</strong>: Welcome! I am Dr. Ese, your senior medical professor and AI board exam tutor. Select a sample case on the left or paste your clinical vignette, and I will guide you step-by-step!
-                </div>
-              </div>
-
-              <div style="display:flex; gap:8px; margin-top:12px;">
-                <input type="text" id="student-q-input" placeholder="Ask Dr. Ese a question..." style="flex-grow:1;">
-                <button class="btn" onclick="sendStudentQuestion()">Send</button>
-              </div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Select a lecture to start listening</div>
             </div>
 
+            <div class="lecture-grid" id="lectures-catalog-grid">
+              <!-- Dynamically populated from DR_ESE_LECTURES -->
+            </div>
+
+            <!-- Live Lecture Theater -->
+            <div class="card" id="lecture-theater-card" style="margin-top: 20px; border: 2px solid #0D9488;">
+              <!-- Theater Header -->
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span id="theater-system-badge" style="background: #E0F2FE; color: #0369A1; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 8px; text-transform: uppercase;">
+                      Renal / Acid-Base
+                    </span>
+                    <span id="theater-tag-badge" style="background: #FEF3C7; color: #92400E; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 8px;">
+                      ⚡ High-Yield
+                    </span>
+                    <span style="font-size: 11.5px; color: var(--text-muted);" id="theater-duration">
+                      ⏱️ 6-Min Board Masterclass
+                    </span>
+                  </div>
+                  <h3 id="theater-lecture-title" style="font-size: 20px; font-weight: 800; color: var(--text); margin: 0;">
+                    Acid-Base Mastery & Winter's Formula Masterclass
+                  </h3>
+                  <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                    Lecturer: <strong>Dr. Ese, MD</strong> • Senior Medical Professor & USMLE Board Review Specialist
+                  </div>
+                </div>
+
+                <!-- Voice Audio Controls for Lecture -->
+                <div style="display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 8px 14px; border-radius: 12px; border: 1px solid var(--border); flex-wrap: wrap;">
+                  <button class="btn btn-primary" id="lecture-voice-btn" onclick="toggleLectureAudio()" style="font-size: 12px; padding: 6px 14px; font-weight: 700;">
+                    <span id="lecture-voice-btn-icon">🔊</span> <span id="lecture-voice-btn-text">Listen with Google Voice</span>
+                  </button>
+                  <button class="btn btn-secondary" onclick="stopLectureVoice()" style="font-size: 11px; padding: 6px 10px;">
+                    ⏹️ Stop
+                  </button>
+                  <div style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-muted); margin-left: 4px;">
+                    <span>Speed:</span>
+                    <button class="btn btn-secondary" style="font-size: 10px; padding: 3px 7px;" onclick="setLectureSpeed(1.0)">1.0x</button>
+                    <button class="btn btn-secondary" style="font-size: 10px; padding: 3px 7px;" onclick="setLectureSpeed(1.25)">1.25x</button>
+                    <button class="btn btn-secondary" style="font-size: 10px; padding: 3px 7px;" onclick="setLectureSpeed(1.5)">1.5x</button>
+                  </div>
+                  <div id="lecture-audio-wave" class="sound-wave hidden" style="margin-left: 6px;">
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lecture Content Body -->
+              <div id="theater-lecture-body" style="font-size: 14px; line-height: 1.7; color: var(--text); padding: 4px 6px;">
+                <!-- Dynamically rendered lecture text -->
+              </div>
+
+              <!-- Lecture Action Bar -->
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--border); padding-top: 16px; margin-top: 20px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <button class="btn btn-success" onclick="saveActiveLectureAsNote()" style="font-size: 12px; padding: 8px 16px;">
+                    📝 Save Lecture to My Notes
+                  </button>
+                  <button class="btn btn-secondary" onclick="convertActiveLectureToFlashcard()" style="font-size: 12px; padding: 8px 16px; color: #0D9488;">
+                    ⚡ Add Takeaway to Flashcards
+                  </button>
+                </div>
+                <div>
+                  <button class="btn btn-secondary" onclick="askFollowUpOnLecture()" style="font-size: 12px; padding: 8px 16px;">
+                    💬 Ask Dr. Ese a Question on this Lecture ➔
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- TAB 2: GENERAL MEDICINE & HEALTH Q&A -->
+          <!-- ========================================== -->
+          <div id="tutor-panel-qa" class="hidden">
+            <div class="split-layout">
+              <!-- Left: Clinical Guidelines & Sample Medical Queries -->
+              <div class="card">
+                <div class="card-title">🩺 Ask Dr. Ese Anything in Medicine & Health</div>
+                <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
+                  Ask any question on clinical pathology, pharmacology, pathophysiology, differential diagnosis, diagnostic algorithms, symptoms, or health recommendations. Dr. Ese responds with clinical rigor, evidence synthesis, and board pearls.
+                </p>
+
+                <div style="margin-bottom: 16px;">
+                  <span style="font-size: 11.5px; font-weight: 800; color: var(--primary-dark); display: block; margin-bottom: 8px;">
+                    QUICK SAMPLE MEDICAL QUERIES:
+                  </span>
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <button class="action-pill" style="text-align: left; padding: 8px 12px; border-radius: 10px;" onclick="askPresetQuestion('What are the critical contraindications for AV-nodal blockers in WPW with Atrial Fibrillation?')">
+                      🚨 WPW with AFib AV-Nodal Blocker Traps
+                    </button>
+                    <button class="action-pill" style="text-align: left; padding: 8px 12px; border-radius: 10px;" onclick="askPresetQuestion('How do you calculate and interpret the Serum Anion Gap and Winter\'s formula?')">
+                      🧪 Anion Gap & Winter\'s Formula Calculation
+                    </button>
+                    <button class="action-pill" style="text-align: left; padding: 8px 12px; border-radius: 10px;" onclick="askPresetQuestion('What is the Surviving Sepsis 1-hour bundle and vasopressor hierarchy?')">
+                      💉 Sepsis 1-Hour Bundle & Vasopressors
+                    </button>
+                    <button class="action-pill" style="text-align: left; padding: 8px 12px; border-radius: 10px;" onclick="askPresetQuestion('Explain the 4 pillars of GDMT in Heart Failure with Reduced Ejection Fraction (HFrEF)')">
+                      ❤️ 4 Pillars of GDMT in Heart Failure
+                    </button>
+                    <button class="action-pill" style="text-align: left; padding: 8px 12px; border-radius: 10px;" onclick="askPresetQuestion('What are the maximum safe sodium correction limits in chronic hyponatremia?')">
+                      🩸 Hyponatremia & Osmotic Demyelination Limits
+                    </button>
+                    <button class="action-pill" style="text-align: left; padding: 8px 12px; border-radius: 10px;" onclick="askPresetQuestion('How to distinguish between central and peripheral vertigo at the bedside (HINTS exam)?')">
+                      🧠 HINTS Exam: Central vs Peripheral Vertigo
+                    </button>
+                  </div>
+                </div>
+
+                <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-size: 11.5px; color: var(--text-muted);">
+                  💡 <strong>Medical Student Tip</strong>: Ask Dr. Ese to explain any drug mechanism, compare confusing differentials, or create a diagnostic flowchart!
+                </div>
+              </div>
+
+              <!-- Right: Dr. Ese Interactive Q&A Dialogue -->
+              <div class="card">
+                <div class="tutor-avatar-card" style="height: 180px;">
+                  <img src="/drawable/ai_tutor_avatar_1785483426714.jpg" class="tutor-img" alt="Dr. Ese AI Tutor" onerror="this.src='https://images.unsplash.com/photo-1594824813566-788b22730b62?w=800&auto=format&fit=crop&q=80'">
+                  <div class="tutor-hud-tag">
+                    <div class="pulse-dot"></div>
+                    <span>DR. ESE • LIVE SENIOR AI CLINICIAN & EDUCATOR</span>
+                  </div>
+                </div>
+
+                <div class="chat-container" id="tutor-chat-box" style="height: 380px;">
+                  <div class="msg-bubble msg-tutor">
+                    👩‍🏫 <strong>Dr. Ese</strong>: Hello! I am Dr. Ese, your clinical educator and senior medical professor. Ask me ANY question related to medicine, pathology, pharmacology, diagnosis, or health, and I will break it down thoroughly for you!
+                  </div>
+                </div>
+
+                <!-- Input Row with Voice Dictation & Send -->
+                <div style="display: flex; gap: 8px; margin-top: 12px; align-items: center;">
+                  <input type="text" id="student-q-input" placeholder="Ask Dr. Ese any medicine or health question..." style="flex-grow: 1; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 13.5px; background: var(--bg); color: var(--text);" onkeydown="if(event.key==='Enter'){event.preventDefault();sendStudentQuestion();}">
+                  <button class="btn btn-secondary" onclick="startQuestionDictation()" id="qa-dictate-btn" title="Dictate question with voice" style="padding: 10px 14px;">
+                    🎤
+                  </button>
+                  <button class="btn btn-primary" onclick="sendStudentQuestion()" style="padding: 10px 18px; font-weight: 800;">
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- TAB 3: CASE VIGNETTES & PDF WALKTHROUGH -->
+          <!-- ========================================== -->
+          <div id="tutor-panel-cases" class="hidden">
+            <div class="split-layout">
+              <!-- Left Panel: Document Upload & Case Viewer -->
+              <div class="card">
+                <div class="card-title">📄 Clinical Case & Vignette Upload</div>
+                <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">Upload medical PDFs, ECG reports, or case notes for instant step-by-step interactive tutoring with Dr. Ese.</p>
+
+                <!-- Anti-PHI Compliance Warning -->
+                <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:10px; padding:8px 12px; margin-bottom:12px; font-size:11.5px; color:#B45309;">
+                  🔒 <strong>HIPAA & Anti-PHI Warning</strong>: Do not upload protected patient health information (names, DOBs, MRNs). Ensure all case notes are de-identified.
+                </div>
+
+                <!-- PDF File Upload Interface -->
+                <div style="margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                  <input type="file" id="pdf-file-picker" accept=".pdf,.txt" style="display:none;" onchange="handlePDFFileSelect(event)">
+                  <button class="btn btn-secondary" style="font-size:11.5px; padding:6px 12px;" onclick="document.getElementById('pdf-file-picker').click()">📁 Select Case PDF File (Max 10MB)</button>
+                  <span id="pdf-file-status" style="font-size:11.5px; color:var(--text-muted);">No file selected</span>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                  <span style="font-size:11.5px; font-weight:bold; color:var(--primary-dark);">Sample Cases:</span><br>
+                  <span class="action-pill" onclick="loadSample('ecg')">📄 ECG_Arrhythmias.pdf</span>
+                  <span class="action-pill" onclick="loadSample('renal')">📄 AcidBase_Renal.pdf</span>
+                  <span class="action-pill" onclick="loadSample('hf')">📄 HeartFailure_GDMT.pdf</span>
+                </div>
+
+                <textarea id="tutor-doc-input" rows="5" placeholder="Paste medical case text, PDF notes, or lab values here..."></textarea>
+
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+                  <button class="btn" onclick="startTutorWalkthrough()">▶️ Start Tutoring Walkthrough</button>
+                  <button class="btn btn-success" onclick="runVignettePipeline()">⚡ Vignette-to-Everything Pipeline</button>
+                </div>
+
+                <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:12px;">
+                  <div style="font-size:12px; font-weight:bold; color:var(--text-muted); margin-bottom:6px;">QUICK AI ACTIONS:</div>
+                  <span class="action-pill" onclick="quickAiAction('summarize')">✨ Summarize Diagnosis</span>
+                  <span class="action-pill" onclick="quickAiAction('questions')">📝 Generate 5 QBank Items</span>
+                  <span class="action-pill" onclick="quickAiAction('differential')">🔬 Explain Differential</span>
+                </div>
+              </div>
+
+              <!-- Right Panel: Case Output Container -->
+              <div class="card">
+                <div class="card-title">🔬 Case Analysis & Differential</div>
+                <div id="case-output-container" style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:16px; min-height:300px; font-size:13.5px; line-height:1.6; color:var(--text);">
+                  <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+                    <div style="font-size:32px; margin-bottom:8px;">📋</div>
+                    <div style="font-weight:700;">No active case walkthrough yet.</div>
+                    <div style="font-size:12px; margin-top:4px;">Upload a PDF or select a sample case on the left, then click "Start Tutoring Walkthrough".</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -819,20 +1207,132 @@
       }
     }
 
-    function sendStudentQuestion() {
+    async function sendStudentQuestion(explicitText = null) {
       const input = document.getElementById('student-q-input');
-      const text = input.value.trim();
+      const text = explicitText || (input ? input.value.trim() : '');
       if (!text) return;
 
       const chatBox = document.getElementById('tutor-chat-box');
-      chatBox.innerHTML += `<div class="msg-bubble msg-student">${text}</div>`;
-      input.value = '';
+      if (!chatBox) return;
 
-      setTimeout(() => {
-        const ans = `👩‍🏫 <strong>Dr. Ese</strong>: Great question regarding "${text}"! In board questions, distinguish between immediate initial actions versus definitive gold-standard diagnostic procedures. Distractors usually offer chronic maintenance medications!`;
-        chatBox.innerHTML += `<div class="msg-bubble msg-tutor">${ans}</div>`;
+      chatBox.innerHTML += `<div class="msg-bubble msg-student">${escapeHTML(text)}</div>`;
+      if (input && !explicitText) input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Add loading indicator bubble
+      const loadingId = 'tutor-loading-' + Date.now();
+      chatBox.innerHTML += `
+        <div class="msg-bubble msg-tutor" id="${loadingId}">
+          👩‍🏫 <strong>Dr. Ese</strong>: <span style="opacity:0.8;">Consulting clinical guidelines, pathophysiology & evidence-based recommendations...</span>
+          <span class="sound-wave" style="display:inline-flex; vertical-align:middle; margin-left:8px;"><span></span><span></span><span></span><span></span></span>
+        </div>
+      `;
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const res = await fetch('/api/ai/tutor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ studentQuestion: text, mode: 'general_qa' })
+        });
+        const data = await res.json();
+        const loadingElem = document.getElementById(loadingId);
+        if (loadingElem) loadingElem.remove();
+
+        const answerText = data.explanation || "I have reviewed your query. Always prioritize hemodynamic stability and initial diagnostic evaluation before definitive secondary therapy.";
+        
+        // Convert Markdown formatting to HTML
+        let formattedHTML = formatMedicalMarkdown(answerText);
+
+        const answerId = 'tutor-ans-' + Date.now();
+        chatBox.innerHTML += `
+          <div class="msg-bubble msg-tutor" id="${answerId}">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid rgba(13,148,136,0.15); padding-bottom:6px;">
+              <span style="font-weight:800; color:var(--primary-dark);">👩‍🏫 Dr. Ese, MD</span>
+              <span style="font-size:11px; background:var(--card-bg); padding:2px 8px; border-radius:6px; border:1px solid var(--border);">Clinical Educator</span>
+            </div>
+            <div class="tutor-ans-text" style="font-size:13px; line-height:1.65;">
+              ${formattedHTML}
+            </div>
+            <div style="display:flex; gap:8px; margin-top:12px; border-top:1px solid rgba(13,148,136,0.15); padding-top:8px; flex-wrap:wrap;">
+              <button class="btn btn-secondary" style="font-size:11px; padding:3px 10px;" onclick="speakSpecificText('${escapeQuotes(cleanTextForSpeech(answerText))}', this)">
+                🔊 Listen
+              </button>
+              <button class="btn btn-secondary" style="font-size:11px; padding:3px 10px; color:#0D9488;" onclick="saveAnswerAsConceptNote('${escapeQuotes(text.substring(0, 40))}', '${escapeQuotes(cleanTextForNote(answerText))}')">
+                📝 Save as Concept Note
+              </button>
+            </div>
+          </div>
+        `;
         chatBox.scrollTop = chatBox.scrollHeight;
-      }, 500);
+
+      } catch (err) {
+        console.error('Tutor API error:', err);
+        const loadingElem = document.getElementById(loadingId);
+        if (loadingElem) {
+          loadingElem.innerHTML = `
+            👩‍🏫 <strong>Dr. Ese</strong>: In approaching "${escapeHTML(text)}", remember the first-line diagnostic algorithm: confirm patient stability (ABC), check routine labs and targeted biomarkers, and apply guideline-directed therapy while monitoring for drug interactions.
+          `;
+        }
+      }
+    }
+
+    function askPresetQuestion(queryText) {
+      // Switch to Q&A tab
+      switchTutorTab('qa', document.getElementById('tab-btn-qa'));
+      const input = document.getElementById('student-q-input');
+      if (input) input.value = queryText;
+      sendStudentQuestion(queryText);
+    }
+
+    // Question Dictation
+    function startQuestionDictation() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Voice recognition not supported in this browser.');
+        return;
+      }
+      const btn = document.getElementById('qa-dictate-btn');
+      const input = document.getElementById('student-q-input');
+      const rec = new SpeechRecognition();
+      rec.lang = 'en-US';
+      if (btn) btn.style.background = '#EF4444';
+      rec.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        if (input) input.value = transcript;
+        if (btn) btn.style.background = '';
+        sendStudentQuestion(transcript);
+      };
+      rec.onerror = () => { if (btn) btn.style.background = ''; };
+      rec.onend = () => { if (btn) btn.style.background = ''; };
+      rec.start();
+    }
+
+    function formatMedicalMarkdown(text) {
+      if (!text) return '';
+      return text
+        .replace(/^### (.*$)/gim, '<h4 style="color:var(--primary-dark); font-size:14px; margin:10px 0 4px 0;">$1</h4>')
+        .replace(/^#### (.*$)/gim, '<div style="font-weight:700; color:var(--text); margin-top:8px;">$1</div>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code style="background:var(--bg); padding:2px 6px; border-radius:4px; font-size:12px;">$1</code>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/^\• (.*$)/gim, '• $1<br>');
+    }
+
+    function cleanTextForSpeech(text) {
+      if (!text) return '';
+      return text.replace(/<[^>]*>/g, '').replace(/[#\*`_•]/g, '').trim();
+    }
+
+    function cleanTextForNote(text) {
+      if (!text) return '';
+      return text.replace(/<[^>]*>/g, '').replace(/[#`]/g, '').trim();
+    }
+
+    function escapeQuotes(str) {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
     }
 
     function quickAiAction(action) {
@@ -1859,6 +2359,1558 @@
     function openDevModal() { document.getElementById('dev-modal').classList.add('active'); }
     function closeDevModal() { document.getElementById('dev-modal').classList.remove('active'); }
 
+    // ==========================================
+    // CLINICAL NOTES & CATEGORY TAG ENGINE
+    // ==========================================
+    const NOTE_CATEGORY_CONFIG = {
+      'Emergency': { color: '#B91C1C', bg: '#FEE2E2', border: '#FCA5A5', icon: '🚨' },
+      'Pharmacology': { color: '#6D28D9', bg: '#EDE9FE', border: '#C4B5FD', icon: '💊' },
+      'Review Needed': { color: '#B45309', bg: '#FEF3C7', border: '#FCD34D', icon: '⚠️' },
+      'High-Yield': { color: '#0F766E', bg: '#CCFBF1', border: '#5EEAD4', icon: '⚡' },
+      'Diagnostic': { color: '#0369A1', bg: '#E0F2FE', border: '#7DD3FC', icon: '🩺' },
+      'Contraindication': { color: '#9F1239', bg: '#FFE4E6', border: '#FDA4AF', icon: '🚫' },
+      'Guideline': { color: '#4338CA', bg: '#E0E7FF', border: '#A5B4FC', icon: '📋' },
+      'Cardiology': { color: '#0369A1', bg: '#E0F2FE', border: '#BAE6FD', icon: '❤️' },
+      'Renal / Acid-Base': { color: '#B45309', bg: '#FEF3C7', border: '#FDE68A', icon: '🧪' },
+      'Endocrinology': { color: '#BE185D', bg: '#FCE7F3', border: '#FBCFE8', icon: '🩸' }
+    };
+
+    function getNoteTagStyle(tag) {
+      if (!tag) return { color: '#334155', bg: '#F1F5F9', border: '#CBD5E1', icon: '🏷️' };
+      if (NOTE_CATEGORY_CONFIG[tag]) return NOTE_CATEGORY_CONFIG[tag];
+      const lower = tag.toLowerCase();
+      for (const [k, v] of Object.entries(NOTE_CATEGORY_CONFIG)) {
+        if (k.toLowerCase() === lower || lower.includes(k.toLowerCase())) return v;
+      }
+      return { color: '#334155', bg: '#F1F5F9', border: '#CBD5E1', icon: '🏷️' };
+    }
+
+    let CLINICAL_NOTES = [
+      {
+        id: "note-sglt2i-hfp-ef",
+        title: "SGLT2 Inhibitors Cardiorenal GDMT",
+        content: "Dapagliflozin (DAPA-HF) & Empagliflozin (EMPEROR-Preserved) significantly reduce cardiovascular mortality and heart failure hospitalizations across the entire ejection fraction spectrum (HFrEF, HFmrEF, HFpEF). Crucial: Expect an initial, benign eGFR dip of up to 30% upon initiation due to afferent arteriole vasoconstriction and intraglomerular pressure reduction. Do NOT stop therapy for mild GFR dips.",
+        organSystem: "Cardiology",
+        isHighYield: true,
+        isPinned: true,
+        createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+        tags: ["Pharmacology", "High-Yield", "Guideline", "Cardiology"]
+      },
+      {
+        id: "note-hagma-acid-base",
+        title: "HAGMA Diagnostic Workflow & Delta Gap",
+        content: "Calculate Anion Gap: [Na+] - ([Cl-] + [HCO3-]). Normal: 8-12 mEq/L. High AG (>12) indicates unmeasured organic acids. Etiology mnemonic: GOLDMARK (Glycols, Oxoproline, L-lactate, D-lactate, Methanol, Aspirin, Renal failure, Ketoacidosis). Always check Delta-Delta ratio (ΔAG / ΔHCO3-): Ratio < 1 indicates concurrent Normal Anion Gap Metabolic Acidosis (NAGMA); Ratio > 2 indicates concurrent Metabolic Alkalosis.",
+        organSystem: "Renal / Acid-Base",
+        isHighYield: true,
+        isPinned: true,
+        createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+        tags: ["Diagnostic", "Review Needed", "Renal / Acid-Base"]
+      },
+      {
+        id: "note-wpw-afib-contraindications",
+        title: "Pre-Excited Atrial Fibrillation (WPW Danger)",
+        content: "Presents as irregularly irregular, wide-complex, polymorphic tachycardia in younger patients. PATHOGNOMONIC TRAP: Do NOT administer AV-nodal blocking agents (Beta-blockers, Non-DHP CCBs like Diltiazem/Verapamil, Digoxin, or Adenosine)! Blocking the AV node diverts all conduction down the accessory pathway (Bundle of Kent), precipitating Ventricular Fibrillation and cardiac arrest. Hemodynamically stable: IV Procainamide or Ibutilide.",
+        organSystem: "Cardiology",
+        isHighYield: true,
+        isPinned: false,
+        createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
+        tags: ["Emergency", "Contraindication", "Pharmacology", "Cardiology"]
+      },
+      {
+        id: "note-hyponatremia-osmolality",
+        title: "Hyponatremia Serum Sodium Correction Ceilings",
+        content: "Acute severe symptomatic hyponatremia: Administer 3% hypertonic saline (100 mL boluses over 10 min, up to 3 times) to raise Na+ by 4-6 mEq/L and abort seizures. Chronic hyponatremia: Max correction rate is strictly 8 mEq/L in any 24-hour window (6 mEq/L in high-risk patients with malnutrition or cirrhosis) to prevent irreversible Osmotic Demyelination Syndrome (Central Pontine Myelinolysis).",
+        organSystem: "Endocrinology",
+        isHighYield: true,
+        isPinned: false,
+        createdAt: new Date(Date.now() - 3600000 * 72).toISOString(),
+        tags: ["Emergency", "Review Needed", "High-Yield", "Endocrinology"]
+      }
+    ];
+
+    let currentNotesFilter = "ALL";
+    let currentNotesTagFilter = "ALL";
+    let currentNotesSearch = "";
+
+    function loadNotesState() {
+      try {
+        const saved = localStorage.getItem('medcolleague_clinical_notes_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            CLINICAL_NOTES = parsed;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load notes from localStorage', err);
+      }
+    }
+
+    function saveNotesState() {
+      try {
+        localStorage.setItem('medcolleague_clinical_notes_v1', JSON.stringify(CLINICAL_NOTES));
+      } catch (err) {
+        console.warn('Failed to save notes to localStorage', err);
+      }
+      const statElem = document.getElementById('dash-notes-stat-count');
+      if (statElem) statElem.innerText = CLINICAL_NOTES.length;
+      const countElem = document.getElementById('count-all-notes');
+      if (countElem) countElem.innerText = CLINICAL_NOTES.length;
+      renderNotesTagFilterPills();
+    }
+
+    function setNoteCategoryFilter(category, btnElem) {
+      currentNotesFilter = category;
+      document.querySelectorAll('#notes-filter-pills .action-pill').forEach(btn => btn.classList.remove('active'));
+      if (btnElem) btnElem.classList.add('active');
+      renderNotes();
+    }
+
+    function setNoteTagFilter(tag, btnElem) {
+      currentNotesTagFilter = tag;
+      document.querySelectorAll('#notes-tag-filter-pills .action-pill').forEach(btn => btn.classList.remove('active'));
+      if (btnElem) {
+        btnElem.classList.add('active');
+      } else {
+        document.querySelectorAll('#notes-tag-filter-pills .action-pill').forEach(btn => {
+          if (btn.innerText.toLowerCase().includes(tag.toLowerCase())) btn.classList.add('active');
+        });
+      }
+      renderNotes();
+    }
+
+    function renderNotesTagFilterPills() {
+      const container = document.getElementById('notes-tag-filter-pills');
+      if (!container) return;
+
+      const presetCategories = ['Emergency', 'Pharmacology', 'Review Needed', 'High-Yield', 'Diagnostic', 'Contraindication'];
+      const customTags = new Set();
+      CLINICAL_NOTES.forEach(n => {
+        (n.tags || []).forEach(t => {
+          if (!presetCategories.some(p => p.toLowerCase() === t.toLowerCase())) {
+            customTags.add(t);
+          }
+        });
+      });
+
+      let pillsHTML = `
+        <button class="action-pill ${currentNotesTagFilter === 'ALL' ? 'active' : ''}" onclick="setNoteTagFilter('ALL', this)">All Tags</button>
+      `;
+
+      presetCategories.forEach(cat => {
+        const count = CLINICAL_NOTES.filter(n => (n.tags || []).some(t => t.toLowerCase() === cat.toLowerCase())).length;
+        const style = getNoteTagStyle(cat);
+        const isActive = currentNotesTagFilter.toLowerCase() === cat.toLowerCase();
+        pillsHTML += `
+          <button class="action-pill ${isActive ? 'active' : ''}" style="border-left: 3px solid ${style.color}; color: ${style.color};" onclick="setNoteTagFilter('${cat}', this)">
+            ${style.icon} ${cat} (${count})
+          </button>
+        `;
+      });
+
+      customTags.forEach(cat => {
+        const count = CLINICAL_NOTES.filter(n => (n.tags || []).some(t => t.toLowerCase() === cat.toLowerCase())).length;
+        const style = getNoteTagStyle(cat);
+        const isActive = currentNotesTagFilter.toLowerCase() === cat.toLowerCase();
+        pillsHTML += `
+          <button class="action-pill ${isActive ? 'active' : ''}" style="border-left: 3px solid ${style.color}; color: ${style.color};" onclick="setNoteTagFilter('${cat}', this)">
+            ${style.icon} ${cat} (${count})
+          </button>
+        `;
+      });
+
+      container.innerHTML = pillsHTML;
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notes-grid-container');
+      if (!container) return;
+
+      const filtered = CLINICAL_NOTES.filter(note => {
+        // System / Pinned filtering
+        if (currentNotesFilter === 'PINNED' && !note.isPinned) return false;
+        if (currentNotesFilter !== 'ALL' && currentNotesFilter !== 'PINNED') {
+          if (note.organSystem !== currentNotesFilter) return false;
+        }
+
+        // Tag filtering
+        if (currentNotesTagFilter !== 'ALL') {
+          const targetTag = currentNotesTagFilter.toLowerCase();
+          const hasTag = (note.tags || []).some(t => t.toLowerCase() === targetTag);
+          if (!hasTag) return false;
+        }
+
+        // Search text filtering
+        if (currentNotesSearch) {
+          const q = currentNotesSearch.toLowerCase();
+          const matchTitle = (note.title || '').toLowerCase().includes(q);
+          const matchContent = (note.content || '').toLowerCase().includes(q);
+          const matchSystem = (note.organSystem || '').toLowerCase().includes(q);
+          const matchTags = (note.tags || []).some(t => t.toLowerCase().includes(q));
+          return matchTitle || matchContent || matchSystem || matchTags;
+        }
+        return true;
+      });
+
+      // Sort: Pinned first, then newest
+      filtered.sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 36px 20px; text-align: center; background: var(--bg); border: 1px dashed var(--border); border-radius: 14px;">
+            <div style="font-size: 28px; margin-bottom: 8px;">📝</div>
+            <div style="font-size: 14px; font-weight: 700; color: var(--text);">No matching clinical concept notes found.</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Click "Add Medical Note" above or toggle the tag filter to see more concepts!</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(note => {
+        const systemColors = {
+          'Cardiology': { bg: '#E0F2FE', text: '#0369A1' },
+          'Renal / Acid-Base': { bg: '#FEF3C7', text: '#B45309' },
+          'Pulmonology': { bg: '#E0E7FF', text: '#4338CA' },
+          'Endocrinology': { bg: '#FCE7F3', text: '#BE185D' },
+          'Gastroenterology': { bg: '#ECFDF5', text: '#047857' },
+          'Neurology': { bg: '#F3E8FF', text: '#7E22CE' },
+          'Infectious Disease': { bg: '#FEF2F2', text: '#B91C1C' },
+          'Pharmacology': { bg: '#CCFBF1', text: '#0F766E' }
+        };
+        const color = systemColors[note.organSystem] || { bg: 'var(--primary-light)', text: 'var(--primary-dark)' };
+
+        const tagsHtml = (note.tags || []).map(t => {
+          const ts = getNoteTagStyle(t);
+          return `<span class="tag-badge" style="background:${ts.bg}; color:${ts.color}; border:1px solid ${ts.border}; font-size:10px; cursor:pointer;" onclick="setNoteTagFilter('${escapeHTML(t)}')" title="Filter by tag: ${escapeHTML(t)}">
+            ${ts.icon} ${escapeHTML(t)}
+          </span>`;
+        }).join('');
+
+        return `
+          <div class="note-card ${note.isPinned ? 'pinned' : ''}" id="card-${note.id}">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                  <span style="background: ${color.bg}; color: ${color.text}; font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 8px; text-transform: uppercase;">
+                    ${note.organSystem}
+                  </span>
+                  ${note.isHighYield ? `<span style="background: #FEF3C7; color: #92400E; font-size: 10.5px; font-weight: 800; padding: 2px 7px; border-radius: 8px;">⚡ High-Yield</span>` : ''}
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <button onclick="togglePinNote('${note.id}')" title="${note.isPinned ? 'Unpin' : 'Pin to top'}" style="background: transparent; border: none; cursor: pointer; font-size: 14px; opacity: ${note.isPinned ? '1' : '0.4'};">
+                    📌
+                  </button>
+                  <button onclick="deleteNote('${note.id}')" title="Delete note" style="background: transparent; border: none; cursor: pointer; font-size: 14px; color: var(--text-muted); opacity: 0.6;">
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              <div class="note-title">${escapeHTML(note.title)}</div>
+
+              <!-- Color-Coded Tags Badges -->
+              <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px;">
+                ${tagsHtml}
+              </div>
+
+              <div class="note-content">${escapeHTML(note.content)}</div>
+            </div>
+
+            <div class="note-footer">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px; font-weight: 700;" onclick="playGoogleVoiceNote('${note.id}', this)" title="Speak concept note aloud with Google Voice">
+                  <span>🔊 Listen</span>
+                </button>
+                <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px; font-weight: 700; color: #0D9488;" onclick="convertNoteToFlashcard('${note.id}')" title="Convert to SM-2 Spaced Repetition Flashcard">
+                  <span>⚡ Flashcard</span>
+                </button>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <button onclick="copyNoteContent('${note.id}')" class="btn btn-secondary" style="font-size: 10.5px; padding: 3px 7px;" title="Copy note text to clipboard">
+                  📋 Copy
+                </button>
+                <button onclick="editNote('${note.id}')" class="btn btn-secondary" style="font-size: 10.5px; padding: 3px 7px;" title="Edit note">
+                  ✏️ Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    function filterNotes(q) {
+      currentNotesSearch = q.trim();
+      renderNotes();
+    }
+
+    // Modal Tag Management State & Auto-Suggestion Engine
+    let currentModalTags = [];
+    let selectedCustomTagColor = { color: '#B91C1C', bg: '#FEE2E2', border: '#FCA5A5' };
+    let currentTagSuggestions = [];
+    let activeTagSuggestionIndex = -1;
+
+    function selectTagColor(element) {
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+      element.classList.add('selected');
+      selectedCustomTagColor = {
+        color: element.getAttribute('data-color'),
+        bg: element.getAttribute('data-bg'),
+        border: element.getAttribute('data-border')
+      };
+    }
+
+    function toggleModalPresetTag(tagName) {
+      const idx = currentModalTags.findIndex(t => t.toLowerCase() === tagName.toLowerCase());
+      if (idx !== -1) {
+        currentModalTags.splice(idx, 1);
+      } else {
+        currentModalTags.push(tagName);
+      }
+      renderModalTags();
+      closeTagSuggestionsDropdown();
+    }
+
+    function addCustomModalTag(specificTag = null) {
+      const input = document.getElementById('modal-new-tag-input');
+      const val = specificTag || (input ? input.value.trim() : '');
+      if (!val) return;
+      if (!currentModalTags.some(t => t.toLowerCase() === val.toLowerCase())) {
+        currentModalTags.push(val);
+        if (!NOTE_CATEGORY_CONFIG[val]) {
+          NOTE_CATEGORY_CONFIG[val] = {
+            ...selectedCustomTagColor,
+            icon: '🏷️'
+          };
+        }
+      }
+      if (input) input.value = '';
+      closeTagSuggestionsDropdown();
+      renderModalTags();
+    }
+
+    function removeModalTag(idx) {
+      currentModalTags.splice(idx, 1);
+      renderModalTags();
+      // Refresh suggestions if dropdown is open
+      const input = document.getElementById('modal-new-tag-input');
+      if (input && document.activeElement === input) {
+        handleTagInput(input.value);
+      }
+    }
+
+    // Auto-Suggestion Dropdown Engine
+    function getAllAvailableTags() {
+      const tagSet = new Set();
+      // Preset and configured categories
+      Object.keys(NOTE_CATEGORY_CONFIG).forEach(k => tagSet.add(k));
+      // Tags from all clinical notes
+      CLINICAL_NOTES.forEach(n => {
+        (n.tags || []).forEach(t => {
+          if (t && t.trim()) tagSet.add(t.trim());
+        });
+      });
+      return Array.from(tagSet);
+    }
+
+    function handleTagInput(query) {
+      const dropdown = document.getElementById('modal-tag-suggestions-dropdown');
+      if (!dropdown) return;
+
+      const cleanQ = (query || '').trim().toLowerCase();
+      const allTags = getAllAvailableTags();
+
+      // Count tag frequency across all notes
+      const counts = {};
+      CLINICAL_NOTES.forEach(n => {
+        (n.tags || []).forEach(t => {
+          const trimmed = t.trim();
+          counts[trimmed] = (counts[trimmed] || 0) + 1;
+        });
+      });
+
+      // Filter tags not already in currentModalTags
+      const available = allTags.filter(t => !currentModalTags.some(curr => curr.toLowerCase() === t.toLowerCase()));
+
+      let filtered;
+      if (!cleanQ) {
+        // When query is empty, show top existing tags (frequently used or presets)
+        filtered = available.slice();
+      } else {
+        filtered = available.filter(t => t.toLowerCase().includes(cleanQ));
+      }
+
+      // Sort: Prefix matches first, then frequency, then alphabetical
+      filtered.sort((a, b) => {
+        const aLower = a.toLowerCase();
+        const bLower = b.toLowerCase();
+        const aStarts = cleanQ ? aLower.startsWith(cleanQ) : false;
+        const bStarts = cleanQ ? bLower.startsWith(cleanQ) : false;
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+        const countA = counts[a] || 0;
+        const countB = counts[b] || 0;
+        if (countB !== countA) return countB - countA;
+        return a.localeCompare(b);
+      });
+
+      currentTagSuggestions = filtered.slice(0, 7);
+      activeTagSuggestionIndex = -1;
+
+      if (currentTagSuggestions.length === 0 && !cleanQ) {
+        closeTagSuggestionsDropdown();
+        return;
+      }
+
+      let html = '';
+      if (cleanQ) {
+        html += `<div style="font-size:10.5px; font-weight:700; color:var(--text-muted); padding:4px 8px; text-transform:uppercase; letter-spacing:0.04em;">Matching Tags (${currentTagSuggestions.length}):</div>`;
+      } else {
+        html += `<div style="font-size:10.5px; font-weight:700; color:var(--text-muted); padding:4px 8px; text-transform:uppercase; letter-spacing:0.04em;">Suggested Existing Tags:</div>`;
+      }
+
+      currentTagSuggestions.forEach((tag, idx) => {
+        const style = getNoteTagStyle(tag);
+        const count = counts[tag] || 0;
+        const badgeLabel = count > 0 ? `${count} ${count === 1 ? 'note' : 'notes'}` : 'Preset';
+
+        // Highlight matching portion
+        let displayName = escapeHTML(tag);
+        if (cleanQ) {
+          const matchIdx = tag.toLowerCase().indexOf(cleanQ);
+          if (matchIdx !== -1) {
+            const before = escapeHTML(tag.substring(0, matchIdx));
+            const match = escapeHTML(tag.substring(matchIdx, matchIdx + cleanQ.length));
+            const after = escapeHTML(tag.substring(matchIdx + cleanQ.length));
+            displayName = `${before}<span class="tag-suggestion-match">${match}</span>${after}`;
+          }
+        }
+
+        html += `
+          <div class="tag-suggestion-item" id="tag-sugg-${idx}" onmousedown="selectTagSuggestion('${escapeQuotes(tag)}')" onmouseenter="setActiveSuggestionIndex(${idx})">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:6px; background:${style.bg}; color:${style.color}; border:1px solid ${style.border}; font-size:12px;">
+                ${style.icon}
+              </span>
+              <span style="font-weight:600;">${displayName}</span>
+            </div>
+            <span class="tag-suggestion-count">${badgeLabel}</span>
+          </div>
+        `;
+      });
+
+      // If user typed a query that doesn't exactly match an existing tag, show option to create it with chosen color
+      const hasExactMatch = allTags.some(t => t.toLowerCase() === cleanQ);
+      if (cleanQ && !hasExactMatch) {
+        html += `
+          <div class="tag-suggestion-item" id="tag-sugg-create" style="border-top:1px dashed var(--border); margin-top:4px; padding-top:7px; color:var(--primary-dark); font-weight:700;" onmousedown="addCustomModalTag()" onmouseenter="setActiveSuggestionIndex(${currentTagSuggestions.length})">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span>➕</span>
+              <span>Create tag <strong style="color:var(--text); background:var(--primary-light); padding:1px 6px; border-radius:4px;">"${escapeHTML(query.trim())}"</strong> with selected color</span>
+            </div>
+            <span style="width:12px; height:12px; border-radius:50%; background:${selectedCustomTagColor.color}; display:inline-block;"></span>
+          </div>
+        `;
+      }
+
+      dropdown.innerHTML = html;
+      dropdown.classList.remove('hidden');
+      dropdown.style.display = 'block';
+    }
+
+    function setActiveSuggestionIndex(idx) {
+      activeTagSuggestionIndex = idx;
+      updateSuggestionHighlight();
+    }
+
+    function updateSuggestionHighlight() {
+      const items = document.querySelectorAll('.tag-suggestion-item');
+      items.forEach((item, i) => {
+        if (i === activeTagSuggestionIndex) {
+          item.classList.add('active');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+
+    function handleTagInputKeydown(e) {
+      const dropdown = document.getElementById('modal-tag-suggestions-dropdown');
+      const isDropdownOpen = dropdown && !dropdown.classList.contains('hidden') && dropdown.style.display !== 'none';
+
+      if (!isDropdownOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        handleTagInput(document.getElementById('modal-new-tag-input')?.value || '');
+        return;
+      }
+
+      const totalItems = currentTagSuggestions.length + (document.getElementById('tag-sugg-create') ? 1 : 0);
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (totalItems > 0) {
+          activeTagSuggestionIndex = (activeTagSuggestionIndex + 1) % totalItems;
+          updateSuggestionHighlight();
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (totalItems > 0) {
+          activeTagSuggestionIndex = (activeTagSuggestionIndex - 1 + totalItems) % totalItems;
+          updateSuggestionHighlight();
+        }
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (isDropdownOpen && activeTagSuggestionIndex >= 0) {
+          if (activeTagSuggestionIndex < currentTagSuggestions.length) {
+            selectTagSuggestion(currentTagSuggestions[activeTagSuggestionIndex]);
+          } else {
+            addCustomModalTag();
+          }
+        } else {
+          addCustomModalTag();
+        }
+      } else if (e.key === 'Escape') {
+        closeTagSuggestionsDropdown();
+      }
+    }
+
+    function selectTagSuggestion(tagName) {
+      addCustomModalTag(tagName);
+      closeTagSuggestionsDropdown();
+      const input = document.getElementById('modal-new-tag-input');
+      if (input) input.focus();
+    }
+
+    function closeTagSuggestionsDropdown() {
+      const dropdown = document.getElementById('modal-tag-suggestions-dropdown');
+      if (dropdown) {
+        dropdown.classList.add('hidden');
+        dropdown.style.display = 'none';
+      }
+      activeTagSuggestionIndex = -1;
+    }
+
+    function renderModalTags() {
+      const container = document.getElementById('modal-active-tags-container');
+      const hiddenInput = document.getElementById('note-input-tags');
+      if (hiddenInput) hiddenInput.value = currentModalTags.join(', ');
+
+      document.querySelectorAll('#modal-preset-tags .tag-badge').forEach(btn => {
+        const text = btn.innerText.replace(/[🚨💊⚠️⚡🩺🚫📋🏷️❤️🧪🩸]/g, '').trim();
+        const isActive = currentModalTags.some(t => t.toLowerCase() === text.toLowerCase());
+        if (isActive) {
+          btn.style.boxShadow = '0 0 0 2px var(--text)';
+          btn.style.fontWeight = '800';
+        } else {
+          btn.style.boxShadow = 'none';
+          btn.style.fontWeight = '600';
+        }
+      });
+
+      if (!container) return;
+      if (currentModalTags.length === 0) {
+        container.innerHTML = '<span style="font-size:11.5px; color:var(--text-muted); font-style:italic;">No tags added yet. Click category buttons above or type in the input below.</span>';
+        return;
+      }
+
+      container.innerHTML = currentModalTags.map((t, idx) => {
+        const ts = getNoteTagStyle(t);
+        return `
+          <span class="tag-badge" style="background:${ts.bg}; color:${ts.color}; border:1px solid ${ts.border}; font-size:11.5px; padding:3px 10px; border-radius:8px;">
+            ${ts.icon} ${escapeHTML(t)}
+            <button type="button" onclick="removeModalTag(${idx})" style="background:transparent; border:none; color:inherit; font-weight:bold; cursor:pointer; margin-left:4px; font-size:12px;" title="Remove tag">✕</button>
+          </span>
+        `;
+      }).join('');
+    }
+
+    function openNewNoteModal(editId = null) {
+      closeTagSuggestionsDropdown();
+      const modal = document.getElementById('new-note-modal');
+      const titleElem = document.getElementById('note-modal-title');
+      const editIdInput = document.getElementById('edit-note-id');
+      const customTagInput = document.getElementById('modal-new-tag-input');
+      if (customTagInput) customTagInput.value = '';
+
+      if (editId) {
+        const note = CLINICAL_NOTES.find(n => n.id === editId);
+        if (note) {
+          titleElem.innerText = "✏️ Edit Clinical Concept Note";
+          editIdInput.value = note.id;
+          document.getElementById('note-input-title').value = note.title;
+          document.getElementById('note-input-system').value = note.organSystem;
+          document.getElementById('note-input-content').value = note.content;
+          document.getElementById('note-input-highyield').checked = !!note.isHighYield;
+          document.getElementById('note-input-pinned').checked = !!note.isPinned;
+          currentModalTags = [...(note.tags || [])];
+        }
+      } else {
+        titleElem.innerText = "📝 Jot Down Clinical Concept Note";
+        editIdInput.value = "";
+        document.getElementById('note-input-title').value = "";
+        document.getElementById('note-input-content').value = "";
+        document.getElementById('note-input-highyield').checked = true;
+        document.getElementById('note-input-pinned').checked = false;
+        currentModalTags = ["High-Yield"];
+      }
+
+      renderModalTags();
+      modal.classList.add('active');
+      setTimeout(() => document.getElementById('note-input-title')?.focus(), 100);
+    }
+
+    function closeNewNoteModal() {
+      closeTagSuggestionsDropdown();
+      document.getElementById('new-note-modal').classList.remove('active');
+    }
+
+    function editNote(id) {
+      openNewNoteModal(id);
+    }
+
+    function saveNoteFromModal() {
+      const title = document.getElementById('note-input-title').value.trim();
+      const content = document.getElementById('note-input-content').value.trim();
+      const system = document.getElementById('note-input-system').value;
+      const isHighYield = document.getElementById('note-input-highyield').checked;
+      const isPinned = document.getElementById('note-input-pinned').checked;
+      const editId = document.getElementById('edit-note-id').value;
+
+      if (!title || !content) {
+        alert('Please provide both a Title and Clinical Concept Content.');
+        return;
+      }
+
+      const tags = currentModalTags.length > 0 ? [...currentModalTags] : [system];
+
+      if (editId) {
+        const idx = CLINICAL_NOTES.findIndex(n => n.id === editId);
+        if (idx !== -1) {
+          CLINICAL_NOTES[idx] = {
+            ...CLINICAL_NOTES[idx],
+            title,
+            content,
+            organSystem: system,
+            isHighYield,
+            isPinned,
+            tags
+          };
+          showToast('✓ Medical note updated successfully!');
+        }
+      } else {
+        const newNote = {
+          id: `note-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+          title,
+          content,
+          organSystem: system,
+          isHighYield,
+          isPinned,
+          tags,
+          createdAt: new Date().toISOString()
+        };
+        CLINICAL_NOTES.unshift(newNote);
+        showToast('✓ Clinical concept note saved to Dashboard!');
+      }
+
+      saveNotesState();
+      renderNotes();
+      closeNewNoteModal();
+    }
+
+    function saveAnswerAsConceptNote(title, content) {
+      const cleanTitle = title || 'Dr. Ese Clinical Pearl';
+      const newNote = {
+        id: `note-ese-${Date.now()}`,
+        title: cleanTitle.length > 50 ? cleanTitle.substring(0, 50) + '...' : cleanTitle,
+        content: content.length > 500 ? content.substring(0, 500) + '...' : content,
+        organSystem: 'General Clinical',
+        isHighYield: true,
+        isPinned: true,
+        tags: ['Review Needed', 'High-Yield'],
+        createdAt: new Date().toISOString()
+      };
+      CLINICAL_NOTES.unshift(newNote);
+      saveNotesState();
+      renderNotes();
+      showToast('✓ Saved Dr. Ese clinical answer to My Notes!');
+      switchNav('dashboard');
+      scrollToNotes();
+    }
+
+    function speakSpecificText(text, btnElement) {
+      if (!('speechSynthesis' in window)) {
+        alert('Speech synthesis is not supported in this browser.');
+        return;
+      }
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        if (btnElement) btnElement.innerHTML = '🔊 Listen';
+        return;
+      }
+
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1.05;
+      const voices = window.speechSynthesis.getVoices();
+      const v = voices.find(vo => vo.name.includes('Google US English') || vo.name.includes('Samantha') || vo.name.includes('Natural'));
+      if (v) u.voice = v;
+
+      if (btnElement) btnElement.innerHTML = '⏸️ Stop';
+      u.onend = () => { if (btnElement) btnElement.innerHTML = '🔊 Listen'; };
+      u.onerror = () => { if (btnElement) btnElement.innerHTML = '🔊 Listen'; };
+      window.speechSynthesis.speak(u);
+    }
+
+    // ==========================================
+    // DR. ESE LECTURE & TUTORING STUDIO ENGINE
+    // ==========================================
+    const DR_ESE_LECTURES = [
+      {
+        id: "acid-base",
+        title: "Acid-Base Mastery & Winter's Formula Masterclass",
+        system: "Renal / Acid-Base",
+        tag: "⚡ High-Yield",
+        duration: "⏱️ 6-Min Board Masterclass",
+        description: "Master the 4-step ABG algorithm, calculate serum anion gap, and apply Winter's formula to uncover hidden triple mixed disorders.",
+        audioText: "Welcome to this clinical masterclass on Acid-Base Mastery and Winter's formula. When interpreting arterial blood gases on the wards or during USMLE exams, remember the golden rule: always calculate the serum anion gap first, regardless of the bicarbonate level. A patient with severe diabetic ketoacidosis and concurrent persistent vomiting may present with a normal serum bicarbonate of twenty-four, but a markedly elevated anion gap of twenty-six. In this masterclass, we explore the delta-delta gap and how to identify mixed acid-base disorders instantly.",
+        contentHTML: `
+          <div style="background:var(--primary-light); padding:14px 18px; border-radius:12px; border:1px solid rgba(13,148,136,0.2); margin-bottom:16px;">
+            <div style="font-weight:800; color:var(--primary-dark); font-size:13px; margin-bottom:4px;">🎯 LECTURE OBJECTIVES:</div>
+            <ul style="margin:0; padding-left:18px; font-size:12.5px; line-height:1.6;">
+              <li>Execute the 4-step ABG interpretation sequence with zero hesitation.</li>
+              <li>Calculate albumin-corrected Anion Gap and apply the GOLDMARK etiology mnemonic.</li>
+              <li>Use Winter's Formula: Expected PaCO2 = 1.5 * [HCO3-] + 8 &plusmn; 2 to detect secondary respiratory compensation failures.</li>
+              <li>Calculate the Delta-Delta ratio to identify triple mixed disorders.</li>
+            </ul>
+          </div>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">🔬 1. Pathophysiology & The 4-Step Systematic Sequence</h4>
+          <ol style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>Check arterial pH</strong>: Normal 7.35–7.45. Below 7.35 is acidemia; above 7.45 is alkalemia.</li>
+            <li><strong>Identify primary driver</strong>: If PaCO2 moves inversely with pH, primary process is respiratory. If HCO3- moves in the same direction, it is metabolic.</li>
+            <li><strong>Always Calculate Anion Gap</strong>: AG = [Na+] - ([Cl-] + [HCO3-]). Normal: 8–12 mEq/L. Add 2.5 mEq/L for every 1.0 g/dL drop in albumin below 4.0.</li>
+            <li><strong>Check Secondary Respiratory Compensation</strong>: In metabolic acidosis, use Winter's Formula. If PaCO2 &gt; expected, concurrent respiratory acidosis exists.</li>
+          </ol>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">🧪 2. The Delta-Delta Ratio (ΔAG / ΔHCO3-)</h4>
+          <ul style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>Ratio &lt; 1</strong>: Combined HAGMA + Normal Anion Gap Metabolic Acidosis (NAGMA/RTA/diarrhea).</li>
+            <li><strong>Ratio 1 to 2</strong>: Pure High Anion Gap Metabolic Acidosis (DKA, lactic acidosis).</li>
+            <li><strong>Ratio &gt; 2</strong>: Combined HAGMA + Metabolic Alkalosis (e.g. DKA plus vomiting).</li>
+          </ul>
+
+          <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:12px 16px; margin:14px 0; color:#B45309;">
+            <strong>⚡ Dr. Ese's Board Trap</strong>: Distractors often try to trick you with a "normal" bicarbonate level. In a patient with DKA who has been vomiting profusely, the metabolic alkalosis from gastric acid loss raises bicarbonate, masking the acidosis. However, the Anion Gap will be wildly elevated (e.g. 26). <em>Always calculate the gap!</em>
+          </div>
+
+          <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:14px; margin-top:16px;">
+            <div style="font-weight:800; font-size:13px; color:var(--text); margin-bottom:8px;">❓ Interactive Board Challenge Question:</div>
+            <p style="font-size:13px; line-height:1.5; margin-bottom:10px;">
+              A 48-year-old female presents with acute severe nausea and lethargy. ABG reveals: pH 7.24, PaCO2 25 mmHg, HCO3- 10 mEq/L. Serum electrolytes: Na+ 140, Cl- 98, HCO3- 10, Albumin 4.0. According to Winter's formula, what is the expected PaCO2, and what is the underlying acid-base diagnosis?
+            </p>
+            <button class="btn btn-secondary" onclick="this.nextElementSibling.classList.toggle('hidden')" style="font-size:11.5px; padding:5px 12px;">
+              👁️ Reveal Dr. Ese's Clinical Answer & Explanation
+            </button>
+            <div class="hidden" style="margin-top:10px; padding:10px 14px; background:var(--primary-light); border-radius:10px; font-size:12.5px; line-height:1.6; color:var(--primary-dark);">
+              <strong>Correct Answer: Expected PaCO2 is 23 &plusmn; 2 mmHg (21–25 mmHg). Diagnosis: Pure High Anion Gap Metabolic Acidosis with appropriate respiratory compensation.</strong><br>
+              <em>Walkthrough</em>: Winter's formula = 1.5 * 10 + 8 = 23 &plusmn; 2. Since measured PaCO2 is 25 mmHg, compensation is appropriate. Anion Gap = 140 - (98 + 10) = 32 (severely elevated HAGMA). Delta-Delta = (32 - 12)/(24 - 10) = 20/14 = 1.42 (pure HAGMA).
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "wpw-afib",
+        title: "Wolff-Parkinson-White & Wide-Complex Arrhythmias",
+        system: "Cardiology",
+        tag: "🚨 Emergency",
+        duration: "⏱️ 5-Min Board Masterclass",
+        description: "Emergency identification of pre-excited Atrial Fibrillation, understanding the bundle of Kent, and avoiding the lethal ABCD AV-nodal blocking drugs.",
+        audioText: "This is Dr. Ese with a critical emergency cardiology lecture on Wolff-Parkinson-White syndrome. When a patient with WPW develops Atrial Fibrillation, the ECG presents with an irregularly irregular, wide-complex, polymorphic tachycardia. You must remember the lethal ABCD contraindications: Adenosine, Beta-blockers, Calcium channel blockers, and Digoxin are strictly contraindicated. Blocking the AV node diverts all erratic impulses down the accessory pathway, precipitating ventricular fibrillation and cardiac arrest. If the patient is unstable, perform immediate electrical cardioversion. If stable, give intravenous Procainamide.",
+        contentHTML: `
+          <div style="background:var(--primary-light); padding:14px 18px; border-radius:12px; border:1px solid rgba(13,148,136,0.2); margin-bottom:16px;">
+            <div style="font-weight:800; color:var(--primary-dark); font-size:13px; margin-bottom:4px;">🎯 LECTURE OBJECTIVES:</div>
+            <ul style="margin:0; padding-left:18px; font-size:12.5px; line-height:1.6;">
+              <li>Recognize the classic WPW ECG triad: short PR (&lt;120 ms), delta wave, and wide QRS.</li>
+              <li>Identify pre-excited Atrial Fibrillation: irregularly irregular, wide-complex, rapid rate (&gt;200 bpm).</li>
+              <li>Memorize the ABCD contraindications that precipitate fatal Ventricular Fibrillation.</li>
+              <li>Order first-line pharmacotherapy: IV Procainamide or Ibutilide for stable patients.</li>
+            </ul>
+          </div>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">🚨 1. Pre-Excited AFib: The Lethal ABCD Drugs</h4>
+          <p>Under normal conditions, conduction travels down both the AV node and the bypass tract (Bundle of Kent). In atrial fibrillation, hundreds of erratic impulses bombard both pathways.</p>
+          <p><strong>Lethal ABCD AV-Nodal Blockers to AVOID:</strong></p>
+          <ul style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>A</strong>denosine</li>
+            <li><strong>B</strong>eta-blockers (Metoprolol, Esmolol, Atenolol)</li>
+            <li><strong>C</strong>alcium Channel Blockers (Diltiazem, Verapamil)</li>
+            <li><strong>D</strong>igoxin</li>
+          </ul>
+          <p><em>Why fatal?</em> By blocking the AV node, 100% of the erratic atrial impulses are funneled uninhibited down the accessory pathway, precipitating <strong>Ventricular Fibrillation and sudden cardiac death</strong>.</p>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">💊 2. Emergency Management Algorithm</h4>
+          <ul style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>Hemodynamically Unstable</strong> (Hypotension, pulmonary edema, altered mental status): Immediate <strong>Synchronized Electrical Cardioversion</strong> (100J–200J).</li>
+            <li><strong>Hemodynamically Stable</strong>: Intravenous <strong>Procainamide</strong> or <strong>Ibutilide</strong>.</li>
+            <li><strong>Definitive Long-Term Cure</strong>: Catheter radiofrequency ablation of the bypass tract.</li>
+          </ul>
+
+          <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:12px 16px; margin:14px 0; color:#B45309;">
+            <strong>⚡ Dr. Ese's Board Trap</strong>: An irregular wide-complex tachycardia in a young person without prior ischemic history is virtually ALWAYS pre-excited AFib. Do not order IV Metoprolol or Amiodarone! Reach for Procainamide or Cardioversion!
+          </div>
+        `
+      },
+      {
+        id: "sepsis-shock",
+        title: "Sepsis & Septic Shock Guidelines (Surviving Sepsis Bundle)",
+        system: "Critical Care",
+        tag: "🚨 Emergency",
+        duration: "⏱️ 5-Min Board Masterclass",
+        description: "The 1-hour Surviving Sepsis bundle, fluid resuscitation formulas (30 mL/kg), and the vasopressor hierarchy from Norepinephrine to Vasopressin.",
+        audioText: "Welcome! Dr. Ese here to walk you through the Surviving Sepsis Campaign guidelines. Remember that sepsis is defined as life-threatening organ dysfunction caused by a dysregulated host response to infection. When septic shock is suspected, time is tissue. You must complete the one-hour bundle immediately: measure serum lactate, draw blood cultures before antibiotics, start broad-spectrum intravenous antimicrobials, administer thirty milliliters per kilogram of crystalloid for hypotension, and start Norepinephrine as your first-line vasopressor to maintain a mean arterial pressure of sixty-five or higher.",
+        contentHTML: `
+          <div style="background:var(--primary-light); padding:14px 18px; border-radius:12px; border:1px solid rgba(13,148,136,0.2); margin-bottom:16px;">
+            <div style="font-weight:800; color:var(--primary-dark); font-size:13px; margin-bottom:4px;">🎯 LECTURE OBJECTIVES:</div>
+            <ul style="margin:0; padding-left:18px; font-size:12.5px; line-height:1.6;">
+              <li>Execute all 5 components of the Surviving Sepsis 1-Hour Bundle.</li>
+              <li>Calculate initial fluid bolus (30 mL/kg balanced crystalloid).</li>
+              <li>Titrate Norepinephrine as first-line vasopressor to MAP &ge; 65 mmHg.</li>
+              <li>Recognize when to initiate Vasopressin and stress-dose Hydrocortisone.</li>
+            </ul>
+          </div>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">⏱️ 1. The 1-Hour Surviving Sepsis Bundle</h4>
+          <ol style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>Measure Serum Lactate</strong>: Re-measure within 2–4 hours if initially &gt; 2.0 mmol/L.</li>
+            <li><strong>Blood Cultures Prior to Antibiotics</strong>: Two sets from distinct sites.</li>
+            <li><strong>Broad-Spectrum Antibiotics</strong>: Administer within 1 hour of recognition.</li>
+            <li><strong>Rapid IV Crystalloid Bolus</strong>: 30 mL/kg of balanced crystalloid (Lactated Ringer's preferred).</li>
+            <li><strong>Vasopressors</strong>: Start if MAP &lt; 65 mmHg despite adequate fluid resuscitation.</li>
+          </ol>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">💉 2. Vasopressor Hierarchy</h4>
+          <ul style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>First-Line</strong>: <strong>Norepinephrine</strong> (potent alpha-1 vasoconstrictor).</li>
+            <li><strong>Second-Line</strong>: Add <strong>Vasopressin</strong> (fixed dose 0.03 units/min).</li>
+            <li><strong>Third-Line (Refractory)</strong>: Add <strong>Epinephrine</strong>.</li>
+            <li><strong>Refractory Shock</strong>: Add IV <strong>Hydrocortisone</strong> (200 mg/day).</li>
+          </ul>
+
+          <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:12px 16px; margin:14px 0; color:#B45309;">
+            <strong>⚡ Dr. Ese's Board Trap</strong>: Dopamine is no longer first-line for septic shock due to tachyarrhythmias and increased mortality. Norepinephrine is always the correct first-line choice on board exams.
+          </div>
+        `
+      },
+      {
+        id: "hyponatremia",
+        title: "Systematic Approach to Hyponatremia & Correction Limits",
+        system: "Endocrinology",
+        tag: "⚠️ Review Needed",
+        duration: "⏱️ 5-Min Board Masterclass",
+        description: "Differential diagnosis across volume states (SIADH vs Hypovolemia vs CHF) and safe sodium correction limits to prevent Osmotic Demyelination Syndrome.",
+        audioText: "Dr. Ese here with an essential endocrinology lecture on Hyponatremia. The most critical principle in managing chronic hyponatremia is the strict correction limit: never raise serum sodium by more than eight milliequivalents per liter in any twenty-four hour period. Overly rapid correction dehydrates pontine astrocytes, leading to irreversible Osmotic Demyelination Syndrome, also known as central pontine myelinolysis. In severe acute symptomatic hyponatremia with seizures, administer small boluses of three percent hypertonic saline to raise sodium by four to six points and abort cerebral herniation.",
+        contentHTML: `
+          <div style="background:var(--primary-light); padding:14px 18px; border-radius:12px; border:1px solid rgba(13,148,136,0.2); margin-bottom:16px;">
+            <div style="font-weight:800; color:var(--primary-dark); font-size:13px; margin-bottom:4px;">🎯 LECTURE OBJECTIVES:</div>
+            <ul style="margin:0; padding-left:18px; font-size:12.5px; line-height:1.6;">
+              <li>Distinguish true hypotonic hyponatremia from pseudohyponatremia.</li>
+              <li>Classify by volume status: Euvolemic, Hypovolemic, Hypervolemic.</li>
+              <li>Execute safe sodium correction protocols (strict 8 mEq/L ceiling per 24 hours).</li>
+              <li>Recognize Osmotic Demyelination Syndrome (CPM) symptoms and rescue protocols.</li>
+            </ul>
+          </div>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">🧠 1. Safe Correction Rules & Osmotic Demyelination</h4>
+          <ul style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>Acute Severe Hyponatremia (&lt;48h duration with seizures)</strong>: Bolus 3% Hypertonic Saline (100 mL over 10 min, repeat up to twice) to rapidly increase [Na+] by 4-6 mEq/L.</li>
+            <li><strong>Chronic Hyponatremia (&gt;48h duration)</strong>: Strict ceiling of <strong>&le; 8 mEq/L per 24 hours</strong> (6 mEq/L in liver failure or malnutrition).</li>
+            <li><strong>Osmotic Demyelination Syndrome (Central Pontine Myelinolysis)</strong>: Rapid correction pulls water out of pontine neurons, destroying the myelin sheath. Clinical signs: dysarthria, dysphagia, quadriparesis, locked-in syndrome.</li>
+            <li><strong>Rescue for Overcorrection</strong>: Administer <strong>Desmopressin (DDAVP) 1-2 mcg IV</strong> plus <strong>D5W infusions</strong> to re-lower sodium.</li>
+          </ul>
+
+          <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:12px 16px; margin:14px 0; color:#B45309;">
+            <strong>⚡ Dr. Ese's Board Trap</strong>: Mnemonic: <em>From low to high, your pons will die (Osmotic Demyelination). From high to low, your brain will blow (Cerebral Edema in Hypernatremia).</em> Always calculate the 24-hour rate!
+          </div>
+        `
+      },
+      {
+        id: "acs-stemi",
+        title: "Acute Coronary Syndromes (STEMI vs NSTEMI & GDMT)",
+        system: "Cardiology",
+        tag: "💊 Pharmacology",
+        duration: "⏱️ 6-Min Board Masterclass",
+        description: "Door-to-balloon times, right ventricular infarction contraindications to nitroglycerin, dual antiplatelet therapy, and secondary prevention.",
+        audioText: "Welcome! Dr. Ese here with your cardiology board review on Acute Coronary Syndromes. When a patient presents with ischemic chest pain, time is myocardium. In STEMI, our goal is door-to-balloon time of ninety minutes or less for percutaneous coronary intervention. Immediate medical stabilization includes chewed Aspirin, P2Y12 inhibitor loading, unfractionated Heparin, high-intensity Statin, and sublingual Nitroglycerin. Remember the critical pitfall: never administer Nitroglycerin or Morphine in right ventricular or inferior myocardial infarction, as venodilation causes catastrophic preload collapse and hypotension.",
+        contentHTML: `
+          <div style="background:var(--primary-light); padding:14px 18px; border-radius:12px; border:1px solid rgba(13,148,136,0.2); margin-bottom:16px;">
+            <div style="font-weight:800; color:var(--primary-dark); font-size:13px; margin-bottom:4px;">🎯 LECTURE OBJECTIVES:</div>
+            <ul style="margin:0; padding-left:18px; font-size:12.5px; line-height:1.6;">
+              <li>Distinguish STEMI from NSTEMI/Unstable Angina on ECG and serial troponins.</li>
+              <li>Revascularization timelines: Door-to-balloon &le; 90 min (PCI) or Door-to-needle &le; 30 min.</li>
+              <li>Initiate guideline-directed acute medical therapy (DAPT, Heparin, High-intensity Statin).</li>
+              <li>Identify Right Ventricular Infarction and the strict contraindication to Nitroglycerin.</li>
+            </ul>
+          </div>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">💊 1. Immediate Acute Medical Cocktail</h4>
+          <ul style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>Aspirin</strong>: 325 mg chewed immediately.</li>
+            <li><strong>P2Y12 Inhibitor</strong>: Ticagrelor or Prasugrel or Clopidogrel.</li>
+            <li><strong>Anticoagulation</strong>: Unfractionated Heparin IV bolus + infusion.</li>
+            <li><strong>High-Intensity Statin</strong>: Atorvastatin 80 mg.</li>
+            <li><strong>Beta-Blocker</strong>: Oral Metoprolol within 24 hours if hemodynamically stable.</li>
+          </ul>
+
+          <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:12px 16px; margin:14px 0; color:#B45309;">
+            <strong>⚡ Dr. Ese's Board Trap</strong>: In Inferior STEMI (ST elevations in II, III, aVF), always check right-sided leads (V4R). If positive (RV Infarction), <strong>Nitroglycerin and Morphine are strictly contraindicated</strong> because they drop preload and precipitate shock! Treat with IV saline boluses.
+          </div>
+        `
+      },
+      {
+        id: "dka-hhs",
+        title: "Diabetic Ketoacidosis (DKA) vs HHS Resuscitation",
+        system: "Endocrinology",
+        tag: "🚨 Emergency",
+        duration: "⏱️ 5-Min Board Masterclass",
+        description: "The two-bag fluid system, potassium replacement rules before insulin, closing the anion gap, and preventing fatal cerebral edema.",
+        audioText: "Dr. Ese here to break down the emergency management of Diabetic Ketoacidosis and Hyperosmolar Hyperglycemic State. The single most important rule before starting an insulin drip is checking serum potassium. If serum potassium is below three point three, you must hold insulin and aggressively infuse potassium. Administering insulin drives potassium into cells, precipitating fatal cardiac arrhythmias. Once potassium is above three point three, begin regular insulin infusion and isotonic crystalloids. When blood glucose drops below two hundred, add five percent dextrose to prevent hypoglycemia while continuing insulin until the anion gap closes.",
+        contentHTML: `
+          <div style="background:var(--primary-light); padding:14px 18px; border-radius:12px; border:1px solid rgba(13,148,136,0.2); margin-bottom:16px;">
+            <div style="font-weight:800; color:var(--primary-dark); font-size:13px; margin-bottom:4px;">🎯 LECTURE OBJECTIVES:</div>
+            <ul style="margin:0; padding-left:18px; font-size:12.5px; line-height:1.6;">
+              <li>Distinguish DKA (High AG Acidosis, ketones) from HHS (Osmolality &gt;320, Glucose &gt;600).</li>
+              <li>Execute the Serum Potassium Decision Rule before initiating IV insulin.</li>
+              <li>Implement the two-bag fluid protocol: switch to D5W when glucose reaches 200 mg/dL.</li>
+              <li>Recognize endpoint of therapy: resolution of the serum anion gap (&le; 12), not normal glucose!</li>
+            </ul>
+          </div>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">🩸 1. The Potassium Decision Rule (Prior to Insulin)</h4>
+          <ul style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>Serum K+ &lt; 3.3 mEq/L</strong>: <strong>HOLD INSULIN!</strong> Administer IV KCl (20-30 mEq/hr) until K+ &gt; 3.3 mEq/L.</li>
+            <li><strong>Serum K+ 3.3 - 5.2 mEq/L</strong>: Start regular insulin infusion (0.1 units/kg/hr) AND add 20-30 mEq KCl to each liter of IV maintenance fluid.</li>
+            <li><strong>Serum K+ &gt; 5.2 mEq/L</strong>: Start insulin infusion alone; monitor K+ every 2 hours.</li>
+          </ul>
+
+          <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:12px 16px; margin:14px 0; color:#B45309;">
+            <strong>⚡ Dr. Ese's Board Trap</strong>: Do NOT stop insulin when glucose drops below 200 mg/dL! Add 5% Dextrose (D5W) and continue the insulin infusion until the <strong>anion gap closes (&le; 12)</strong>. Stopping insulin early causes immediate relapse of ketoacidosis!
+          </div>
+        `
+      },
+      {
+        id: "hf-gdmt",
+        title: "Heart Failure: 4-Pillar GDMT Implementation",
+        system: "Cardiology",
+        tag: "💊 Pharmacology",
+        duration: "⏱️ 5-Min Board Masterclass",
+        description: "The 4 pillars of Guideline-Directed Medical Therapy in HFrEF: ARNI, Beta-blocker, MRA, and SGLT2i, and managing benign eGFR drops.",
+        audioText: "Hello! Dr. Ese here with your guideline-directed medical therapy lecture for Heart Failure with Reduced Ejection Fraction. Every patient with HFrEF must be initiated on all four mortality-reducing medication pillars: an ARNI like Sacubitril-Valsartan, an evidence-based Beta-blocker like Carvedilol or Metoprolol Succinate, a Mineralocorticoid Receptor Antagonist like Spironolactone, and an SGLT2 inhibitor like Dapagliflozin or Empagliflozin. Crucially, expect a benign initial eGFR dip of up to thirty percent upon starting an SGLT2 inhibitor. Do not discontinue the drug for this expected hemodynamic effect.",
+        contentHTML: `
+          <div style="background:var(--primary-light); padding:14px 18px; border-radius:12px; border:1px solid rgba(13,148,136,0.2); margin-bottom:16px;">
+            <div style="font-weight:800; color:var(--primary-dark); font-size:13px; margin-bottom:4px;">🎯 LECTURE OBJECTIVES:</div>
+            <ul style="margin:0; padding-left:18px; font-size:12.5px; line-height:1.6;">
+              <li>Name the 4 disease-modifying pillars proven to reduce mortality in HFrEF.</li>
+              <li>Observe the 36-hour washout period when switching from ACE inhibitors to ARNI.</li>
+              <li>Anticipate and manage benign eGFR drops (&le; 30%) with SGLT2 inhibitors.</li>
+              <li>Titrate MRAs while monitoring serum potassium and renal clearance.</li>
+            </ul>
+          </div>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">❤️ 1. The 4 Proven Mortality Pillars</h4>
+          <ol style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>ARNI</strong>: Sacubitril/Valsartan (Wait 36 hours after stopping ACEi to avoid angioedema).</li>
+            <li><strong>Beta-Blocker</strong>: Carvedilol, Metoprolol Succinate, or Bisoprolol.</li>
+            <li><strong>MRA</strong>: Spironolactone or Eplerenone (Monitor K+ &lt; 5.0).</li>
+            <li><strong>SGLT2 Inhibitor</strong>: Dapagliflozin or Empagliflozin.</li>
+          </ol>
+
+          <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:12px 16px; margin:14px 0; color:#B45309;">
+            <strong>⚡ Dr. Ese's Board Trap</strong>: SGLT2 inhibitors cause afferent arteriolar vasoconstriction, resulting in an expected, benign dip in eGFR of up to 30% in the first 2–4 weeks. Do NOT stop the medication for mild GFR dips!
+          </div>
+        `
+      },
+      {
+        id: "antibiotics",
+        title: "Empiric Antibiotic Stewardship from Head to Toe",
+        system: "Infectious Disease",
+        tag: "📋 Guideline",
+        duration: "⏱️ 5-Min Board Masterclass",
+        description: "Community-acquired vs hospital-acquired pneumonia, acute bacterial meningitis empiric regimens, and coverage for MRSA and Pseudomonas.",
+        audioText: "Welcome! Dr. Ese here with high-yield principles of antimicrobial stewardship. In acute bacterial meningitis in adults under fifty, empiric coverage requires intravenous Ceftriaxone, Vancomycin, and Dexamethasone. If the patient is over fifty, immunocompromised, or pregnant, you must add Ampicillin to cover Listeria monocytogenes. In hospital-acquired pneumonia, always include two antipseudomonal agents plus an anti-MRSA agent like Vancomycin or Linezolid.",
+        contentHTML: `
+          <div style="background:var(--primary-light); padding:14px 18px; border-radius:12px; border:1px solid rgba(13,148,136,0.2); margin-bottom:16px;">
+            <div style="font-weight:800; color:var(--primary-dark); font-size:13px; margin-bottom:4px;">🎯 LECTURE OBJECTIVES:</div>
+            <ul style="margin:0; padding-left:18px; font-size:12.5px; line-height:1.6;">
+              <li>Select empiric regimens for Acute Meningitis across age and immune status.</li>
+              <li>Differentiate Community-Acquired (CAP) from Hospital-Acquired Pneumonia (HAP).</li>
+              <li>List anti-pseudomonal beta-lactams and anti-MRSA agents.</li>
+              <li>Administer Dexamethasone prior to or with the first dose of antibiotics in meningitis.</li>
+            </ul>
+          </div>
+
+          <h4 style="color:var(--primary-dark); margin:14px 0 6px 0;">🧠 1. Acute Bacterial Meningitis Regimens</h4>
+          <ul style="padding-left:20px; line-height:1.6; font-size:13px;">
+            <li><strong>Age &lt; 50 years (Immunocompetent)</strong>: IV Ceftriaxone + Vancomycin + Dexamethasone.</li>
+            <li><strong>Age &ge; 50 years or Immunocompromised</strong>: Add IV <strong>Ampicillin</strong> to cover <em>Listeria monocytogenes</em>.</li>
+            <li><strong>Dexamethasone Rule</strong>: Give before or with first antibiotic dose to prevent sensorineural hearing loss.</li>
+          </ul>
+
+          <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:12px; padding:12px 16px; margin:14px 0; color:#B45309;">
+            <strong>⚡ Dr. Ese's Board Trap</strong>: Ceftriaxone does NOT cover <em>Listeria monocytogenes</em>. Listeria requires Ampicillin. Always add Ampicillin for patients older than 50!
+          </div>
+        `
+      }
+    ];
+
+    let activeLecture = DR_ESE_LECTURES[0];
+    let isLectureAudioPlaying = false;
+    let lectureSpeechUtterance = null;
+    let lectureVoiceSpeed = 1.0;
+
+    function switchTutorTab(tabName, btnElem) {
+      document.querySelectorAll('.tutor-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btnElem) btnElem.classList.add('active');
+
+      document.getElementById('tutor-panel-lectures').classList.add('hidden');
+      document.getElementById('tutor-panel-qa').classList.add('hidden');
+      document.getElementById('tutor-panel-cases').classList.add('hidden');
+
+      if (tabName === 'lectures') {
+        document.getElementById('tutor-panel-lectures').classList.remove('hidden');
+        renderLecturesCatalog();
+      } else if (tabName === 'qa') {
+        document.getElementById('tutor-panel-qa').classList.remove('hidden');
+        setTimeout(() => document.getElementById('student-q-input')?.focus(), 100);
+      } else if (tabName === 'cases') {
+        document.getElementById('tutor-panel-cases').classList.remove('hidden');
+      }
+    }
+
+    function renderLecturesCatalog() {
+      const grid = document.getElementById('lectures-catalog-grid');
+      if (!grid) return;
+
+      grid.innerHTML = DR_ESE_LECTURES.map(lec => {
+        const isActive = activeLecture && activeLecture.id === lec.id;
+        const tagStyle = getNoteTagStyle(lec.tag.replace(/[^a-zA-Z -]/g, '').trim());
+        return `
+          <div class="lecture-card ${isActive ? 'active' : ''}" onclick="selectLecture('${lec.id}')">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span class="tag-badge" style="background:${tagStyle.bg}; color:${tagStyle.color}; border:1px solid ${tagStyle.border};">
+                  ${tagStyle.icon} ${lec.tag}
+                </span>
+                <span style="font-size:11px; color:var(--text-muted);">${lec.duration}</span>
+              </div>
+              <div style="font-size:14px; font-weight:800; color:var(--text); line-height:1.4; margin-bottom:6px;">
+                ${escapeHTML(lec.title)}
+              </div>
+              <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">
+                ${escapeHTML(lec.description)}
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; border-top:1px solid var(--border); padding-top:8px;">
+              <span style="font-size:11px; font-weight:700; color:var(--primary-dark); text-transform:uppercase;">${lec.system}</span>
+              <span style="font-size:11.5px; font-weight:700; color:#0D9488;">${isActive ? '● Now Playing' : '▶ Start Lecture'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectLecture(id) {
+      const lec = DR_ESE_LECTURES.find(l => l.id === id);
+      if (!lec) return;
+      stopLectureVoice();
+      activeLecture = lec;
+      renderLecturesCatalog();
+
+      const titleElem = document.getElementById('theater-lecture-title');
+      const systemBadge = document.getElementById('theater-system-badge');
+      const tagBadge = document.getElementById('theater-tag-badge');
+      const durationElem = document.getElementById('theater-duration');
+      const bodyElem = document.getElementById('theater-lecture-body');
+
+      if (titleElem) titleElem.innerText = lec.title;
+      if (systemBadge) systemBadge.innerText = lec.system;
+      if (durationElem) durationElem.innerText = lec.duration;
+      if (tagBadge) {
+        const ts = getNoteTagStyle(lec.tag.replace(/[^a-zA-Z -]/g, '').trim());
+        tagBadge.innerText = lec.tag;
+        tagBadge.style.background = ts.bg;
+        tagBadge.style.color = ts.color;
+      }
+      if (bodyElem) bodyElem.innerHTML = lec.contentHTML;
+
+      document.getElementById('lecture-theater-card')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    async function deliverCustomLecture() {
+      const input = document.getElementById('custom-lecture-topic-input');
+      const topic = input ? input.value.trim() : '';
+      if (!topic) {
+        alert('Please enter a medical topic or clinical syndrome for Dr. Ese.');
+        return;
+      }
+
+      stopLectureVoice();
+      const bodyElem = document.getElementById('theater-lecture-body');
+      const titleElem = document.getElementById('theater-lecture-title');
+      const systemBadge = document.getElementById('theater-system-badge');
+
+      if (titleElem) titleElem.innerText = `Masterclass: ${topic} with Dr. Ese`;
+      if (systemBadge) systemBadge.innerText = 'On-Demand Board Lecture';
+
+      if (bodyElem) {
+        bodyElem.innerHTML = `
+          <div style="text-align:center; padding:30px 20px;">
+            <div class="skeleton-box" style="height:24px; width:70%; margin:0 auto 12px auto;"></div>
+            <div class="skeleton-box" style="height:18px; width:90%; margin:0 auto 8px auto;"></div>
+            <div class="skeleton-box" style="height:18px; width:80%; margin:0 auto 16px auto;"></div>
+            <div style="font-weight:700; color:var(--primary-dark); font-size:14px;">
+              👩‍🏫 Dr. Ese is preparing your Clinical Masterclass on "${escapeHTML(topic)}"...
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('lecture-theater-card')?.scrollIntoView({ behavior: 'smooth' });
+
+      try {
+        const res = await fetch('/api/ai/tutor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic, mode: 'lecture' })
+        });
+        const data = await res.json();
+        const lectureMarkdown = data.explanation || `### 🎓 Clinical Masterclass: ${topic}\n\nKey Pathophysiology & Management Protocol...`;
+
+        const newLecture = {
+          id: `custom-lec-${Date.now()}`,
+          title: `Masterclass: ${topic}`,
+          system: "General Clinical",
+          tag: "⚡ High-Yield",
+          duration: "⏱️ 6-Min Custom Masterclass",
+          description: `Comprehensive diagnostic workup, mechanism, and board pearls for ${topic}.`,
+          audioText: cleanTextForSpeech(lectureMarkdown).substring(0, 500),
+          contentHTML: formatMedicalMarkdown(lectureMarkdown)
+        };
+
+        DR_ESE_LECTURES.unshift(newLecture);
+        activeLecture = newLecture;
+        renderLecturesCatalog();
+        if (bodyElem) bodyElem.innerHTML = newLecture.contentHTML;
+        showToast('✓ Custom masterclass generated by Dr. Ese!');
+
+      } catch (err) {
+        console.error('Custom lecture error:', err);
+        if (bodyElem) {
+          bodyElem.innerHTML = `
+            <div style="padding:16px; background:#FEF2F2; border:1px solid #FCA5A5; border-radius:12px; color:#991B1B;">
+              Unable to reach lecture service. Please try again or select one of the curated masterclasses above.
+            </div>
+          `;
+        }
+      }
+    }
+
+    function toggleLectureAudio() {
+      if (isLectureAudioPlaying) {
+        stopLectureVoice();
+        return;
+      }
+      playActiveLectureAudio();
+    }
+
+    function playActiveLectureAudio() {
+      if (!('speechSynthesis' in window)) {
+        alert('Web Speech Synthesis is not supported in this browser.');
+        return;
+      }
+      if (!activeLecture) return;
+
+      stopLectureVoice();
+
+      const text = activeLecture.audioText || cleanTextForSpeech(activeLecture.contentHTML);
+      lectureSpeechUtterance = new SpeechSynthesisUtterance(text);
+      lectureSpeechUtterance.rate = lectureVoiceSpeed;
+      lectureSpeechUtterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const googleVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Natural'));
+      if (googleVoice) lectureSpeechUtterance.voice = googleVoice;
+
+      const btnText = document.getElementById('lecture-voice-btn-text');
+      const btnIcon = document.getElementById('lecture-voice-btn-icon');
+      const wave = document.getElementById('lecture-audio-wave');
+
+      if (btnText) btnText.innerText = 'Pause / Stop Audio';
+      if (btnIcon) btnIcon.innerText = '⏸️';
+      if (wave) wave.classList.remove('hidden');
+      isLectureAudioPlaying = true;
+
+      lectureSpeechUtterance.onend = () => {
+        stopLectureVoice();
+      };
+      lectureSpeechUtterance.onerror = () => {
+        stopLectureVoice();
+      };
+
+      window.speechSynthesis.speak(lectureSpeechUtterance);
+    }
+
+    function stopLectureVoice() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      const btnText = document.getElementById('lecture-voice-btn-text');
+      const btnIcon = document.getElementById('lecture-voice-btn-icon');
+      const wave = document.getElementById('lecture-audio-wave');
+
+      if (btnText) btnText.innerText = 'Listen with Google Voice';
+      if (btnIcon) btnIcon.innerText = '🔊';
+      if (wave) wave.classList.add('hidden');
+      isLectureAudioPlaying = false;
+      lectureSpeechUtterance = null;
+    }
+
+    function setLectureSpeed(spd) {
+      lectureVoiceSpeed = spd;
+      if (isLectureAudioPlaying) {
+        playActiveLectureAudio();
+      }
+      showToast(`Audio speed set to ${spd}x`);
+    }
+
+    function saveActiveLectureAsNote() {
+      if (!activeLecture) return;
+      const newNote = {
+        id: `note-lec-${Date.now()}`,
+        title: activeLecture.title,
+        content: cleanTextForNote(activeLecture.audioText || activeLecture.description || ''),
+        organSystem: activeLecture.system,
+        isHighYield: true,
+        isPinned: true,
+        tags: ['High-Yield', 'Guideline', activeLecture.system],
+        createdAt: new Date().toISOString()
+      };
+      CLINICAL_NOTES.unshift(newNote);
+      saveNotesState();
+      renderNotes();
+      showToast('✓ Saved Dr. Ese Lecture to My Clinical Notes!');
+    }
+
+    function convertActiveLectureToFlashcard() {
+      if (!activeLecture) return;
+      const newCard = {
+        id: `fc-lec-${Date.now()}`,
+        system: activeLecture.system.toUpperCase(),
+        front: `Dr. Ese Masterclass: ${activeLecture.title}`,
+        back: `✅ Key Takeaway: ${activeLecture.description}`,
+        notes: `USMLE Board Lecture Pearls • Tag: ${activeLecture.tag}`,
+        repetitions: 0,
+        easeFactor: 2.5,
+        interval: 1,
+        dueDate: new Date().toISOString()
+      };
+      FC_DATA.push(newCard);
+      saveFlashcardState();
+      renderFlashcard();
+      showToast('⚡ Converted lecture takeaways into SM-2 Flashcard!');
+    }
+
+    function askFollowUpOnLecture() {
+      if (!activeLecture) return;
+      switchTutorTab('qa', document.getElementById('tab-btn-qa'));
+      const q = `Dr. Ese, can you explain more about the board traps and diagnostic criteria in "${activeLecture.title}"?`;
+      askPresetQuestion(q);
+    }
+
+    function deleteNote(id) {
+      if (confirm('Are you sure you want to delete this clinical concept note?')) {
+        CLINICAL_NOTES = CLINICAL_NOTES.filter(n => n.id !== id);
+        saveNotesState();
+        renderNotes();
+        showToast('🗑️ Concept note deleted.');
+      }
+    }
+
+    function togglePinNote(id) {
+      const note = CLINICAL_NOTES.find(n => n.id === id);
+      if (note) {
+        note.isPinned = !note.isPinned;
+        saveNotesState();
+        renderNotes();
+        showToast(note.isPinned ? '📌 Note pinned to top!' : 'Note unpinned.');
+      }
+    }
+
+    function copyNoteContent(id) {
+      const note = CLINICAL_NOTES.find(n => n.id === id);
+      if (!note) return;
+      const copyText = `[MedColleague Note: ${note.title} (${note.organSystem})]\n\n${note.content}\n\nHigh-Yield Tags: ${(note.tags || []).join(', ')}`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(copyText).then(() => {
+          showToast('📋 Copied clinical note to clipboard!');
+        });
+      } else {
+        alert('Copied to clipboard:\n\n' + copyText);
+      }
+    }
+
+    // Convert Note into Active Spaced Repetition (SM-2) Flashcard
+    function convertNoteToFlashcard(id) {
+      const note = CLINICAL_NOTES.find(n => n.id === id);
+      if (!note) return;
+
+      const newCard = {
+        id: `fc-note-${Date.now()}`,
+        system: note.organSystem.toUpperCase(),
+        front: `Clinical Concept: ${note.title} - High-Yield Principles`,
+        back: `✅ ${note.content}`,
+        notes: `Tags: ${(note.tags || []).join(', ')} (Converted from My Notes)`,
+        repetitions: 0,
+        easeFactor: 2.5,
+        interval: 1,
+        dueDate: new Date().toISOString()
+      };
+
+      FC_DATA.push(newCard);
+      saveFlashcardState();
+      renderFlashcard();
+      showToast('⚡ Converted note to SM-2 Flashcard! Available in study deck.');
+    }
+
+    // Google Voice Sound Synthesis for Notes
+    let activeVoiceUtterance = null;
+    let currentlySpeakingBtn = null;
+
+    function playGoogleVoiceNote(id, btnElement) {
+      const note = CLINICAL_NOTES.find(n => n.id === id);
+      if (!note) return;
+
+      if (!('speechSynthesis' in window)) {
+        alert('Web Speech Synthesis is not supported in this browser.');
+        return;
+      }
+
+      // If already speaking this note, toggle stop
+      if (window.speechSynthesis.speaking && currentlySpeakingBtn === btnElement) {
+        window.speechSynthesis.cancel();
+        btnElement.innerHTML = '<span>🔊 Listen</span>';
+        const globalWave = document.getElementById('global-voice-wave');
+        if (globalWave) globalWave.classList.add('hidden');
+        currentlySpeakingBtn = null;
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      if (currentlySpeakingBtn) {
+        currentlySpeakingBtn.innerHTML = '<span>🔊 Listen</span>';
+      }
+
+      const textToSpeak = `${note.title}. Organ system: ${note.organSystem}. Clinical concept: ${note.content}`;
+      activeVoiceUtterance = new SpeechSynthesisUtterance(textToSpeak);
+      activeVoiceUtterance.rate = 1.05;
+      activeVoiceUtterance.pitch = 1.0;
+
+      // Select Google US English natural voice if present
+      const voices = window.speechSynthesis.getVoices();
+      const googleVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Natural'));
+      if (googleVoice) activeVoiceUtterance.voice = googleVoice;
+
+      btnElement.innerHTML = `<span>⏸️ Stop</span><span class="sound-wave"><span></span><span></span><span></span><span></span></span>`;
+      currentlySpeakingBtn = btnElement;
+
+      const globalWave = document.getElementById('global-voice-wave');
+      if (globalWave) globalWave.classList.remove('hidden');
+
+      activeVoiceUtterance.onend = () => {
+        btnElement.innerHTML = '<span>🔊 Listen</span>';
+        if (globalWave) globalWave.classList.add('hidden');
+        currentlySpeakingBtn = null;
+      };
+
+      activeVoiceUtterance.onerror = () => {
+        btnElement.innerHTML = '<span>🔊 Listen</span>';
+        if (globalWave) globalWave.classList.add('hidden');
+        currentlySpeakingBtn = null;
+      };
+
+      window.speechSynthesis.speak(activeVoiceUtterance);
+    }
+
+    // Hands-Free Voice Dictation using Web Speech API
+    let speechRecognitionInstance = null;
+    let isDictating = false;
+
+    function startNoteVoiceDictation() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Speech-to-text dictation is not supported in this browser. Please type your note.');
+        openNewNoteModal();
+        return;
+      }
+
+      openNewNoteModal();
+      startModalDictation();
+    }
+
+    function startModalDictation() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Speech recognition is not supported in this browser.');
+        return;
+      }
+
+      const dictateBtn = document.getElementById('modal-dictate-btn');
+      const contentArea = document.getElementById('note-input-content');
+
+      if (isDictating && speechRecognitionInstance) {
+        speechRecognitionInstance.stop();
+        isDictating = false;
+        if (dictateBtn) dictateBtn.innerText = '🎤 Dictate with Voice';
+        return;
+      }
+
+      try {
+        speechRecognitionInstance = new SpeechRecognition();
+        speechRecognitionInstance.continuous = true;
+        speechRecognitionInstance.interimResults = true;
+        speechRecognitionInstance.lang = 'en-US';
+
+        speechRecognitionInstance.onstart = () => {
+          isDictating = true;
+          if (dictateBtn) dictateBtn.innerText = '🔴 Listening... (Click to Stop)';
+          showToast('🎤 Listening... Speak your clinical concept clearly.');
+        };
+
+        speechRecognitionInstance.onresult = (event) => {
+          let transcript = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            transcript += event.results[i][0].transcript;
+          }
+          if (contentArea) {
+            contentArea.value = (contentArea.value ? contentArea.value + ' ' : '') + transcript;
+          }
+        };
+
+        speechRecognitionInstance.onerror = (err) => {
+          console.warn('Speech recognition error:', err);
+          isDictating = false;
+          if (dictateBtn) dictateBtn.innerText = '🎤 Dictate with Voice';
+        };
+
+        speechRecognitionInstance.onend = () => {
+          isDictating = false;
+          if (dictateBtn) dictateBtn.innerText = '🎤 Dictate with Voice';
+        };
+
+        speechRecognitionInstance.start();
+      } catch (err) {
+        console.error('Dictation start failed', err);
+      }
+    }
+
+    function exportNotesPDF() {
+      let notesHTML = `
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; padding: 20px;">
+          <h1 style="color: #0D9488; font-size: 22px; border-bottom: 2px solid #0D9488; padding-bottom: 8px;">MedColleague Clinical Concept Notes</h1>
+          <p style="font-size: 12px; color: #64748B;">Generated: ${new Date().toLocaleDateString()} • Physician / Educator: Dr. Ese • Total Notes: ${CLINICAL_NOTES.length}</p>
+      `;
+
+      CLINICAL_NOTES.forEach((note, index) => {
+        notesHTML += `
+          <div style="border: 1px solid #CBD5E1; border-radius: 10px; padding: 14px; margin-top: 14px; page-break-inside: avoid; background: #FAFBFD;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; color: #0284C7;">
+              <span>NOTE ${index + 1} • ${note.organSystem.toUpperCase()}</span>
+              ${note.isHighYield ? '<span style="color:#B45309;">⚡ HIGH-YIELD</span>' : ''}
+            </div>
+            <div style="font-size: 15px; font-weight: bold; margin-top: 6px; color: #0F172A;">${note.title}</div>
+            <div style="font-size: 13px; color: #334155; margin-top: 8px; line-height: 1.5;">${note.content}</div>
+            <div style="font-size: 11px; color: #64748B; margin-top: 8px;">Tags: ${(note.tags || []).join(', ')}</div>
+          </div>
+        `;
+      });
+
+      notesHTML += `</div>`;
+      exportToPDF("MedColleague Clinical Notes", notesHTML);
+    }
+
+    function scrollToNotes() {
+      switchNav('dashboard');
+      setTimeout(() => {
+        const card = document.getElementById('my-notes-card');
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          card.style.borderColor = '#0D9488';
+          setTimeout(() => { card.style.borderColor = ''; }, 1500);
+        }
+      }, 100);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast-notification');
+      if (!toast) return;
+      toast.innerText = message;
+      toast.style.transform = 'translateY(0)';
+      toast.style.opacity = '1';
+      setTimeout(() => {
+        toast.style.transform = 'translateY(100px)';
+        toast.style.opacity = '0';
+      }, 3000);
+    }
+
+    // Toggle Theme (Light / Dark)
+    function toggleTheme() {
+      const body = document.body;
+      const isDark = body.getAttribute('data-theme') === 'dark';
+      const switchBtn = document.getElementById('theme-switch-btn');
+      const switchText = document.getElementById('sidebar-theme-text');
+
+      if (isDark) {
+        body.removeAttribute('data-theme');
+        if (switchBtn) switchBtn.classList.remove('active');
+        if (switchText) switchText.innerHTML = '☀️ Light Theme';
+        try { localStorage.setItem('medcolleague_theme', 'light'); } catch (e) {}
+      } else {
+        body.setAttribute('data-theme', 'dark');
+        if (switchBtn) switchBtn.classList.add('active');
+        if (switchText) switchText.innerHTML = '🌙 Dark Theme';
+        try { localStorage.setItem('medcolleague_theme', 'dark'); } catch (e) {}
+      }
+    }
+
+    function loadThemePreference() {
+      try {
+        const saved = localStorage.getItem('medcolleague_theme');
+        const switchBtn = document.getElementById('theme-switch-btn');
+        const switchText = document.getElementById('sidebar-theme-text');
+
+        if (saved === 'dark') {
+          document.body.setAttribute('data-theme', 'dark');
+          if (switchBtn) switchBtn.classList.add('active');
+          if (switchText) switchText.innerHTML = '🌙 Dark Theme';
+        } else {
+          document.body.removeAttribute('data-theme');
+          if (switchBtn) switchBtn.classList.remove('active');
+          if (switchText) switchText.innerHTML = '☀️ Light Theme';
+        }
+      } catch (e) {}
+    }
+
     // Service Worker Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -1867,7 +3919,163 @@
           .catch(err => console.error('SW error', err));
       });
     }
+
+    // Close Tag Suggestions Dropdown on Outside Click
+    document.addEventListener('click', (e) => {
+      const input = document.getElementById('modal-new-tag-input');
+      const dropdown = document.getElementById('modal-tag-suggestions-dropdown');
+      if (!input || !dropdown) return;
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        closeTagSuggestionsDropdown();
+      }
+    });
+
+    // Initial render hook
+    window.addEventListener('DOMContentLoaded', () => {
+      loadThemePreference();
+      loadNotesState();
+      renderNotes();
+      loadQBankState();
+      loadFlashcardState();
+      renderQuestion();
+      renderFlashcard();
+      runEgfr();
+      runAnionGap();
+      renderD3RadarChart();
+    });
   </script>
+
+  <!-- MODAL: ADD / EDIT MEDICAL NOTE -->
+  <div class="modal-overlay" id="new-note-modal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:16px;">
+        <h3 style="font-size:16px; font-weight:800; color:var(--text);" id="note-modal-title">📝 Jot Down Clinical Concept Note</h3>
+        <button onclick="closeNewNoteModal()" style="background:transparent; border:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✕</button>
+      </div>
+
+      <input type="hidden" id="edit-note-id" value="">
+
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11.5px; font-weight:700; color:var(--text); display:block; margin-bottom:4px;">Concept Title / Drug / Diagnostic Syndrome:</label>
+        <input type="text" id="note-input-title" placeholder="e.g. SGLT2 Inhibitor Cardiorenal GDMT Indication" style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); font-size:13.5px; background:var(--bg); color:var(--text);">
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:11.5px; font-weight:700; color:var(--text); display:block; margin-bottom:4px;">Organ System / Specialty:</label>
+          <select id="note-input-system" style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); font-size:13px; background:var(--bg); color:var(--text);">
+            <option value="Cardiology">Cardiology</option>
+            <option value="Renal / Acid-Base">Renal / Acid-Base</option>
+            <option value="Pulmonology">Pulmonology</option>
+            <option value="Endocrinology">Endocrinology</option>
+            <option value="Gastroenterology">Gastroenterology</option>
+            <option value="Neurology">Neurology</option>
+            <option value="Infectious Disease">Infectious Disease</option>
+            <option value="Hematology / Oncology">Hematology / Oncology</option>
+            <option value="Pharmacology">Pharmacology</option>
+            <option value="General Clinical">General Clinical</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size:11.5px; font-weight:700; color:var(--text); display:block; margin-bottom:4px;">Priority & Pinning:</label>
+          <div style="display:flex; align-items:center; gap:14px; height:42px;">
+            <label style="font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="note-input-highyield" checked>
+              <span>⚡ High-Yield</span>
+            </label>
+            <label style="font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="note-input-pinned">
+              <span>📌 Pin to Top</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <label style="font-size:11.5px; font-weight:700; color:var(--text);">Clinical Pearl, Diagnostic Criteria, or Contraindications:</label>
+          <button type="button" class="btn btn-secondary" style="font-size:11px; padding:3px 10px;" onclick="startModalDictation()" id="modal-dictate-btn">
+            🎤 Dictate with Voice
+          </button>
+        </div>
+        <textarea id="note-input-content" rows="5" placeholder="Write clinical mechanisms, key criteria, contraindications, or exam pearls... (e.g., Do NOT give AV-nodal blockers in WPW with AFib!)" style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); font-size:13px; background:var(--bg); color:var(--text); font-family:inherit; resize:vertical;"></textarea>
+      </div>
+
+      <!-- COLOR-CODED TAG MANAGEMENT SECTION -->
+      <div style="margin-bottom:16px; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <label style="font-size:12px; font-weight:800; color:var(--text); margin:0;">
+            🏷️ Color-Coded Categories & Tags:
+          </label>
+          <span style="font-size:11px; color:var(--text-muted);">Click to toggle categories</span>
+        </div>
+
+        <!-- Quick-Toggle Preset Category Badges -->
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;" id="modal-preset-tags">
+          <button type="button" class="tag-badge" style="background:#FEE2E2; color:#B91C1C; border:1px solid #FCA5A5; cursor:pointer;" onclick="toggleModalPresetTag('Emergency')">
+            🚨 Emergency
+          </button>
+          <button type="button" class="tag-badge" style="background:#EDE9FE; color:#6D28D9; border:1px solid #C4B5FD; cursor:pointer;" onclick="toggleModalPresetTag('Pharmacology')">
+            💊 Pharmacology
+          </button>
+          <button type="button" class="tag-badge" style="background:#FEF3C7; color:#B45309; border:1px solid #FCD34D; cursor:pointer;" onclick="toggleModalPresetTag('Review Needed')">
+            ⚠️ Review Needed
+          </button>
+          <button type="button" class="tag-badge" style="background:#CCFBF1; color:#0F766E; border:1px solid #5EEAD4; cursor:pointer;" onclick="toggleModalPresetTag('High-Yield')">
+            ⚡ High-Yield
+          </button>
+          <button type="button" class="tag-badge" style="background:#E0F2FE; color:#0369A1; border:1px solid #7DD3FC; cursor:pointer;" onclick="toggleModalPresetTag('Diagnostic')">
+            🩺 Diagnostic
+          </button>
+          <button type="button" class="tag-badge" style="background:#FFE4E6; color:#9F1239; border:1px solid #FDA4AF; cursor:pointer;" onclick="toggleModalPresetTag('Contraindication')">
+            🚫 Contraindication
+          </button>
+          <button type="button" class="tag-badge" style="background:#E0E7FF; color:#4338CA; border:1px solid #A5B4FC; cursor:pointer;" onclick="toggleModalPresetTag('Guideline')">
+            📋 Guideline
+          </button>
+        </div>
+
+        <!-- Active Tags on this Note -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Applied Tags:</div>
+          <div id="modal-active-tags-container" style="display:flex; gap:6px; flex-wrap:wrap; min-height:28px; align-items:center;">
+            <!-- Rendered dynamically with remove buttons -->
+          </div>
+        </div>
+
+        <!-- Add Custom Tag Row with Auto-Suggestion Dropdown -->
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; border-top:1px dashed var(--border); padding-top:8px;">
+          <div style="position:relative; flex-grow:1; min-width:180px;">
+            <input type="text" id="modal-new-tag-input" placeholder="Type tag name (e.g. Sepsis, EKG)..." autocomplete="off" style="width:100%; padding:7px 10px; border-radius:8px; border:1px solid var(--border); font-size:12px; background:var(--card-bg); color:var(--text);" oninput="handleTagInput(this.value)" onfocus="handleTagInput(this.value)" onkeydown="handleTagInputKeydown(event)">
+            <div id="modal-tag-suggestions-dropdown" class="tag-suggestions-dropdown hidden" style="display:none;"></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <span style="font-size:11px; color:var(--text-muted);">Color:</span>
+            <div class="color-swatch selected" style="background:#B91C1C;" data-color="#B91C1C" data-bg="#FEE2E2" data-border="#FCA5A5" onclick="selectTagColor(this)" title="Red / Emergency"></div>
+            <div class="color-swatch" style="background:#6D28D9;" data-color="#6D28D9" data-bg="#EDE9FE" data-border="#C4B5FD" onclick="selectTagColor(this)" title="Purple / Pharmacology"></div>
+            <div class="color-swatch" style="background:#B45309;" data-color="#B45309" data-bg="#FEF3C7" data-border="#FCD34D" onclick="selectTagColor(this)" title="Amber / Review"></div>
+            <div class="color-swatch" style="background:#0F766E;" data-color="#0F766E" data-bg="#CCFBF1" data-border="#5EEAD4" onclick="selectTagColor(this)" title="Teal / High-Yield"></div>
+            <div class="color-swatch" style="background:#0369A1;" data-color="#0369A1" data-bg="#E0F2FE" data-border="#7DD3FC" onclick="selectTagColor(this)" title="Blue / Diagnostic"></div>
+            <div class="color-swatch" style="background:#4338CA;" data-color="#4338CA" data-bg="#E0E7FF" data-border="#A5B4FC" onclick="selectTagColor(this)" title="Indigo / Guideline"></div>
+          </div>
+          <button type="button" class="btn btn-secondary" style="font-size:11px; padding:6px 12px; font-weight:700;" onclick="addCustomModalTag()">
+            ➕ Add
+          </button>
+        </div>
+
+        <input type="hidden" id="note-input-tags" value="">
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border); padding-top:14px;">
+        <button type="button" class="btn btn-secondary" onclick="closeNewNoteModal()">Cancel</button>
+        <button type="button" class="btn btn-success" onclick="saveNoteFromModal()">💾 Save Medical Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-notification" style="position:fixed; bottom:24px; right:24px; background:#0F172A; color:white; padding:12px 20px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 10px 25px rgba(0,0,0,0.2); z-index:9999; transform:translateY(100px); opacity:0; transition:all 0.3s ease; display:flex; align-items:center; gap:8px;"></div>
 
   <!-- IRT PSYCHOMETRIC MODEL MODAL -->
   <div class="modal-overlay" id="irt-modal">
@@ -1906,3 +4114,4 @@
 
 </body>
 </html>
+

@@ -9,16 +9,24 @@ generator client {
 
 enum Role {
   STUDENT
-  RESIDENT
-  ATTENDING
+  CLINICIAN
   ADMIN
+  VIEWER
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
 }
 
 enum Plan {
-  FREE
+  FREE_TRIAL
   PRO_MONTHLY
   PRO_ANNUAL
-  INSTITUTIONAL
+  ENTERPRISE_INSTITUTION
 }
 
 enum ExamType {
@@ -31,26 +39,95 @@ enum ExamType {
 }
 
 model User {
-  id                  String               @id @default(uuid())
+  id                  String               @id @default(cuid())
   email               String               @unique
-  name                String
+  name                String?
+  passwordHash        String?
+  image               String?
   role                Role                 @default(STUDENT)
-  plan                Plan                 @default(FREE)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
+
+  // 14-Day Free Trial Engine
+  trialStartedAt      DateTime             @default(now())
+  trialEndsAt         DateTime             @default(dbgenerated("NOW() + interval '14 days'"))
+
+  // Multi-Tenant Workspace Relation
+  workspaceId         String?
+  workspace           Workspace?           @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+
+  // Clinical Content & Study Relations
+  notes               Note[]
   questionAttempts    QuestionAttempt[]
   flashcardReviews    FlashcardReview[]
   tutorSessions       TutorSession[]
   organSystemMastery  OrganSystemMastery[]
   uploadedCases       UploadedCase[]
   generatedItems      GeneratedItem[]
-  subscriptions       Subscription[]
+  usageLogs           UsageLog[]
   studySessions       StudySession[]
+
+  @@index([workspaceId])
+  @@index([email])
+}
+
+model Workspace {
+  id                   String             @id @default(cuid())
+  name                 String
+  slug                 String             @unique
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  // Stripe Subscriptions
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  stripePriceId        String?
+  subscriptionStatus   SubscriptionStatus @default(TRIALING)
+  currentPeriodEnd     DateTime?
+
+  members              User[]
+  usageLogs            UsageLog[]
+
+  @@index([slug])
+}
+
+model Note {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  content     String
+  organSystem String   @default("General")
+  tags        String[]
+  isPinned    Boolean  @default(false)
+  isHighYield Boolean  @default(true)
+  audioUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, organSystem])
+  @@index([userId, isPinned])
+}
+
+model UsageLog {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  action      String   // e.g. "AI_QUERY", "CASE_PARSING", "QBANK_GENERATION", "TTS_SYNTHESIS"
+  tokensUsed  Int      @default(0)
+  timestamp   DateTime @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, timestamp])
+  @@index([userId, timestamp])
 }
 
 model Question {
-  id             String            @id @default(uuid())
-  examType       ExamType
+  id             String            @id @default(cuid())
+  examType       ExamType          @default(USMLE_STEP_2_CK)
   organSystem    String
   vignette       String
   options        Json              // Array of option strings
@@ -65,7 +142,7 @@ model Question {
 }
 
 model QuestionAttempt {
-  id            String   @id @default(uuid())
+  id            String   @id @default(cuid())
   userId        String
   questionId    String
   selectedIndex Int
@@ -79,7 +156,7 @@ model QuestionAttempt {
 }
 
 model Flashcard {
-  id          String            @id @default(uuid())
+  id          String            @id @default(cuid())
   organSystem String
   front       String
   back        String
@@ -90,7 +167,7 @@ model Flashcard {
 }
 
 model FlashcardReview {
-  id           String    @id @default(uuid())
+  id           String    @id @default(cuid())
   userId       String
   flashcardId  String
   easeFactor   Float     @default(2.5)
@@ -104,7 +181,7 @@ model FlashcardReview {
 }
 
 model OrganSystemMastery {
-  id                    String   @id @default(uuid())
+  id                    String   @id @default(cuid())
   userId                String
   organSystem           String
   pMastery              Float    @default(0.5)
@@ -119,7 +196,7 @@ model OrganSystemMastery {
 }
 
 model UploadedCase {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   userId      String
   fileName    String
   caseText    String
@@ -132,9 +209,9 @@ model UploadedCase {
 }
 
 model GeneratedItem {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   userId      String
-  itemType    String   // QBank, Flashcard, ClinicalSummary
+  itemType    String   // QBank, Flashcard, ClinicalSummary, Note
   organSystem String
   content     Json
   createdAt   DateTime @default(now())
@@ -143,24 +220,10 @@ model GeneratedItem {
   @@index([userId])
 }
 
-model Subscription {
-  id                   String   @id @default(uuid())
-  userId               String
-  stripeCustomerId     String?
-  stripeSubscriptionId String?
-  status               String   @default("active")
-  plan                 Plan     @default(FREE)
-  currentPeriodEnd     DateTime
-  createdAt            DateTime @default(now())
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
 model StudySession {
-  id              String   @id @default(uuid())
+  id              String   @id @default(cuid())
   userId          String
-  sessionType     String   // QBank, Flashcard, Tutor, Calculator
+  sessionType     String   // QBank, Flashcard, Tutor, Calculator, Notes
   durationMinutes Int      @default(0)
   itemsCompleted  Int      @default(0)
   createdAt       DateTime @default(now())
@@ -170,7 +233,7 @@ model StudySession {
 }
 
 model TutorSession {
-  id           String   @id @default(uuid())
+  id           String   @id @default(cuid())
   userId       String
   documentText String
   dialogue     Json     // Chat transcript array
